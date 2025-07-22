@@ -1,0 +1,31 @@
+﻿@using MudBlazor
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    <!-- استایل‌ها -->
+    <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["BlazorApp11.styles.css"]" />
+
+    <ImportMap />
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+
+<body>
+    <!-- ✅ Providerها را حذف کردیم؛ فقط روتینگ باقی ماند -->
+    <Routes @rendermode="InteractiveServer" />
+
+    <!-- اسکریپت‌ها -->
+    <script src="_content/MudBlazor/MudBlazor.min.js" type="module"></script>
+    <script src="_framework/blazor.web.js"></script>
+</body>
+</html>

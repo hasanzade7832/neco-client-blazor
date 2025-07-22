@@ -1,0 +1,50 @@
+﻿@inherits LayoutComponentBase
+@using MudBlazor
+@using BlazorApp12.Components.Layout
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+
+<!-- ░ HeadContent ░ -->
+<HeadContent>
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="Dashboard.css" />
+    <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+</HeadContent>
+
+<!-- ░ Providerهای MudBlazor (فقط یک‌بار) ░ -->
+<MudThemeProvider Theme="AppThemes.KargardoonTheme" @bind-IsDarkMode="_isDarkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<!-- ░ ساختار صفحه ░ -->
+<MudLayout>
+
+    <!-- نوار بالایی -->
+    <NavMenu DrawerOpen="_drawerOpen"
+             ToggleDrawer="ToggleDrawer"
+             IsDarkMode="_isDarkMode"
+             ToggleDarkMode="ToggleDarkMode" />
+
+    <MudDrawerContainer>
+
+        <!-- سایدبار -->
+        <SideBar @bind-Open="_drawerOpen"
+                 OnClose="CloseDrawer" />
+
+        <!-- محتوای اصلی -->
+        <MudMainContent Class="@(_drawerOpen ? "appbar-shift pa-4" : "pa-4")">
+            @Body
+        </MudMainContent>
+
+    </MudDrawerContainer>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+    private bool _isDarkMode = false;
+
+    void ToggleDrawer()   => _drawerOpen = !_drawerOpen;
+    void CloseDrawer()    => _drawerOpen = false;
+    void ToggleDarkMode() => _isDarkMode = !_isDarkMode;
+}
