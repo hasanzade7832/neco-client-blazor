@@ -1,0 +1,13 @@
+﻿@using MudBlazor
+
+<MudText Typo="Typo.caption" Class="mt-4 d-block">
+    Version @Version
+</MudText>
+<MudText Typo="Typo.caption">
+    @BuildDate.ToString("dd MMM yyyy, hh:mm tt")
+</MudText>
+
+@code {
+    [Parameter] public string Version { get; set; } = "0.0";
+    [Parameter] public DateTime BuildDate { get; set; } = DateTime.Now;
+}

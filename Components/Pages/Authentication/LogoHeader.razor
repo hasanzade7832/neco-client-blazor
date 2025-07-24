@@ -1,0 +1,12 @@
+﻿@using MudBlazor
+@namespace BlazorApp12.Components.Pages.Authentication
+
+<MudStack Spacing="2" Class="mb-4" AlignItems="AlignItems.Center">
+    <img src="images/bipc-logo.png" alt="B.I.P.C" style="max-height:120px;" />
+    <MudText Typo="Typo.h5" Class="mt-2">B.I.P.C</MudText>
+
+    <MudPaper Elevation="0" Class="px-2 py-1 d-inline-flex align-center" Style="gap:8px">
+        <MudRating Value="3" MaxValue="3" ReadOnly="true" Size="Size.Small" />
+        <MudIcon Color="Color.Error">@Icons.Material.Filled.VpnKey</MudIcon>
+    </MudPaper>
+</MudStack>

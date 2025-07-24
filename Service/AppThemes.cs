@@ -1,8 +1,10 @@
-﻿using MudBlazor;
+﻿namespace BlazorApp12.Service;   // <-- این خط را اضافه کن (file‑scoped namespace)
+
+using MudBlazor;
 
 public static class AppThemes
 {
-    public static MudTheme KargardoonTheme = new MudTheme()
+    public static readonly MudTheme KargardoonTheme = new()
     {
         PaletteLight = new PaletteLight
         {

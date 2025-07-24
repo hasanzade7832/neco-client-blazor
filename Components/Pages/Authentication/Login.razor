@@ -1,0 +1,51 @@
+﻿@page "/login"
+
+@using MudBlazor
+@using Microsoft.AspNetCore.Components
+@using BlazorApp12.Models
+@using BlazorApp12.Components.Common
+@using BlazorApp12.Components.Pages.Authentication
+
+@namespace BlazorApp12.Components.Pages.Authentication
+
+<MudContainer MaxWidth="MaxWidth.False" Class="login-page pa-4">
+    <MudGrid Justify="Justify.Center" AlignItems="center" Spacing="3">
+
+        <!-- ستون چپ -->
+        <MudItem xs="12" md="7">
+            <LogoHeader />
+
+            <LoginForm UsernameSeed="Stefanie.sh@gmail.com"
+                       OnLogin="HandleLogin" />
+
+            <VersionInfo Version="2.09"
+                         BuildDate="@_now" />
+        </MudItem>
+
+        <!-- ستون راست -->
+        <MudItem xs="12" md="5">
+            <UpdatePanel Version="2.09" Items="@_updates" />
+        </MudItem>
+
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private DateTime _now = new(2024, 12, 14, 10, 34, 0);
+
+    private readonly List<UpdateItem> _updates =
+        [
+        new("New Features", "Highlights of the new version."),
+        new("Bug Fixes", "Corrections of previous errors or issues."),
+        new("Performance Improvements", "Enhancements to run more efficiently."),
+        new("User Interface Updates", "Changes to design and layout for better usability."),
+        new("Security Enhancements", "Better protection against threats."),
+        new("Compatibility", "Info about compatibility with devices or software.")
+    ];
+
+    private async Task HandleLogin(LoginModel model)
+    {
+        await Task.Delay(500);
+        Console.WriteLine($"Logged in as {model.Username}");
+    }
+}

@@ -295,3 +295,21 @@ aside.mud-drawer.sidebar-drawer {
     overflow-y: auto;
     padding-top: .25rem;
 }
+
+
+/*/////////////////////*/
+
+/*LOgin*/
+
+.login-page {
+    min-height: 100vh;
+}
+
+.login-card {
+    border: 2px solid var(--mud-palette-primary);
+    border-radius: 18px;
+}
+
+.update-card {
+    border-radius: 28px;
+}
