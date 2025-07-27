@@ -1,0 +1,49 @@
+﻿@using MudBlazor
+
+<div class="login-box-wrapper">
+    <!-- تیتر -->
+    <MudStack Class="login-box-header" Spacing="1">
+        <MudText Class="pa-1" Typo="Typo.h5" Style="font-weight:bold;">Log In</MudText>
+        <MudText Class="pa-1" Typo="Typo.subtitle1" Style="font-weight:bold;">Welcome Back!</MudText>
+    </MudStack>
+
+    <!-- خودِ باکس -->
+    <MudPaper Class="login-box-paper mud-width-full">
+        <MudForm>
+
+            <MudTextField Label="USERNAME"
+                          Placeholder="Enter your username"
+                          @bind-Value="Username"
+                          Class="mb-4 login-input-large" />
+
+            <MudTextField Label="PASSWORD"
+                          Placeholder="Enter your password"
+                          @bind-Value="Password"
+                          InputType="InputType.Password"
+                          Class="mb-5 login-input-large" />
+
+            <!-- ردیف پایینی: دکمه و لوگو کنار هم -->
+            <div class="login-bottom-row">
+                <MudButton Color="Color.Primary"
+                           Variant="Variant.Filled"
+                           Class="login-btn"
+                           OnClick="OnLoginClicked">
+                    <MudIcon Icon="@Icons.Material.Filled.ArrowForward"
+                             Style="color:#FFD600; font-size:1.5rem;" />
+                </MudButton>
+                <img src="images/logoNeco.jpg" alt="logo" class="login-logo-img" />
+            </div>
+
+        </MudForm>
+    </MudPaper>
+</div>
+
+@code {
+    public string Username { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+
+    private void OnLoginClicked()
+    {
+        // منطق ورود
+    }
+}

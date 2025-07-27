@@ -1,51 +1,52 @@
-﻿@page "/login"
-
+﻿@layout BlazorApp12.Components.Layout.EmptyLayout
+@page "/login"
 @using MudBlazor
-@using Microsoft.AspNetCore.Components
-@using BlazorApp12.Models
-@using BlazorApp12.Components.Common
-@using BlazorApp12.Components.Pages.Authentication
 
-@namespace BlazorApp12.Components.Pages.Authentication
+<MudGrid Class="mud-height-full mud-width-full"
+         Spacing="0"                  
+         AlignItems="Stretch"           
+         Style="
+            position:fixed; inset:0;
+            width:100vw; height:100vh;
+            border-radius:10px;
+            overflow:hidden; background:#fff;
+         ">
 
-<MudContainer MaxWidth="MaxWidth.False" Class="login-page pa-4">
-    <MudGrid Justify="Justify.Center" AlignItems="center" Spacing="3">
+    <!-- ستون خاکستری -->
+    <MudItem xs="12" sm="3" md="2" lg="2" xl="2"
+             Style="padding:0; margin:0; height:100vh; display:flex;">
+        <MudPaper Class="mud-width-full" Elevation="1"
+                  Style="background:#f3f3f3; flex:1; margin:0;" />
+    </MudItem>
 
-        <!-- ستون چپ -->
-        <MudItem xs="12" md="7">
-            <LogoHeader />
+    <!-- ستون سفید -->
+    <MudItem xs="0" sm="6" md="7" lg="7" xl="7"
+             Style="padding:0; margin:0; height:100vh; display:flex;">
+        <MudPaper Class="mud-width-full" Elevation="0"
+                  Style="background:#fff; flex:1; margin:0;" />
+    </MudItem>
 
-            <LoginForm UsernameSeed="Stefanie.sh@gmail.com"
-                       OnLogin="HandleLogin" />
+    <!-- ستون زرد -->
+    <MudItem xs="12" sm="3" md="3" lg="3" xl="3"
+             Class="d-flex align-center justify-center"
+             Style="padding:0; margin:0; height:100vh;">
+        <MudPaper Elevation="4"
+                  Class="d-flex align-center justify-center"
+                  Style="
+                     width:88%; height:93%;
+                     background:#ffe680;
+                     border-radius:38px;
+                     box-shadow:0 4px 16px #e8d98170;
+                  ">
+        </MudPaper>
+    </MudItem>
 
-            <VersionInfo Version="2.09"
-                         BuildDate="@_now" />
-        </MudItem>
-
-        <!-- ستون راست -->
-        <MudItem xs="12" md="5">
-            <UpdatePanel Version="2.09" Items="@_updates" />
-        </MudItem>
-
-    </MudGrid>
-</MudContainer>
-
-@code {
-    private DateTime _now = new(2024, 12, 14, 10, 34, 0);
-
-    private readonly List<UpdateItem> _updates =
-        [
-        new("New Features", "Highlights of the new version."),
-        new("Bug Fixes", "Corrections of previous errors or issues."),
-        new("Performance Improvements", "Enhancements to run more efficiently."),
-        new("User Interface Updates", "Changes to design and layout for better usability."),
-        new("Security Enhancements", "Better protection against threats."),
-        new("Compatibility", "Info about compatibility with devices or software.")
-    ];
-
-    private async Task HandleLogin(LoginModel model)
-    {
-        await Task.Delay(500);
-        Console.WriteLine($"Logged in as {model.Username}");
-    }
-}
+    <!-- باکس لاگین -->
+    <div style="
+         position:fixed;
+         left:calc(14vw - 100px);
+         bottom:40px;
+         z-index:5;">
+        <LoginBox />
+    </div>
+</MudGrid>
