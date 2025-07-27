@@ -2,51 +2,57 @@
 @page "/login"
 @using MudBlazor
 
-<MudGrid Class="mud-height-full mud-width-full"
-         Spacing="0"                  
-         AlignItems="Stretch"           
-         Style="
-            position:fixed; inset:0;
-            width:100vw; height:100vh;
-            border-radius:10px;
-            overflow:hidden; background:#fff;
-         ">
+<!-- ── باکس لاگین ── -->
+<div class="login-box-fixed">
+    <LoginBox />
+</div>
+
+<!-- ── شبکهٔ سه‌ستونه (برای دسکتاپ) ── -->
+<MudGrid Class="layout-grid mud-height-full mud-width-full"
+         Spacing="0"
+         AlignItems="Stretch"
+         Style="inset:0; width:100vw; height:100vh; overflow:hidden; background:#fff;">
 
     <!-- ستون خاکستری -->
     <MudItem xs="12" sm="3" md="2" lg="2" xl="2"
+             Class="col-grey"
              Style="padding:0; margin:0; height:100vh; display:flex;">
         <MudPaper Class="mud-width-full" Elevation="1"
-                  Style="background:#f3f3f3; flex:1; margin:0;" />
+                  Style="background:#f3f3f3; flex:1;" />
     </MudItem>
 
     <!-- ستون سفید -->
     <MudItem xs="0" sm="6" md="7" lg="7" xl="7"
+             Class="col-white"
              Style="padding:0; margin:0; height:100vh; display:flex;">
         <MudPaper Class="mud-width-full" Elevation="0"
-                  Style="background:#fff; flex:1; margin:0;" />
+                  Style="background:#fff; flex:1;" />
     </MudItem>
 
-    <!-- ستون زرد -->
+    <!-- ستون زرد (پنل آپدیت) -->
     <MudItem xs="12" sm="3" md="3" lg="3" xl="3"
-             Class="d-flex align-center justify-center"
+             Class="col-yellow d-flex align-center justify-center"
              Style="padding:0; margin:0; height:100vh;">
         <MudPaper Elevation="4"
-                  Class="d-flex align-center justify-center"
-                  Style="
-                     width:88%; height:93%;
-                     background:#ffe680;
-                     border-radius:38px;
-                     box-shadow:0 4px 16px #e8d98170;
-                  ">
+                  Class="update-panel"
+                  Style="width:88%; height:93%; background:#ffe680; border-radius:38px;">
+
+            <div class="update-panel-inner">
+                <MudText Typo="Typo.h6" Align="Align.Center" Class="update-title">
+                    Updates of version 2.09
+                </MudText>
+
+                <ul class="update-list">
+                    <li><b>New Features:</b> Highlights of the new version.</li>
+                    <li><b>Bug Fixes:</b> Corrections of previous errors or issues.</li>
+                    <li><b>Performance Improvements:</b> Enhancements to make the software run more efficiently.</li>
+                    <li><b>User Interface Updates:</b> Changes to the design and layout for better usability.</li>
+                    <li><b>Security Enhancements:</b> Upgrades to ensure better protection against threats.</li>
+                    <li><b>Compatibility:</b> Information about compatibility with different devices or software.</li>
+                </ul>
+            </div>
+
         </MudPaper>
     </MudItem>
 
-    <!-- باکس لاگین -->
-    <div style="
-         position:fixed;
-         left:calc(14vw - 100px);
-         bottom:40px;
-         z-index:5;">
-        <LoginBox />
-    </div>
 </MudGrid>
