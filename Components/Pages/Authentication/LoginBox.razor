@@ -1,27 +1,20 @@
 ﻿@using MudBlazor
 
-<div class="login-box-wrapper">
-
-    <!-- تیتر و سوییچ حالت -->
+<div class="login-box-header-bar">
     <MudStack Class="login-box-header-row"
               Row="true"
               Spacing="0"
               AlignItems="AlignItems.Center"
               Justify="Justify.SpaceBetween">
-
         <MudStack Spacing="1">
             <MudText Typo="Typo.h5" Class="fw-bold">Log In</MudText>
-            <MudText Typo="Typo.subtitle1" Class="fw-bold">Welcome Back!</MudText>
+            <MudText Typo="Typo.subtitle1" Class="fw-bold login-welcome-text">Welcome Back!</MudText>
         </MudStack>
-
         <div class="login-mode-switch">
-            <button class="@GetModeBtnClass(false)"
-                    @onclick="@(() => ToggleMode(false))">
+            <button class="@GetModeBtnClass(false)" @onclick="@(() => ToggleMode(false))">
                 <img src="images/password.svg" alt="OTP" class="icon-mode" />
             </button>
-
             <div class="mode-divider"></div>
-
             <MudIconButton Icon="@Icons.Material.Filled.VpnKey"
                            Size="Size.Medium"
                            Color="Color.Inherit"
@@ -29,33 +22,37 @@
                            OnClick="@(() => ToggleMode(true))" />
         </div>
     </MudStack>
+</div>
 
-    <!-- بدنهٔ فرم -->
+<div class="login-box-wrapper">
     <MudPaper Class="login-box-paper mud-width-full">
         <MudForm>
-
             <MudTextField Label="USERNAME"
                           @bind-Value="Username"
-                          Variant="Variant.Text" />
-
-            @if (!_isCodeMode)   @* حالت پسورد *@
+                          Variant="Variant.Text"
+                          Class="login-input"
+                          Autocomplete="off"
+                          AutocompleteAttribute="new-username"
+                          InputType="InputType.Text" />
+            @if (!_isCodeMode)
             {
                 <MudTextField Label="PASSWORD"
                               @bind-Value="Password"
                               InputType="InputType.Password"
                               Variant="Variant.Text"
-                              Class="mb-4" />
+                              Class="login-input"
+                              Autocomplete="off"
+                              AutocompleteAttribute="new-password" />
             }
-            else                 @* حالت کد یک‌بارمصرف *@
+            else
             {
-                <MudStack Row="true"
-                          AlignItems="AlignItems.Center"
-                          Class="mb-4 code-row">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4 code-row">
                     <MudTextField Label="CODE"
                                   @bind-Value="Code"
                                   Variant="Variant.Text"
-                                  Class="flex-grow-1" />
-
+                                  Class="login-input flex-grow-1"
+                                  Autocomplete="off"
+                                  AutocompleteAttribute="off" />
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Primary"
                                Class="send-code-btn"
@@ -64,7 +61,6 @@
                     </MudButton>
                 </MudStack>
             }
-
             <div class="login-bottom-row">
                 <MudButton Color="Color.Primary"
                            Variant="Variant.Filled"
@@ -75,30 +71,18 @@
                 </MudButton>
                 <img src="images/logoNeco.jpg" alt="logo" class="login-logo-img" />
             </div>
-
         </MudForm>
     </MudPaper>
 </div>
 
 @code {
     private bool _isCodeMode = false;
-
     public string Username { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string Code { get; set; } = string.Empty;
-
     private void ToggleMode(bool toCode) => _isCodeMode = toCode;
-
     private string GetModeBtnClass(bool forCodeMode)
         => $"mode-btn {(_isCodeMode == forCodeMode ? "active" : string.Empty)}";
-
-    private void SendCode()
-    {
-        // TODO: ارسال کد یک‌بارمصرف
-    }
-
-    private void OnLoginClicked()
-    {
-        // TODO: منطق ورود
-    }
+    private void SendCode() { }
+    private void OnLoginClicked() { }
 }
