@@ -1,6 +1,7 @@
 ﻿@layout BlazorApp12.Components.Layout.EmptyLayout
 @page "/login"
 @using MudBlazor
+@inject NavigationManager Nav
 
 <MudGrid Class="login-layout"
          Spacing="0"
@@ -10,12 +11,14 @@
              Style="padding:0; margin:0; height:100vh; display:flex;">
         <MudPaper Class="mud-width-full" Elevation="1" Style="background:#f3f3f3; flex:1;" />
     </MudItem>
+
     <MudItem xs="12" md="6" lg="6" xl="6" Class="col-center"
              Style="padding:0; margin:0; height:100vh; display:flex; align-items:flex-end; justify-content:center;">
         <div class="login-box-container">
             <LoginBox />
         </div>
     </MudItem>
+
     <MudItem xs="12" md="3" lg="4" xl="4" Class="col-yellow d-flex align-center justify-center"
              Style="padding:0; margin:0; height:100vh;">
         <div class="update-panel-outer">
@@ -37,3 +40,6 @@
         </div>
     </MudItem>
 </MudGrid>
+
+@code {
+}

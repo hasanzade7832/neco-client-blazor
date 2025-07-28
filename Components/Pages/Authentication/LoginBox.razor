@@ -1,4 +1,5 @@
 ﻿@using MudBlazor
+@inject NavigationManager Nav
 
 <div class="login-box-header-bar">
     <MudStack Class="login-box-header-row"
@@ -34,6 +35,7 @@
                           Autocomplete="off"
                           AutocompleteAttribute="new-username"
                           InputType="InputType.Text" />
+
             @if (!_isCodeMode)
             {
                 <MudTextField Label="PASSWORD"
@@ -61,6 +63,7 @@
                     </MudButton>
                 </MudStack>
             }
+
             <div class="login-bottom-row">
                 <MudButton Color="Color.Primary"
                            Variant="Variant.Filled"
@@ -80,9 +83,25 @@
     public string Username { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string Code { get; set; } = string.Empty;
+
     private void ToggleMode(bool toCode) => _isCodeMode = toCode;
+
     private string GetModeBtnClass(bool forCodeMode)
         => $"mode-btn {(_isCodeMode == forCodeMode ? "active" : string.Empty)}";
+
     private void SendCode() { }
-    private void OnLoginClicked() { }
+
+    private void OnLoginClicked()
+    {
+        if (!_isCodeMode)
+        {
+            if (Username == "test" && Password == "123")
+                Nav.NavigateTo("/home");
+        }
+        else
+        {
+            if (Code == "123")
+                Nav.NavigateTo("/home");
+        }
+    }
 }
