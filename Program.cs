@@ -1,18 +1,24 @@
-﻿using BlazorApp12.Components;
-using MudBlazor.Services;
+﻿using BlazorApp12.Components;     // ⬅️ کامپوننت ریشه
+using MudBlazor.Services;         // ⬅️ سرویس‌های MudBlazor
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ⬅️ ۱. Razor Components برای حالت Server
+// ─────────────────────────────────────────────────────────────
+// ۱. سرویس‌ها
+// ─────────────────────────────────────────────────────────────
 builder.Services.AddRazorComponents()
-                .AddInteractiveServerComponents();   // در Preview‑9 هنوز همین نام است
+                .AddInteractiveServerComponents();   // در SDK‑های جدیدتر AddServerRenderMode()
 
-// ⬅️ ۲. **ثبت سرویس‌های MudBlazor – حیاتی!**
-builder.Services.AddMudServices();
+builder.Services.AddMudServices();                  // MudBlazor
+
+// اگر سرویس دیگری (HttpClient، Auth و …) دارید اینجا اضافه کنید
+// …
 
 var app = builder.Build();
 
-// Pipeline
+// ─────────────────────────────────────────────────────────────
+// ۲. Pipeline
+// ─────────────────────────────────────────────────────────────
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -20,12 +26,14 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles();      // ⬅️ حیاتی برای بارگذاری CSS/JS
 app.UseRouting();
-app.UseAntiforgery();
+app.UseAntiforgery();      // Razor Components نیاز دارد
 
-// ⬅️ ۳. Map کامپوننت ریشه و تعیین مود رندر
+// ─────────────────────────────────────────────────────────────
+// ۳. Map کامپوننت ریشه
+// ─────────────────────────────────────────────────────────────
 app.MapRazorComponents<App>()
-   .AddInteractiveServerRenderMode();   // یا ServerRenderMode در SDKهای جدیدتر
+   .AddInteractiveServerRenderMode();   // یا .AddServerRenderMode() در RC/RTM
 
 app.Run();

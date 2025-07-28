@@ -300,158 +300,215 @@ aside.mud-drawer.sidebar-drawer {
 /*/////////////////////*/
 
 /*LOgin*/
-/* ═══════════ ستون زرد: پنل آپدیت ═══════════ */
+/* ════════ ستون زرد: پنل آپدیت ════════ */
 .update-panel {
     box-shadow: 0 4px 16px #e8d98170;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center
 }
 
 .update-panel-inner {
     width: 85%;
     max-height: 92%;
-    overflow-y: auto;
+    overflow-y: auto
 }
 
 .update-title {
     font-weight: 800;
-    margin-bottom: 22px;
+    margin-bottom: 22px
 }
 
 .update-list {
     list-style-type: disc;
     padding-left: 20px;
-    line-height: 1.65rem;
+    line-height: 1.65rem
 }
 
     .update-list li {
         margin-bottom: 12px;
-        font-size: .95rem;
+        font-size: .95rem
     }
 
-/* ═══════════ باکس لاگین ═══════════ */
+/* ════════ باکس لاگین ════════ */
 .login-box-wrapper {
     width: 550px;
     max-width: 98vw;
-    position: relative;
+    position: relative
 }
 
-.login-box-header {
+.login-box-header-row {
     position: absolute;
     top: -70px;
     left: 0;
+    width: 100%
 }
 
 .login-box-paper {
     border: 2px solid #1976d2;
-    border-radius: 24px !important;
-    padding: 34px 34px 22px;
+    border-radius: 24px;
+    padding: 34px;
     background: #fff;
-    box-shadow: 0 6px 28px #1976d233;
+    box-shadow: 0 6px 20px rgba(0,0,0,.1)
 }
 
-.login-input-large input {
-    font-size: 1.05rem !important;
-    padding: 16px 0 16px 8px !important;
-    text-align: left !important;
-}
+/* ورودی‌ها ─ بدون هیچ کاستوم‌سازی اضافی */
 
-.login-bottom-row {
-    position: relative;
-    width: 100%;
-    height: 60px;
-    margin-top: 14px;
-}
-
+/* ───── دکمه‌ها ───── */
 .login-btn {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%,-50%);
-    width: 33%;
-    min-height: 48px;
+    min-width: 140px;
+    height: 44px;
     border-radius: 10px;
-    background-color: #1976d2 !important;
+    background: #1976d2 !important;
     color: #fff !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    transition: background .2s ease,box-shadow .2s ease
 }
 
     .login-btn:hover {
-        background-color: #115293 !important;
+        background: #1565c0 !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,.2)
     }
 
+.send-code-btn {
+    min-width: 100px;
+    height: 44px;
+    border-radius: 10px;
+    background: #1976d2 !important;
+    color: #FFD600 !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    transition: background .2s ease,box-shadow .2s ease
+}
+
+    .send-code-btn:hover {
+        background: #1565c0 !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,.2)
+    }
+
+/* لوگو در گوشهٔ پایین راست باکس */
 .login-logo-img {
     position: absolute;
     right: 0;
     top: 55%;
     transform: translateY(-50%);
-    height: 38px;
-    opacity: .9;
+    height: 36px;
+    opacity: .9
 }
 
-/* ── باکس لاگین ثابت در دسکتاپ ── */
+/* ردیف پایانی برای تراز وسط */
+.login-bottom-row {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    margin-top: 20px
+}
+
+/* سوییچ حالت (آیکن‌ها + خط جداکننده) */
+.login-mode-switch {
+    display: flex;
+    align-items: center;
+    gap: 0
+}
+
+.mode-divider {
+    width: 1px;
+    height: 24px;
+    background: #1976d2;
+    margin: 0 10px
+}
+
+.mode-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    transition: background .25s ease
+}
+
+    .icon-mode, .mode-btn .mud-icon-root {
+        font-size: 1.8rem;
+        opacity: .55;
+        transition: opacity .25s ease
+    }
+
+    .mode-btn:hover {
+        background: rgba(25,118,210,.08)
+    }
+
+    .mode-btn.active {
+        background: rgba(25,118,210,.15)
+    }
+
+        .mode-btn.active .icon-mode,
+        .mode-btn.active .mud-icon-root {
+            opacity: 1
+        }
+
+/* ردیف کد */
+.code-row {
+    width: 100%;
+    gap: 12px;
+    margin-top: 4px
+}
+
+/* ── باکس لاگین ثابت (دسکتاپ) ── */
 .login-box-fixed {
     position: fixed;
     left: calc(14vw - 100px);
     bottom: 40px;
-    z-index: 5;
+    z-index: 5
 }
 
-/* ═══════════ واکنشگرایی (≤ 960px) ═══════════ */
+/* ════════ ریسپانسیو ≤960px ════════ */
 @media(max-width:960px) {
-
-    /* شبکه از fixed به flex‑column تبدیل شود تا محتوا وسط بیاید */
     .layout-grid {
         position: static !important;
         height: auto !important;
         width: 100% !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: center !important; /* افقی وسط */
-        justify-content: flex-start !important;
+        align-items: center !important
     }
 
-    /* باکس لاگین در جریان عادی وسط و با حاشیه چپ/راست */
     .login-box-fixed {
         position: relative !important;
-        width: 94% !important; /* هم‌اندازه با پنل زرد */
+        width: 94% !important;
         max-width: 550px !important;
         left: auto !important;
         transform: none !important;
-        margin: 8vh auto 32px; /* کمی پایین‌تر از بالا و افقی وسط */
-        z-index: 1;
+        margin: 8vh auto 32px
     }
 
-    /* ستون‌های خاکستری و سفید حذف شوند */
     .col-grey, .col-white {
-        display: none !important;
+        display: none !important
     }
 
-    /* ستون زرد تمام عرض و وسط */
     .col-yellow {
         width: 100% !important;
-        max-width: 100% !important;
-        height: auto !important;
         display: flex !important;
-        justify-content: center !important;
-        padding: 0 !important;
+        justify-content: center !important
     }
 
-    /* خودِ پنل زرد یکی مانده به باکس لاگین، هم‌اندازه با آن و وسط */
     .update-panel {
-        width: 94% !important; /* عرض ثابت مانند لاگین */
+        width: 94% !important;
         max-width: 550px !important;
         height: auto !important;
         padding: 28px 0;
-        margin: 0 auto 40px;
+        margin: 0 auto 40px
     }
 }
 
-/* ═══════════ ریسپانسیو بسیار کوچک (≤ 480px) ═══════════ */
+/* ════════ ریسپانسیو ≤480px ════════ */
 @media(max-width:480px) {
-    .login-box-fixed,
-    .update-panel {
-        width: 95% !important;
+    .login-box-fixed, .update-panel {
+        width: 95% !important
     }
 }
 

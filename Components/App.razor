@@ -1,30 +1,39 @@
-﻿@using MudBlazor
+﻿@using MudBlazor          <!-- اطمینان از در دسترس بودن کامپوننت‌ها -->
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- ➊ فراگیرهای پایهٔ HTML -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
 
-    <!-- استایل‌ها -->
+    <!-- ➋ استایل‌های MudBlazor و سایر CSS‌ها -->
     <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["BlazorApp11.styles.css"]" />
 
+    <!-- ➌ سایر وابستگی‌ها -->
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
 
+    <!-- ➍ تجهیز تگ <head> برای کامپوننت‌های Blazor -->
     <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 
 <body>
-    <!-- ✅ Providerها را حذف کردیم؛ فقط روتینگ باقی ماند -->
+    <!-- ➎ Providerهای MudBlazor (همه self‑closing هستند) -->
+    <MudThemeProvider />      @* تزریق متغیرهای CSS *@
+    <MudCssBaseline />        @* ریست و استانداردسازی استایل *@
+    <MudDialogProvider />     @* دیالوگ *@
+    <MudSnackbarProvider />   @* Snackbar *@
+
+    <!-- ➏ رندر مسیرها و صفحات -->
     <Routes @rendermode="InteractiveServer" />
 
-    <!-- اسکریپت‌ها -->
+    <!-- ➐ اسکریپت‌ها -->
     <script src="_content/MudBlazor/MudBlazor.min.js" type="module"></script>
     <script src="_framework/blazor.web.js"></script>
 </body>
