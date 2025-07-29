@@ -7,18 +7,26 @@
          Spacing="0"
          AlignItems="Stretch"
          Style="width:100vw; height:100vh; overflow:hidden; background:#fff;">
+    <!-- ستون خاکستری -->
     <MudItem xs="12" md="3" lg="2" xl="2" Class="col-grey"
              Style="padding:0; margin:0; height:100vh; display:flex;">
         <MudPaper Class="mud-width-full" Elevation="1" Style="background:#f3f3f3; flex:1;" />
     </MudItem>
 
+    <!-- ستون وسطی -->
     <MudItem xs="12" md="6" lg="6" xl="6" Class="col-center"
              Style="padding:0; margin:0; height:100vh; display:flex; align-items:flex-end; justify-content:center;">
         <div class="login-box-container">
+            <!-- این دیو فقط در md به بالا نمایش داده می‌شود -->
+            <div class="login-top-image d-none d-md-block">
+                <img src="images/bandaremam.jpg" alt="Banner" />
+            </div>
+
             <LoginBox />
         </div>
     </MudItem>
 
+    <!-- ستون زرد (آپدیت‌ها) -->
     <MudItem xs="12" md="3" lg="4" xl="4" Class="col-yellow d-flex align-center justify-center"
              Style="padding:0; margin:0; height:100vh;">
         <div class="update-panel-outer">
