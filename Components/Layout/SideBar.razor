@@ -1,58 +1,66 @@
 ﻿@using MudBlazor
 @using Microsoft.AspNetCore.Components
 
-<MudDrawer @bind-Open="Open"
-           ClipMode="DrawerClipMode.Always"
-           Class="sidebar-drawer">
+<div style="@($"position: fixed; top: 0; left: 0; height: 100vh; width: {(_isOpen ? "250px" : "56px")}; background: #e1e1e1; z-index: 9999; padding-top: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1); transition: width 0.3s; overflow: hidden;")">
+    <div class="@($"flex items-center justify-start {(_isOpen ? "px-4 mb-4" : "px-2 mb-2")}")">
+        <img src="images/Icons/Menu.png"
+             alt="Menu"
+             width="32"
+             height="32"
+             class="cursor-pointer"
+             @onclick="ToggleSidebar" />
+    </div>
 
-    <MudPaper Class="h-100 d-flex flex-column" Elevation="0">
+    @if (_isOpen)
+    {
+        <hr class="mx-4 my-2" />
+    }
 
-        <MudDrawerHeader Class="drawer-header">
-            <MudIconButton Icon="@Icons.Material.Filled.Close"
-                           Color="Color.Dark"
-                           Size="Size.Small"
-                           DisableRipple="true"
-                           OnClick="Close" />
-        </MudDrawerHeader>
-
-        <MudNavMenu Dense="true" Class="sidebar-menu">
-
-            <MudNavGroup Title="Meetings" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning" Expanded="true">
-                <MudNavLink Href="/meetings/schedule" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning">Schedule</MudNavLink>
-                <MudNavLink Href="/meetings/minutes" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning">Minutes</MudNavLink>
-            </MudNavGroup>
-
-            <MudNavGroup Title="Letters" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning" Expanded="true">
-                <MudNavLink Href="/letters/inbox" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning">Inbox</MudNavLink>
-                <MudNavLink Href="/letters/sent" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning">Sent</MudNavLink>
-                <MudNavLink Href="/letters/drafts" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning">Drafts</MudNavLink>
-            </MudNavGroup>
-
-            <MudNavGroup Title="Issues" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning" Expanded="true">
-                <MudNavLink Href="/issues/open" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning">Open</MudNavLink>
-                <MudNavLink Href="/issues/closed" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning">Closed</MudNavLink>
-            </MudNavGroup>
-
-            <MudNavGroup Title="Orders" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning" Expanded="true">
-                <MudNavLink Href="/orders/new" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning">New Orders</MudNavLink>
-                <MudNavLink Href="/orders/history" Icon="@Icons.Material.Filled.Folder" IconColor="Color.Warning">History</MudNavLink>
-            </MudNavGroup>
-
-        </MudNavMenu>
-
-    </MudPaper>
-</MudDrawer>
+    <MudStack Spacing="@ItemSpacing" Class="@(_isOpen ? "px-4 items-stretch" : "px-0 items-center")">
+        @foreach (var item in _items)
+        {
+            @if (_isOpen)
+            {
+                <MudNavLink Href="@item.Href"
+                            Class="flex items-center gap-4 px-3 py-2 rounded hover:bg-gray-200 transition-colors">
+                    <MudIcon Icon="@item.Icon" Size="Size.Medium" />
+                    <span class="text-gray-800 hover:text-black">@item.Text</span>
+                </MudNavLink>
+            }
+            else
+            {
+                <MudTooltip Text="@item.Text" Placement="Placement.Right">
+                    <MudNavLink Href="@item.Href"
+                                Class="flex items-center justify-center rounded hover:bg-gray-200 transition-colors"
+                                Style="@("width: 56px; height: 56px;")">
+                        <MudIcon Icon="@item.Icon" Size="Size.Medium" />
+                    </MudNavLink>
+                </MudTooltip>
+            }
+        }
+    </MudStack>
+</div>
 
 @code {
-    [Parameter] public bool Open { get; set; }
-    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
-    [Parameter] public EventCallback OnClose { get; set; }
+    private bool _isOpen = true;
 
-    private async Task Close()
+    private readonly (string Icon, string Text, string Href)[] _items = new[]
     {
-        if (OpenChanged.HasDelegate)
-            await OpenChanged.InvokeAsync(false);
-        if (OnClose.HasDelegate)
-            await OnClose.InvokeAsync();
+        (Icons.Material.Filled.Home,         "Home",        "#"),
+        (Icons.Material.Filled.Workspaces,   "Outsourcing", "#"),
+        (Icons.Material.Filled.Engineering,  "Engineering", "#"),
+        (Icons.Material.Filled.ShoppingCart, "Procurement", "#"),
+        (Icons.Material.Filled.Build,        "Construction","#"),
+    };
+
+    [Parameter]
+    public EventCallback<bool> OnSidebarToggled { get; set; }
+
+    private int ItemSpacing => _isOpen ? 4 : 2;
+
+    private async Task ToggleSidebar()
+    {
+        _isOpen = !_isOpen;
+        await OnSidebarToggled.InvokeAsync(_isOpen);
     }
 }

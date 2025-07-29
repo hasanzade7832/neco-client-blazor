@@ -3,70 +3,57 @@
 
 <MudAppBar Dense="true"
            Elevation="0"
-           Class="@($"fixed-appbar nav-white {(DrawerOpen ? "appbar-shift" : "")}")">
+           Dir="ltr"
+           Class="bg-white shadow-sm px-4 py-2 relative">
 
-    @* دکمهٔ همبرگری فقط وقتی Drawer بسته است *@
-    @if (!DrawerOpen)
-    {
-        <MudIconButton Icon="@Icons.Material.Filled.Menu"
-                       Edge="Edge.Start"
-                       Color="Color.Info"
-                       DisableRipple="true"
-                       OnClick="ToggleDrawer" />
-    }
-
-    <MudBadge Content="3" Color="Color.Error" Overlap="true" Class="mx-6 my-4">
-        <MudIcon Icon="@Icons.Material.Filled.Notifications" Color="Color.Info" />
-    </MudBadge>
-
-
-    <MudIconButton Icon="@Icons.Material.Filled.BarChart"
-                   Color="Color.Info"
-                   DisableRipple="true"
-                   OnClick="ShowCharts" />
+    <div class="absolute top-0"
+         style="@($"left: {(_sidebarOpen ? 250 : 56)}px; height: 100%; display: flex; align-items: center; gap: 12px; transition: left 0.3s;")">
+        <MudImage Src="images/Icons/List.png" Alt="List" Width="32" Height="32" Class="object-contain cursor-pointer" />
+        <MudImage Src="images/Icons/Notifications.png" Alt="Notifications" Width="32" Height="32" Class="object-contain cursor-pointer" />
+        <MudImage Src="images/Icons/DisPlayMode.png" Alt="Display Mode" Width="32" Height="32" Class="object-contain cursor-pointer" />
+        <span class="text-sm font-medium ml-2">All</span>
+    </div>
 
     <MudSpacer />
 
-    <MudTextField @bind-Value="_search"
-                  Placeholder="Search"
-                  Adornment="Adornment.Start"
-                  AdornmentIcon="@Icons.Material.Filled.Search"
-                  Variant="Variant.Text"
-                  Margin="Margin.Dense"
-                  Size="Size.Small"
-                  Color="Color.Info"
-                  Class="nav-search mx-2" />
-
-    <MudIconButton Icon="@(IsDarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.DarkMode)"
-                   Color="Color.Info"
-                   DisableRipple="true"
-                   OnClick="ToggleDarkMode" />
-
-    <MudIconButton Icon="@Icons.Material.Filled.Settings"
-                   Color="Color.Info"
-                   DisableRipple="true"
-                   OnClick="ShowSettings" />
-
-    <MudMenu Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Info">
-        <MudMenuItem Icon="@Icons.Material.Filled.Person" OnClick="GoProfile">Profile</MudMenuItem>
-        <MudMenuItem Icon="@Icons.Material.Filled.ExitToApp" OnClick="Logout">Logout</MudMenuItem>
-    </MudMenu>
+    <div class="flex items-center gap-12">
+        <div class="flex items-center">
+            <MudImage Src="images/Icons/app.png" Alt="App" Width="32" Height="32" Class="object-contain" />
+            <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
+                           Class="p-0 !min-w-0 ml-4 flex items-center justify-center">
+                <MudIcon Icon="@Icons.Material.Filled.Search" />
+            </MudIconButton>
+            <MudTextField @bind-Value="TextValue"
+                          Placeholder="START SEARCHING HERE"
+                          Variant="Variant.Text"
+                          DisableUnderLine="true"
+                          Class="!w-36 !h-8 text-sm p-0 ml-2" />
+        </div>
+        <div class="flex items-center gap-4">
+            <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
+                           Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
+                <MudImage Src="images/Icons/logout.png" Alt="Logout" Width="32" Height="32" Class="object-contain" />
+            </MudIconButton>
+            <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
+                           Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
+                <MudImage Src="images/Icons/setting.png" Alt="Setting" Width="32" Height="32" Class="object-contain" />
+            </MudIconButton>
+            <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
+                           Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
+                <MudImage Src="images/Icons/Profile.png" Alt="Profile" Width="32" Height="32" Class="object-contain" />
+            </MudIconButton>
+        </div>
+    </div>
 </MudAppBar>
 
 @code {
-    [Inject] NavigationManager Nav { get; set; }
-
-    [Parameter] public bool DrawerOpen { get; set; }
-    [Parameter] public EventCallback ToggleDrawer { get; set; }
-
-    [Parameter] public bool IsDarkMode { get; set; }
-    [Parameter] public EventCallback ToggleDarkMode { get; set; }
-
-    private string _search;
-
-    void ShowNotifications() => Nav.NavigateTo("/notifications");
-    void ShowCharts() => Nav.NavigateTo("/charts");
-    void ShowSettings() => Nav.NavigateTo("/settings");
-    void GoProfile() => Nav.NavigateTo("/profile");
-    void Logout() => Nav.NavigateTo("/login", true);
+    [Parameter] public bool SidebarOpen { get; set; }
+    private string TextValue { get; set; }
+    private bool _sidebarOpen => SidebarOpen;
 }
+
+
+
+
+
+

@@ -2,49 +2,35 @@
 @using MudBlazor
 
 <HeadContent>
-    <!-- Bootstrap (اگر استفاده می‌کنی) -->
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
-
-    <!-- استایل اصلی پروژه -->
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="Dashboard.css" />
     <link rel="stylesheet" href="css/app.min.css" />
-
-
-    <!-- استایل خود MudBlazor (اجباری) -->
     <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
 </HeadContent>
 
-<MudThemeProvider Theme="AppThemes.KargardoonTheme"
-                  @bind-IsDarkMode="_isDarkMode" />
+<MudThemeProvider Theme="AppThemes.KargardoonTheme" @bind-IsDarkMode="_isDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
 
 <MudLayout>
-    <!-- AppBar -->
-    <NavMenu DrawerOpen="_drawerOpen"
-             ToggleDrawer="ToggleDrawer"
-             IsDarkMode="_isDarkMode"
-             ToggleDarkMode="ToggleDarkMode" />
-
-    <!-- Container -->
-    <MudDrawerContainer>
-        <!-- Sidebar Drawer (Single Drawer) -->
-        <SideBar @bind-Open="_drawerOpen"
-                 OnClose="CloseDrawer" />
-        <!-- Main Content -->
-        <MudMainContent Class="@(_drawerOpen ? "appbar-shift pa-4" : "pa-4")">
-            @Body
-        </MudMainContent>
-    </MudDrawerContainer>
+    <NavMenu SidebarOpen="_sidebarOpen" />
+    <SideBar OnSidebarToggled="HandleSidebarToggle" />
+    <MudMainContent Class="@MainContentClass">
+        @Body
+    </MudMainContent>
 </MudLayout>
 
 @code {
-    private bool _drawerOpen = true;
     private bool _isDarkMode = false;
+    private bool _sidebarOpen = true;
 
-    void ToggleDrawer() => _drawerOpen = !_drawerOpen;
-    void CloseDrawer() => _drawerOpen = false;
-    void ToggleDarkMode() => _isDarkMode = !_isDarkMode;
+    private void HandleSidebarToggle(bool isOpen)
+    {
+        _sidebarOpen = isOpen;
+    }
+
+    private string MainContentClass =>
+        $"{(_sidebarOpen ? "ml-[250px]" : "ml-[56px]")} pt-14 px-6 py-4 transition-all duration-300";
 }
