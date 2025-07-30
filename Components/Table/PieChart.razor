@@ -1,45 +1,78 @@
 ﻿@using MudBlazor
+@using System
+@using System.Linq
+@using System.Collections.Generic
 
-<MudPaper Class="pa-3" Style="
-    width:360px;
-    min-height:170px;
-    background:white;
-    box-shadow:0 4px 20px 0 #0001, 0 1.5px 4px 0 #8881;
-    border-radius:12px;
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-    position:relative;
-    ">
-    <!-- Legend بالا راست -->
-    <div class="d-flex flex-column align-start" style="margin-bottom:6px; margin-top:2px; margin-right:2px;">
-        @for (int i = 0; i < Labels.Length; i++)
+<div style="width:420px;min-height:260px;border-radius:12px;display:flex;flex-direction:column;align-items:flex-end;position:relative;">
+    <div style="position:absolute;top:4px;right:10px;text-align:right;">
+        <div style="font-weight:700;font-size:20px;color:#666;">Total</div>
+        <div style="font-weight:600;font-size:16px;color:#666;">@Total</div>
+    </div>
+
+    <div style="width:100%;display:flex;justify-content:center;align-items:center;margin-bottom:8px;">
+        <div style="position:relative;width:200px;height:200px;">
+            <MudChart ChartType="ChartType.Pie"
+                      InputData="Data"
+                      InputLabels="EmptyLabels"
+                      Width="200px"
+                      Height="200px" />
+            @foreach (var s in PercentPositions)
+            {
+                <div style="position:absolute;left:@($"{s.Left}px");top:@($"{s.Top}px");transform:translate(-50%,-50%);font-weight:700;font-size:12px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);">@s.Text</div>
+            }
+        </div>
+    </div>
+
+    <div class="d-flex flex-column align-start" style="margin-top:auto;margin-bottom:6px;margin-right:2px;">
+        @for (int i = 0; i < LegendCount; i++)
         {
-            <div class="d-flex flex-row align-center my-1">
-                <span style="display:inline-block; width:12px; height:12px; border-radius:50%; margin-left:6px; background-color:@GetColor(i);"></span>
-                <span style="font-size:12px; color:#222;">@Labels[i]</span>
+            <div class="d-flex flex-row align-center my-1" style="gap:14px;">
+                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background-color:@ResolvedLegendPalette[i];"></span>
+                <span style="font-size:12px;color:#222;">@Labels[i]</span>
+                <span style="font-size:12px;color:#666;">@((int)Data[i])</span>
             </div>
         }
     </div>
-
-    <!-- چارت وسط افقی -->
-    <div style="width:100%; display:flex; justify-content:center; align-items:center; margin-top:4px;">
-        <MudChart ChartType="ChartType.Pie"
-                  InputData="Data"
-                  InputLabels="EmptyLabels"
-                  Width="100px"
-                  Height="100px" />
-    </div>
-</MudPaper>
+</div>
 
 @code {
     [Parameter] public double[] Data { get; set; }
     [Parameter] public string[] Labels { get; set; }
 
-    string[] pieColors = new[]
+    string[] MudDefaultPalette = new[] { "#2196F3", "#1DE9B6", "#FFC400", "#F44336", "#9C27B0", "#FF5722", "#607D8B", "#00B8D4", "#43A047", "#5E35B1" };
+
+    int LegendCount => Math.Min(Labels?.Length ?? 0, Data?.Length ?? 0);
+    string[] EmptyLabels => Enumerable.Repeat("", Data?.Length ?? 0).ToArray();
+    int Total => (int)Math.Round(Data?.Sum() ?? 0);
+
+    string[] ResolvedLegendPalette => Enumerable.Range(0, Data?.Length ?? 0)
+                                                .Select(i => MudDefaultPalette[i % MudDefaultPalette.Length])
+                                                .ToArray();
+
+    class SliceLabel { public string Text { get; set; } public double Left { get; set; } public double Top { get; set; } }
+
+    IEnumerable<SliceLabel> PercentPositions
     {
-        "#2196F3", "#1DE9B6", "#FFC400", "#F44336", "#9C27B0", "#FF5722", "#607D8B", "#00B8D4", "#43A047", "#5E35B1"
-    };
-    string GetColor(int i) => i < pieColors.Length ? pieColors[i] : "#888";
-    string[] EmptyLabels => Labels.Select(x => "").ToArray();
+        get
+        {
+            var list = new List<SliceLabel>();
+            if (Data == null || Data.Length == 0) return list;
+            var sum = Data.Sum();
+            if (sum <= 0) return list;
+            double start = -Math.PI / 2;
+            double cx = 100, cy = 100, r = 65;
+            for (int i = 0; i < Data.Length; i++)
+            {
+                var val = Data[i];
+                var sweep = (val / sum) * 2 * Math.PI;
+                var mid = start + sweep / 2;
+                var x = cx + r * Math.Cos(mid);
+                var y = cy + r * Math.Sin(mid);
+                var pct = Math.Round(val / sum * 100);
+                list.Add(new SliceLabel { Text = $"{pct:0}%", Left = x, Top = y });
+                start += sweep;
+            }
+            return list;
+        }
+    }
 }

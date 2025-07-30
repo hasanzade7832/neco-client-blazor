@@ -1,7 +1,6 @@
 body, html {
-    background-color: #ffffff !important;
+  background-color: #ffffff !important;
 }
-
 
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
