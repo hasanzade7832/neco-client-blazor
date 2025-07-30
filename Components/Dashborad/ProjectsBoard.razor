@@ -1,37 +1,87 @@
-﻿@using MudBlazor
+﻿@page "/projects"
+@using MudBlazor
 
-<div class="projects-layout">
+<div class="flex mt-1 h-[calc((var(--item-h)*var(--visible))+var(--gap)*(var(--visible)-1)+2rem)]"
+     style="--sidebar-w:28rem; --card-width-frac:0.4444444; --card-w:calc(var(--sidebar-w)*var(--card-width-frac)); --item-h:calc(var(--card-w)/4 + 0.5rem); --gap:0.5rem; --visible:5;">
     <ProjectsSidebar />
 
-    <MudPaper Elevation="0" Class="projects-main">
-        <span class="text-2xl font-semibold">Main</span>
+    <MudPaper Elevation="0" Class="flex-1 flex items-start justify-center pt-3 box-border h-full">
+        <MudGrid GutterSize="1" Class="w-full max-w-3xl">
+            <!-- First row -->
+            <MudItem xs="12" sm="4">
+                <div class="bg-white border border-gray-200 rounded-xl px-6 py-6 flex items-center justify-center shadow-sm hover:shadow-md transition">
+                    <span class="text-gray-700 font-medium text-lg flex items-center">
+                        Alerts&nbsp;
+                        <span class="font-bold">
+                            (<span>3</span>,<span class="text-red-600">0</span>)
+                        </span>
+                    </span>
+                </div>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <div class="bg-white border border-gray-200 rounded-xl px-6 py-6 flex items-center justify-center shadow-sm hover:shadow-md transition">
+                    <span class="text-gray-700 font-medium text-lg flex items-center">
+                        Follow&nbsp;Up&nbsp;
+                        <span class="font-bold">
+                            (<span>8</span>,<span class="text-red-600">2</span>)
+                        </span>
+                    </span>
+                </div>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <div class="bg-white border border-gray-200 rounded-xl px-6 py-6 flex items-center justify-center shadow-sm hover:shadow-md transition">
+                    <span class="text-gray-700 font-medium text-lg flex items-center">
+                        Comments&nbsp;
+                        <span class="font-bold">
+                            (<span>13</span>,<span class="text-red-600">5</span>)
+                        </span>
+                    </span>
+                </div>
+            </MudItem>
+
+            <!-- Second row: full-width Tasks -->
+            <MudItem xs="12">
+                <div class="bg-white border border-gray-200 rounded-xl px-6 py-6 flex items-center justify-center shadow-sm hover:shadow-md transition">
+                    <span class="text-gray-700 font-medium text-lg flex items-center">
+                        Tasks&nbsp;
+                        <span class="font-bold">
+                            (<span>23</span>,<span class="text-red-600">8</span>)
+                        </span>
+                    </span>
+                </div>
+            </MudItem>
+
+            <!-- Third row: three items -->
+            <MudItem xs="12" sm="4">
+                <div class="bg-white border border-gray-200 rounded-xl px-6 py-6 flex items-center justify-center shadow-sm hover:shadow-md transition">
+                    <span class="text-gray-700 font-medium text-lg flex items-center">
+                        Meetings&nbsp;
+                        <span class="font-bold">
+                            (<span>6</span>,<span class="text-red-600">2</span>)
+                        </span>
+                    </span>
+                </div>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <div class="bg-white border border-gray-200 rounded-xl px-6 py-6 flex items-center justify-center shadow-sm hover:shadow-md transition">
+                    <span class="text-gray-700 font-medium text-lg flex items-center">
+                        Issues&nbsp;
+                        <span class="font-bold">
+                            (<span>10</span>,<span class="text-red-600">9</span>)
+                        </span>
+                    </span>
+                </div>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <div class="bg-white border border-gray-200 rounded-xl px-6 py-6 flex items-center justify-center shadow-sm hover:shadow-md transition">
+                    <span class="text-gray-700 font-medium text-lg flex items-center">
+                        Letters&nbsp;
+                        <span class="font-bold">
+                            (<span>8</span>,<span class="text-red-600">2</span>)
+                        </span>
+                    </span>
+                </div>
+            </MudItem>
+        </MudGrid>
     </MudPaper>
 </div>
-
-<style>
-    .projects-layout {
-        margin-top: 15px;
-
-        --sidebar-w: 28rem;
-        --card-width-frac: 0.4444444;
-        --card-w: calc(var(--sidebar-w) * var(--card-width-frac));
-        --item-h: calc(var(--card-w) / 4);
-        --gap: 1rem;
-        --visible-items: 5;
-
-        display: flex;
-        height: calc(
-            (var(--item-h) * var(--visible-items))
-            + (var(--gap) * (var(--visible-items) - 1))
-            + 2rem
-        );
-    }
-
-    .projects-main {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-    }
-</style>

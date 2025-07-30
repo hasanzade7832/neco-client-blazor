@@ -3,14 +3,15 @@
 
 <PageTitle>Home</PageTitle>
 
-<MudContainer DisableMaxWidth="true" Class="pa-6">
-    <div class="d-flex flex-row gap-6 justify-center align-center">
+<MudContainer DisableMaxWidth="true" Class="p-6">
+    <div class="flex flex-row gap-6 justify-center items-center">
         <PieChart Data="@pie1Data" Labels="@pie1Labels" Palette="@customPalette" />
         <PieChart Data="@pie2Data" Labels="@pie2Labels" Palette="@customPalette" />
     </div>
-    
-    <ProjectsBoard />
 
+    <div style="margin-top: 50px;">
+        <ProjectsBoard />
+    </div>
 </MudContainer>
 
 @code {
