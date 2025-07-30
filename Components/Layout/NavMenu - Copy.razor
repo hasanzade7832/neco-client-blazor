@@ -1,0 +1,72 @@
+﻿@using MudBlazor
+@using Microsoft.AspNetCore.Components
+
+<MudAppBar Dense="true"
+           Elevation="0"
+           Class="@($"fixed-appbar nav-white {(DrawerOpen ? "appbar-shift" : "")}")">
+
+    @* دکمهٔ همبرگری فقط وقتی Drawer بسته است *@
+    @if (!DrawerOpen)
+    {
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Edge="Edge.Start"
+                       Color="Color.Info"
+                       DisableRipple="true"
+                       OnClick="ToggleDrawer" />
+    }
+
+    <MudBadge Content="3" Color="Color.Error" Overlap="true" Class="mx-6 my-4">
+        <MudIcon Icon="@Icons.Material.Filled.Notifications" Color="Color.Info" />
+    </MudBadge>
+
+
+    <MudIconButton Icon="@Icons.Material.Filled.BarChart"
+                   Color="Color.Info"
+                   DisableRipple="true"
+                   OnClick="ShowCharts" />
+
+    <MudSpacer />
+
+    <MudTextField @bind-Value="_search"
+                  Placeholder="Search"
+                  Adornment="Adornment.Start"
+                  AdornmentIcon="@Icons.Material.Filled.Search"
+                  Variant="Variant.Text"
+                  Margin="Margin.Dense"
+                  Size="Size.Small"
+                  Color="Color.Info"
+                  Class="nav-search mx-2" />
+
+    <MudIconButton Icon="@(IsDarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.DarkMode)"
+                   Color="Color.Info"
+                   DisableRipple="true"
+                   OnClick="ToggleDarkMode" />
+
+    <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                   Color="Color.Info"
+                   DisableRipple="true"
+                   OnClick="ShowSettings" />
+
+    <MudMenu Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Info">
+        <MudMenuItem Icon="@Icons.Material.Filled.Person" OnClick="GoProfile">Profile</MudMenuItem>
+        <MudMenuItem Icon="@Icons.Material.Filled.ExitToApp" OnClick="Logout">Logout</MudMenuItem>
+    </MudMenu>
+</MudAppBar>
+
+@code {
+    [Inject] NavigationManager Nav { get; set; }
+
+    [Parameter] public bool DrawerOpen { get; set; }
+    [Parameter] public EventCallback ToggleDrawer { get; set; }
+
+    [Parameter] public bool IsDarkMode { get; set; }
+    [Parameter] public EventCallback ToggleDarkMode { get; set; }
+
+    private string _search;
+
+    void ShowNotifications() => Nav.NavigateTo("/notifications");
+    void ShowCharts() => Nav.NavigateTo("/charts");
+    void ShowSettings() => Nav.NavigateTo("/settings");
+    void GoProfile() => Nav.NavigateTo("/profile");
+    void Logout() => Nav.NavigateTo("/login", true);
+}

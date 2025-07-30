@@ -1,0 +1,37 @@
+﻿@using MudBlazor
+
+<div class="projects-layout">
+    <ProjectsSidebar />
+
+    <MudPaper Elevation="0" Class="projects-main">
+        <span class="text-2xl font-semibold">Main</span>
+    </MudPaper>
+</div>
+
+<style>
+    .projects-layout {
+        margin-top: 15px;
+
+        --sidebar-w: 28rem;
+        --card-width-frac: 0.4444444;
+        --card-w: calc(var(--sidebar-w) * var(--card-width-frac));
+        --item-h: calc(var(--card-w) / 4);
+        --gap: 1rem;
+        --visible-items: 5;
+
+        display: flex;
+        height: calc(
+            (var(--item-h) * var(--visible-items))
+            + (var(--gap) * (var(--visible-items) - 1))
+            + 2rem
+        );
+    }
+
+    .projects-main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+</style>

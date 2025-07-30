@@ -14,6 +14,7 @@
             <MudChart ChartType="ChartType.Pie"
                       InputData="Data"
                       InputLabels="EmptyLabels"
+                      ChartOptions="ResolvedOptions"
                       Width="200px"
                       Height="200px" />
             @foreach (var s in PercentPositions)
@@ -27,7 +28,7 @@
         @for (int i = 0; i < LegendCount; i++)
         {
             <div class="d-flex flex-row align-center my-1" style="gap:14px;">
-                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background-color:@ResolvedLegendPalette[i];"></span>
+                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background-color:@ResolvedPalette[i];"></span>
                 <span style="font-size:12px;color:#222;">@Labels[i]</span>
                 <span style="font-size:12px;color:#666;">@((int)Data[i])</span>
             </div>
@@ -38,16 +39,22 @@
 @code {
     [Parameter] public double[] Data { get; set; }
     [Parameter] public string[] Labels { get; set; }
+    [Parameter] public string[] Palette { get; set; }
 
-    string[] MudDefaultPalette = new[] { "#2196F3", "#1DE9B6", "#FFC400", "#F44336", "#9C27B0", "#FF5722", "#607D8B", "#00B8D4", "#43A047", "#5E35B1" };
+    string[] DefaultPalette = new[] { "#FFD54F", "#9E9E9E", "#DCEDC8" };
 
     int LegendCount => Math.Min(Labels?.Length ?? 0, Data?.Length ?? 0);
     string[] EmptyLabels => Enumerable.Repeat("", Data?.Length ?? 0).ToArray();
     int Total => (int)Math.Round(Data?.Sum() ?? 0);
 
-    string[] ResolvedLegendPalette => Enumerable.Range(0, Data?.Length ?? 0)
-                                                .Select(i => MudDefaultPalette[i % MudDefaultPalette.Length])
-                                                .ToArray();
+    string[] ResolvedPalette => (Palette != null && Palette.Length > 0)
+        ? Enumerable.Range(0, Data?.Length ?? 0).Select(i => Palette[i % Palette.Length]).ToArray()
+        : Enumerable.Range(0, Data?.Length ?? 0).Select(i => DefaultPalette[i % DefaultPalette.Length]).ToArray();
+
+    ChartOptions ResolvedOptions => new ChartOptions
+        {
+            ChartPalette = ResolvedPalette
+        };
 
     class SliceLabel { public string Text { get; set; } public double Left { get; set; } public double Top { get; set; } }
 

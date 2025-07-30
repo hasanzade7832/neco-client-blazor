@@ -12,10 +12,10 @@
     <!-- ➋ استایل‌های MudBlazor و سایر CSS‌ها -->
     <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
-    <link rel="stylesheet" href="@Assets["app.css"]" />
-    <link rel="stylesheet" href="@Assets["BlazorApp11.styles.css"]" />
+    <link rel="stylesheet" href="@Assets["BlazorApp12.styles.css"]" />
     <link rel="stylesheet" href="css/login.css" />
-    <link rel="stylesheet" href="~/app.css" />
+    <link rel="stylesheet" href="app.css" />
+
 
     <!-- ➌ سایر وابستگی‌ها -->
     <ImportMap />
@@ -28,7 +28,6 @@
 <body>
     <!-- ➎ Providerهای MudBlazor (همه self‑closing هستند) -->
     <MudThemeProvider />      @* تزریق متغیرهای CSS *@
-    <MudCssBaseline />        @* ریست و استانداردسازی استایل *@
     <MudDialogProvider />     @* دیالوگ *@
     <MudSnackbarProvider />   @* Snackbar *@
 
@@ -38,5 +37,10 @@
     <!-- ➐ اسکریپت‌ها -->
     <script src="_content/MudBlazor/MudBlazor.min.js" type="module"></script>
     <script src="_framework/blazor.web.js"></script>
+
+    <script src="_content/ChartJs.Blazor.Fork/ChartJsBlazorInterop.js"></script>
+    <script src="_content/ChartJs.Blazor.Fork/chart.js/Chart.min.js"></script>
+
+
 </body>
 </html>

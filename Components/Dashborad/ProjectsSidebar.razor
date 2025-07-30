@@ -1,0 +1,111 @@
+﻿@using MudBlazor
+
+<MudPaper Elevation="0" Class="projects-sidebar">
+    <div class="projects-viewport">
+        <MudStack Direction="Direction.Column" Spacing="0" Class="projects-list">
+            @foreach (var p in Projects)
+            {
+                var sel = SelectedIds.Contains(p.Id);
+                <MudPaper Elevation="1"
+                          Class="@($"project-card {(sel ? "selected" : "")}")"
+                          @onclick="() => Toggle(p.Id)">
+                    <div class="project-card-body">
+                        <MudImage Src="images/Icons/DisplayMode.png" Alt="Project" Width="24" Height="24" Class="object-contain" />
+                        <span class="title">@p.Name</span>
+                    </div>
+                </MudPaper>
+            }
+        </MudStack>
+    </div>
+</MudPaper>
+
+<style>
+    .projects-sidebar {
+        width: var(--sidebar-w);
+        padding: 1rem;
+        height: 100%;
+        box-sizing: border-box
+    }
+
+    .projects-viewport {
+        width: var(--card-w);
+        margin-left: auto;
+        height: calc(100% - 2rem);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #1e3a8a transparent
+    }
+
+        .projects-viewport::-webkit-scrollbar {
+            width: 8px
+        }
+
+        .projects-viewport::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        .projects-viewport::-webkit-scrollbar-thumb {
+            background-color: #1e3a8a;
+            border-radius: 8px
+        }
+
+    .projects-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap)
+    }
+
+    .project-card {
+        width: 100%;
+        height: var(--item-h);
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        cursor: pointer;
+        transition: background-color .2s,border-color .2s
+    }
+
+    .project-card-body {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        padding: 0 1rem;
+        height: 100%
+    }
+
+    .project-card .title {
+        color: #374151;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis
+    }
+
+    .project-card.selected {
+        background-color: #d1fae5;
+        border-color: #86efac
+    }
+</style>
+
+@code {
+    private class ProjectItem { public int Id { get; set; } public string Name { get; set; } = ""; }
+    private List<ProjectItem> Projects = new();
+    private HashSet<int> SelectedIds = new();
+
+    protected override void OnInitialized()
+    {
+        var names = new[]
+        {
+            "Project I","Project II","Project III","Project IV","Project V",
+            "Project VI","Project VII","Project VIII","Project IX","Project X"
+        };
+        for (int i = 0; i < names.Length; i++)
+            Projects.Add(new ProjectItem { Id = i + 1, Name = names[i] });
+    }
+
+    private void Toggle(int id)
+    {
+        if (!SelectedIds.Add(id))
+            SelectedIds.Remove(id);
+        StateHasChanged();
+    }
+}
