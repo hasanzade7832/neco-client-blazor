@@ -1,59 +1,130 @@
 ﻿@using MudBlazor
 @using Microsoft.AspNetCore.Components
 
-<MudAppBar Dense="true"
-           Elevation="0"
-           Dir="ltr"
-           Class="bg-white shadow-sm px-4 py-2 relative">
-
-    <div class="absolute top-0"
-         style="@($"left: {(_sidebarOpen ? 250 : 56)}px; height: 100%; display: flex; align-items: center; gap: 12px; transition: left 0.3s;")">
-        <MudImage Src="images/Icons/List.png" Alt="List" Width="32" Height="32" Class="object-contain cursor-pointer" />
-        <MudImage Src="images/Icons/Notifications.png" Alt="Notifications" Width="32" Height="32" Class="object-contain cursor-pointer" />
-        <MudImage Src="images/Icons/DisPlayMode.png" Alt="Display Mode" Width="32" Height="32" Class="object-contain cursor-pointer" />
-        <span class="text-sm font-medium ml-2">All</span>
-    </div>
+<MudAppBar Dense="true" Elevation="0" Dir="ltr" Class="bg-white shadow-sm px-4 py-2 relative">
+    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+        <div class="absolute top-0"
+             style="@($"left: {(_sidebarOpen ? 250 : 56)}px; height: 100%; display: flex; align-items: center; gap: 12px; transition: left 0.3s;")">
+            <MudTooltip Text="List">
+                <MudImage Src="images/Icons/List.png" Alt="List" Width="32" Height="32" Class="object-contain cursor-pointer" />
+            </MudTooltip>
+            <MudTooltip Text="Notifications">
+                <MudBadge Content="@NotificationsCount" MaxValue="99" Color="Color.Error" Overlap="true" AnchorOrigin="Origin.TopRight">
+                    <MudImage Src="images/Icons/Notifications.png" Alt="Notifications" Width="32" Height="32" Class="object-contain cursor-pointer" />
+                </MudBadge>
+            </MudTooltip>
+            <MudTooltip Text="Display Mode">
+                <MudImage Src="images/Icons/DisPlayMode.png" Alt="Display Mode" Width="32" Height="32" Class="object-contain cursor-pointer" />
+            </MudTooltip>
+            <span class="text-sm font-medium ml-2">All</span>
+        </div>
+    </MudHidden>
 
     <MudSpacer />
 
-    <div class="flex items-center gap-12">
-        <div class="flex items-center">
-            <MudImage Src="images/Icons/app.png" Alt="App" Width="32" Height="32" Class="object-contain" />
-            <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
-                           Class="p-0 !min-w-0 ml-4 flex items-center justify-center">
-                <MudIcon Icon="@Icons.Material.Filled.Search" />
-            </MudIconButton>
-            <MudTextField @bind-Value="TextValue"
-                          Placeholder="START SEARCHING HERE"
-                          Variant="Variant.Text"
-                          DisableUnderLine="true"
-                          Class="!w-36 !h-8 text-sm p-0 ml-2" />
+    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+        <div class="flex items-center gap-12">
+            <div class="flex items-center">
+                <MudImage Src="images/Icons/app.png" Alt="App" Width="32" Height="32" Class="object-contain" />
+                <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
+                               Class="p-0 !min-w-0 ml-4 flex items-center justify-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Search" />
+                </MudIconButton>
+                <MudTextField @bind-Value="TextValue"
+                              Placeholder="START SEARCHING HERE"
+                              Variant="Variant.Text"
+                              DisableUnderLine="true"
+                              Class="!w-36 !h-8 text-sm p-0 ml-2" />
+            </div>
+            <div class="flex items-center gap-4">
+                <MudTooltip Text="Logout">
+                    <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
+                                   Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
+                        <MudImage Src="images/Icons/logout.png" Alt="Logout" Width="32" Height="32" Class="object-contain" />
+                    </MudIconButton>
+                </MudTooltip>
+                <MudTooltip Text="Settings">
+                    <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
+                                   Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
+                        <MudImage Src="images/Icons/setting.png" Alt="Setting" Width="32" Height="32" Class="object-contain" />
+                    </MudIconButton>
+                </MudTooltip>
+                <MudTooltip Text="Profile">
+                    <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
+                                   Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
+                        <MudImage Src="images/Icons/Profile.png" Alt="Profile" Width="32" Height="32" Class="object-contain" />
+                    </MudIconButton>
+                </MudTooltip>
+            </div>
         </div>
-        <div class="flex items-center gap-4">
-            <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
-                           Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
-                <MudImage Src="images/Icons/logout.png" Alt="Logout" Width="32" Height="32" Class="object-contain" />
-            </MudIconButton>
-            <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
-                           Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
-                <MudImage Src="images/Icons/setting.png" Alt="Setting" Width="32" Height="32" Class="object-contain" />
-            </MudIconButton>
-            <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small"
-                           Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
-                <MudImage Src="images/Icons/Profile.png" Alt="Profile" Width="32" Height="32" Class="object-contain" />
-            </MudIconButton>
-        </div>
-    </div>
+    </MudHidden>
+
+    <MudHidden Breakpoint="Breakpoint.MdAndUp">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       OnClick="@OpenDrawer"
+                       Class="ml-2" />
+    </MudHidden>
 </MudAppBar>
+
+<MudDrawer Anchor="Anchor.Right"
+           @bind-Open="_drawerOpen"
+           Variant="DrawerVariant.Temporary"
+           Elevation="1"
+           Class="w-72"
+           Style="background:#e1e1e1; height:100vh;"
+           OnClose="@CloseDrawer">
+
+    <div class="flex items-center justify-start p-3">
+        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                       Color="Color.Default"
+                       OnClick="@CloseDrawer"
+                       Class="rounded"
+                       Style="background:#e1e1e1; color:#606060;" />
+    </div>
+
+    <MudDivider />
+
+    <MudList T="string" Dense="true" Class="w-full px-4 pt-2">
+        @foreach (var item in MenuItems)
+        {
+            <MudListItem T="string"
+                         Class="!justify-center px-3 py-2 rounded-md hover:!bg-gray-300 transition-all duration-150 cursor-pointer">
+                <div class="flex items-center gap-2">
+                    @if (item.Text == "Notifications")
+                    {
+                        <MudBadge Content="@NotificationsCount" MaxValue="99" Color="Color.Error" Overlap="true" AnchorOrigin="Origin.TopRight">
+                            <MudImage Src="@item.Icon" Alt="@item.Text" Width="24" Height="24" Class="object-contain" />
+                        </MudBadge>
+                    }
+                    else
+                    {
+                        <MudImage Src="@item.Icon" Alt="@item.Text" Width="24" Height="24" Class="object-contain" />
+                    }
+                    <MudText Class="text-sm font-medium text-gray-800">@item.Text</MudText>
+                </div>
+            </MudListItem>
+        }
+    </MudList>
+</MudDrawer>
 
 @code {
     [Parameter] public bool SidebarOpen { get; set; }
     private string TextValue { get; set; }
     private bool _sidebarOpen => SidebarOpen;
+    private bool _drawerOpen;
+    private int NotificationsCount = 3;
+
+    void OpenDrawer() => _drawerOpen = true;
+    void CloseDrawer() => _drawerOpen = false;
+
+    private List<(string Text, string Icon)> MenuItems = new()
+    {
+        ("Profile",       "images/Icons/Profile.png"),
+        ("Settings",      "images/Icons/setting.png"),
+        ("Display Mode",  "images/Icons/DisPlayMode.png"),
+        ("Notifications", "images/Icons/Notifications.png"),
+        ("List",          "images/Icons/List.png"),
+        ("Logout",        "images/Icons/logout.png")
+    };
 }
-
-
-
-
-
-
