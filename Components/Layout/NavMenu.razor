@@ -71,7 +71,7 @@
            @bind-Open="_drawerOpen"
            Variant="DrawerVariant.Temporary"
            Elevation="1"
-           Class="w-72"
+           Class="w-72 flex flex-col"
            Style="background:#e1e1e1; height:100vh;"
            OnClose="@CloseDrawer">
 
@@ -85,12 +85,11 @@
 
     <MudDivider />
 
-    <MudList T="string" Dense="true" Class="w-full px-4 pt-2">
+    <MudList T="string" Dense="true" Class="w-full px-4 mt-3">
         @foreach (var item in MenuItems)
         {
-            <MudListItem T="string"
-                         Class="!justify-center px-3 py-2 rounded-md hover:!bg-gray-300 transition-all duration-150 cursor-pointer">
-                <div class="flex items-center gap-2">
+            <MudListItem T="string" Class="px-3 py-2 rounded-md hover:!bg-gray-300 transition-all duration-150 cursor-pointer">
+                <div class="w-full flex items-center justify-center gap-2">
                     @if (item.Text == "Notifications")
                     {
                         <MudBadge Content="@NotificationsCount" MaxValue="99" Color="Color.Error" Overlap="true" AnchorOrigin="Origin.TopRight">
