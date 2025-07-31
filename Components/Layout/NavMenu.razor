@@ -6,9 +6,24 @@
         background-color: transparent !important;
         transform: none !important;
     }
+
+    .appbar {
+        width: 100vw;
+        max-width: 100%;
+        background-color: var(--mud-palette-appbar-background) !important;
+        color: var(--mud-palette-appbar-text) !important;
+    }
+
+    .drawer-item:hover {
+        background-color: var(--mud-palette-action-default-hover) !important;
+    }
+
+    .text-primary-color {
+        color: var(--mud-palette-text-primary) !important;
+    }
 </style>
 
-<MudAppBar Dense="true" Elevation="0" Dir="ltr" Class="bg-white shadow-sm px-4 py-2 relative w-screen max-w-full">
+<MudAppBar Dense="true" Elevation="0" Dir="ltr" Class="shadow-sm px-4 py-2 relative appbar">
     <MudHidden Breakpoint="Breakpoint.SmAndDown">
         <div class="absolute top-0" style="@($"left: {(_sidebarOpen ? 250 : 56)}px; height:100%; display:flex; align-items:center; gap:12px; transition:left 0.3s;")">
             <MudTooltip Text="List">
@@ -22,7 +37,7 @@
             <MudTooltip Text="Display Mode">
                 <MudImage Src="images/Icons/DisPlayMode.png" Alt="Display Mode" Width="32" Height="32" Class="object-contain cursor-pointer" />
             </MudTooltip>
-            <span class="text-sm font-medium ml-2">All</span>
+            <span class="text-sm font-medium ml-2 text-primary-color">All</span>
         </div>
     </MudHidden>
 
@@ -69,6 +84,14 @@
                         <MudImage Src="images/Icons/Profile.png" Alt="Profile" Width="32" Height="32" Class="object-contain" />
                     </MudIconButton>
                 </MudTooltip>
+                <MudTooltip Text="@(IsDarkMode ? "Light" : "Dark")">
+                    <MudIconButton DisableRipple="true"
+                                   Color="Color.Inherit"
+                                   Size="Size.Medium"
+                                   Class="p-0 !min-w-0 flex items-center justify-center no-hover"
+                                   OnClick="@ToggleTheme"
+                                   Icon="@(IsDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)" />
+                </MudTooltip>
             </div>
         </div>
     </MudHidden>
@@ -86,13 +109,13 @@
            Variant="DrawerVariant.Temporary"
            Elevation="1"
            Class="w-72"
-           PaperStyle="position:relative;background:#e1e1e1;height:100vh;"
+           PaperStyle="position:relative;background:var(--mud-palette-drawer-background);height:100vh;color:var(--mud-palette-drawer-text);"
            OnClose="@CloseDrawer">
 
     <MudList T="string" Dense="true" Class="w-full px-4" Style="position:absolute;top:40px;left:0;">
         @foreach (var item in MenuItems)
         {
-            <MudListItem T="string" Class="px-3 py-2 rounded-md hover:!bg-gray-300 transition-all duration-150 cursor-pointer">
+            <MudListItem T="string" Class="px-3 py-2 rounded-md transition-all duration-150 cursor-pointer drawer-item">
                 <div class="w-full flex items-center justify-center gap-2">
                     @if (item.Text == "Notifications")
                     {
@@ -104,7 +127,7 @@
                     {
                         <MudImage Src="@item.Icon" Alt="@item.Text" Width="24" Height="24" Class="object-contain" />
                     }
-                    <MudText Class="text-sm font-medium text-gray-800">@item.Text</MudText>
+                    <MudText Class="text-sm font-medium" Style="color:var(--mud-palette-drawer-text)">@item.Text</MudText>
                 </div>
             </MudListItem>
         }
@@ -114,11 +137,14 @@
                    Color="Color.Default"
                    OnClick="@CloseDrawer"
                    Class="absolute top-0 right-0 p-3"
-                   Style="color:#606060;" />
+                   Style="color:var(--mud-palette-text-secondary);" />
 </MudDrawer>
 
 @code {
     [Parameter] public bool SidebarOpen { get; set; }
+    [Parameter] public bool IsDarkMode { get; set; }
+    [Parameter] public EventCallback<bool> IsDarkModeChanged { get; set; }
+
     private string TextValue { get; set; }
     private bool _sidebarOpen => SidebarOpen;
     private bool _drawerOpen;
@@ -136,4 +162,10 @@
         ("List",          "images/Icons/List.png"),
         ("Logout",        "images/Icons/logout.png")
     };
+
+    private async Task ToggleTheme()
+    {
+        IsDarkMode = !IsDarkMode;
+        await IsDarkModeChanged.InvokeAsync(IsDarkMode);
+    }
 }

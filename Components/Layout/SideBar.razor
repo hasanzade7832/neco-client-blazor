@@ -23,10 +23,22 @@
         .sidebar.collapsed .nav-mini .mud-icon-root {
             margin: 0 !important
         }
+
+    .hover-surface:hover {
+        background-color: var(--mud-palette-action-default-hover) !important;
+    }
+
+    .sidebar .text-primary-color {
+        color: var(--mud-palette-drawer-text) !important;
+    }
+
+    .sidebar .mud-icon-root {
+        color: var(--mud-palette-drawer-icon) !important;
+    }
 </style>
 
 <div class="@($"sidebar {(_isOpen ? "expanded" : "collapsed")}")"
-     style="@($"position: fixed; top: 0; left: 0; height: 100vh; width: {(_isOpen ? "250px" : "56px")}; background: #e1e1e1; z-index: 9999; padding-top: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1); transition: width 0.3s; overflow: hidden;")"
+     style="@($"position: fixed; top: 0; left: 0; height: 100vh; width: {(_isOpen ? "250px" : "56px")}; background: var(--mud-palette-drawer-background); color: var(--mud-palette-drawer-text); z-index: 9999; padding-top: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1); transition: width 0.3s; overflow: hidden;")"
      dir="ltr">
     <div class="@(_isOpen ? "flex items-center justify-start px-4 mb-4" : "flex items-center justify-center px-0 mb-2")">
         <img src="images/Icons/Menu.png"
@@ -48,16 +60,16 @@
             @if (_isOpen)
             {
                 <MudNavLink Href="@item.Href"
-                            Class="flex items-center gap-4 px-3 py-2 rounded hover:bg-gray-200 transition-colors">
+                            Class="flex items-center gap-4 px-3 py-2 rounded transition-colors hover-surface">
                     <MudIcon Icon="@item.Icon" Size="Size.Medium" />
-                    <span class="text-gray-800 hover:text-black">@item.Text</span>
+                    <span class="text-primary-color">@item.Text</span>
                 </MudNavLink>
             }
             else
             {
                 <MudTooltip Text="@item.Text" Placement="Placement.Right">
                     <MudNavLink Href="@item.Href"
-                                Class="nav-mini rounded hover:bg-gray-200 transition-colors">
+                                Class="nav-mini rounded transition-colors hover-surface">
                         <div class="centerer">
                             <MudIcon Icon="@item.Icon" Size="Size.Medium" />
                         </div>
@@ -84,8 +96,8 @@
         (Icons.Material.Filled.Build,        "Construction","#"),
     };
 
-    [Parameter]
-    public EventCallback<bool> OnSidebarToggled { get; set; }
+    [Parameter] public bool IsDarkMode { get; set; }
+    [Parameter] public EventCallback<bool> OnSidebarToggled { get; set; }
 
     [Inject] private IJSRuntime JS { get; set; }
 

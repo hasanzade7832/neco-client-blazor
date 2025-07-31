@@ -12,6 +12,8 @@
             width: 100%;
             max-width: 100%;
             overflow-x: hidden;
+            background-color: var(--mud-palette-background);
+            color: var(--mud-palette-text-primary);
         }
 
         #app, .mud-layout {
@@ -26,8 +28,8 @@
 <MudPopoverProvider />
 
 <MudLayout>
-    <NavMenu SidebarOpen="_sidebarOpen" />
-    <SideBar OnSidebarToggled="HandleSidebarToggle" />
+    <NavMenu SidebarOpen="_sidebarOpen" @bind-IsDarkMode="_isDarkMode" />
+    <SideBar OnSidebarToggled="HandleSidebarToggle" IsDarkMode="_isDarkMode" />
     <MudMainContent Class="@MainContentClass">
         @Body
     </MudMainContent>
