@@ -16,13 +16,12 @@ public static class AppThemes
             Error = "#DC2626",
             AppbarBackground = "#FFFFFF",
             AppbarText = "#0F172A",
-            Background = "#F6F7FB",
+            Background = "#FFFFFF",
             Surface = "#FFFFFF",
             TextPrimary = "#0F172A",
             TextSecondary = "#475569",
             ActionDefault = "#EEF2F6",
-            //ActionDefaultHover = "#E3E8EF",
-            DrawerBackground = "#FFFFFF",
+            DrawerBackground = "#EEEEEE",
             DrawerText = "#0F172A",
             DrawerIcon = "#64748B"
         },
@@ -41,7 +40,6 @@ public static class AppThemes
             TextPrimary = "#FFFFFF",
             TextSecondary = "#B0B3B8",
             ActionDefault = "#1F232A",
-            //ActionDefaultHover = "#262B34",
             DrawerBackground = "#14161A",
             DrawerText = "#E5E7EB",
             DrawerIcon = "#B0B3B8"

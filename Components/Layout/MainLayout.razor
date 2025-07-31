@@ -30,8 +30,10 @@
 <MudLayout>
     <NavMenu SidebarOpen="_sidebarOpen" @bind-IsDarkMode="_isDarkMode" />
     <SideBar OnSidebarToggled="HandleSidebarToggle" IsDarkMode="_isDarkMode" />
-    <MudMainContent Class="@MainContentClass">
-        @Body
+    <MudMainContent Style="@MainContentStyle">
+        <div style="@InnerContentStyle">
+            @Body
+        </div>
     </MudMainContent>
 </MudLayout>
 
@@ -44,6 +46,20 @@
         _sidebarOpen = isOpen;
     }
 
-    private string MainContentClass =>
-        $"{(_sidebarOpen ? "ml-[250px]" : "ml-[56px]")} w-full overflow-x-hidden pt-14 px-6 py-4 transition-all duration-300";
+    private string MainContentStyle =>
+        $"padding-left:{(_sidebarOpen ? "250px" : "56px")};" +
+        $"padding-right:32px;" +
+        $"padding-top:64px;" +
+        $"padding-bottom:24px;" +
+        $"box-sizing:border-box;" +
+        $"width:100%;" +
+        $"min-height:100vh;" +
+        $"overflow-x:hidden;" +
+        $"background-color:var(--mud-palette-background);" +
+        $"transition:padding-left 300ms ease;";
+
+    private string InnerContentStyle =>
+        $"max-width:1200px;" +
+        $"margin:0 auto;" +
+        $"width:100%;";
 }
