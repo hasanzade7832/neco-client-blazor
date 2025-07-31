@@ -2,8 +2,33 @@
 @using Microsoft.AspNetCore.Components
 @using Microsoft.JSInterop
 
-<div style="@($"position: fixed; top: 0; left: 0; height: 100vh; width: {(_isOpen ? "250px" : "56px")}; background: #e1e1e1; z-index: 9999; padding-top: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1); transition: width 0.3s; overflow: hidden;")">
-    <div class="@($"flex items-center justify-start {(_isOpen ? "px-4 mb-4" : "px-2 mb-2")}")">
+<style>
+    .sidebar.collapsed .nav-mini {
+        position: relative;
+        display: block !important;
+        width: 56px;
+        height: 56px;
+        padding: 0 !important;
+        margin: 0 !important
+    }
+
+        .sidebar.collapsed .nav-mini .centerer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            pointer-events: none
+        }
+
+        .sidebar.collapsed .nav-mini .mud-icon-root {
+            margin: 0 !important
+        }
+</style>
+
+<div class="@($"sidebar {(_isOpen ? "expanded" : "collapsed")}")"
+     style="@($"position: fixed; top: 0; left: 0; height: 100vh; width: {(_isOpen ? "250px" : "56px")}; background: #e1e1e1; z-index: 9999; padding-top: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1); transition: width 0.3s; overflow: hidden;")"
+     dir="ltr">
+    <div class="@(_isOpen ? "flex items-center justify-start px-4 mb-4" : "flex items-center justify-center px-0 mb-2")">
         <img src="images/Icons/Menu.png"
              alt="Menu"
              width="32"
@@ -32,9 +57,10 @@
             {
                 <MudTooltip Text="@item.Text" Placement="Placement.Right">
                     <MudNavLink Href="@item.Href"
-                                Class="flex items-center justify-center rounded hover:bg-gray-200 transition-colors"
-                                Style="@("width: 56px; height: 56px;")">
-                        <MudIcon Icon="@item.Icon" Size="Size.Medium" />
+                                Class="nav-mini rounded hover:bg-gray-200 transition-colors">
+                        <div class="centerer">
+                            <MudIcon Icon="@item.Icon" Size="Size.Medium" />
+                        </div>
                     </MudNavLink>
                 </MudTooltip>
             }
