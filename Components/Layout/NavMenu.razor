@@ -1,7 +1,14 @@
 ﻿@using MudBlazor
 @using Microsoft.AspNetCore.Components
 
-<MudAppBar Dense="true" Elevation="0" Dir="ltr" Class="bg-white shadow-sm px-4 py-2 relative">
+<style>
+    .no-hover:hover {
+        background-color: transparent !important;
+        transform: none !important;
+    }
+</style>
+
+<MudAppBar Dense="true" Elevation="0" Dir="ltr" Class="bg-white shadow-sm px-4 py-2 relative w-screen max-w-full">
     <MudHidden Breakpoint="Breakpoint.SmAndDown">
         <div class="absolute top-0" style="@($"left: {(_sidebarOpen ? 250 : 56)}px; height:100%; display:flex; align-items:center; gap:12px; transition:left 0.3s;")">
             <MudTooltip Text="List">
@@ -25,7 +32,10 @@
         <div class="flex items-center gap-12">
             <div class="flex items-center">
                 <MudImage Src="images/Icons/app.png" Alt="App" Width="32" Height="32" Class="object-contain" />
-                <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small" Class="p-0 !min-w-0 ml-4 flex items-center justify-center">
+                <MudIconButton DisableRipple="true"
+                               Color="Color.Inherit"
+                               Size="Size.Small"
+                               Class="p-0 !min-w-0 ml-4 flex items-center justify-center">
                     <MudIcon Icon="@Icons.Material.Filled.Search" />
                 </MudIconButton>
                 <MudTextField @bind-Value="TextValue"
@@ -36,17 +46,26 @@
             </div>
             <div class="flex items-center gap-4">
                 <MudTooltip Text="Logout">
-                    <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small" Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
+                    <MudIconButton DisableRipple="true"
+                                   Color="Color.Inherit"
+                                   Size="Size.Small"
+                                   Class="p-0 !min-w-0 flex items-center justify-center no-hover">
                         <MudImage Src="images/Icons/logout.png" Alt="Logout" Width="32" Height="32" Class="object-contain" />
                     </MudIconButton>
                 </MudTooltip>
                 <MudTooltip Text="Settings">
-                    <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small" Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
-                        <MudImage Src="images/Icons/setting.png" Alt="Setting" Width="32" Height="32" Class="object-contain" />
+                    <MudIconButton DisableRipple="true"
+                                   Color="Color.Inherit"
+                                   Size="Size.Small"
+                                   Class="p-0 !min-w-0 flex items-center justify-center no-hover">
+                        <MudImage Src="images/Icons/setting.png" Alt="Settings" Width="32" Height="32" Class="object-contain" />
                     </MudIconButton>
                 </MudTooltip>
                 <MudTooltip Text="Profile">
-                    <MudIconButton DisableRipple="true" Color="Color.Inherit" Size="Size.Small" Class="p-0 !min-w-0 flex items-center justify-center hover:scale-110 transition-transform duration-150">
+                    <MudIconButton DisableRipple="true"
+                                   Color="Color.Inherit"
+                                   Size="Size.Small"
+                                   Class="p-0 !min-w-0 flex items-center justify-center no-hover">
                         <MudImage Src="images/Icons/Profile.png" Alt="Profile" Width="32" Height="32" Class="object-contain" />
                     </MudIconButton>
                 </MudTooltip>
@@ -55,7 +74,10 @@
     </MudHidden>
 
     <MudHidden Breakpoint="Breakpoint.MdAndUp">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@OpenDrawer" Class="ml-2" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       OnClick="@OpenDrawer"
+                       Class="ml-2" />
     </MudHidden>
 </MudAppBar>
 
@@ -101,8 +123,10 @@
     private bool _sidebarOpen => SidebarOpen;
     private bool _drawerOpen;
     private int NotificationsCount = 3;
+
     void OpenDrawer() => _drawerOpen = true;
     void CloseDrawer() => _drawerOpen = false;
+
     private List<(string Text, string Icon)> MenuItems = new()
     {
         ("Profile",       "images/Icons/Profile.png"),

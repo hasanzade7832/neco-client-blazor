@@ -1,5 +1,6 @@
 ﻿@using MudBlazor
 @using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
 
 <div style="@($"position: fixed; top: 0; left: 0; height: 100vh; width: {(_isOpen ? "250px" : "56px")}; background: #e1e1e1; z-index: 9999; padding-top: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1); transition: width 0.3s; overflow: hidden;")">
     <div class="@($"flex items-center justify-start {(_isOpen ? "px-4 mb-4" : "px-2 mb-2")}")">
@@ -41,6 +42,10 @@
     </MudStack>
 </div>
 
+<script>
+    function sidebarResizeInit(dotnet){function r(){dotnet.invokeMethodAsync('OnResize', window.innerWidth);} window.addEventListener('resize', r); r();}
+</script>
+
 @code {
     private bool _isOpen = true;
 
@@ -56,11 +61,36 @@
     [Parameter]
     public EventCallback<bool> OnSidebarToggled { get; set; }
 
+    [Inject] private IJSRuntime JS { get; set; }
+
     private int ItemSpacing => _isOpen ? 4 : 2;
 
     private async Task ToggleSidebar()
     {
         _isOpen = !_isOpen;
         await OnSidebarToggled.InvokeAsync(_isOpen);
+    }
+
+    private DotNetObjectReference<SideBar> _objRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _objRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("sidebarResizeInit", _objRef);
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnResize(int width)
+    {
+        var target = width >= 1024;
+        if (_isOpen != target)
+        {
+            _isOpen = target;
+            await OnSidebarToggled.InvokeAsync(_isOpen);
+            StateHasChanged();
+        }
     }
 }

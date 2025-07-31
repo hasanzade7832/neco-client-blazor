@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="Dashboard.css" />
     <link rel="stylesheet" href="css/app.min.css" />
     <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+    <style>
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        #app, .mud-layout {
+            overflow-x: hidden;
+        }
+    </style>
 </HeadContent>
 
 <MudThemeProvider Theme="AppThemes.KargardoonTheme" @bind-IsDarkMode="_isDarkMode" />
@@ -32,5 +43,5 @@
     }
 
     private string MainContentClass =>
-        $"{(_sidebarOpen ? "ml-[250px]" : "ml-[56px]")} pt-14 px-6 py-4 transition-all duration-300";
+        $"{(_sidebarOpen ? "ml-[250px]" : "ml-[56px]")} w-full overflow-x-hidden pt-14 px-6 py-4 transition-all duration-300";
 }
