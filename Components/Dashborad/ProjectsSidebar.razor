@@ -1,96 +1,29 @@
 ﻿@using MudBlazor
 
-<MudPaper Elevation="0" Class="projects-sidebar">
-    <div class="projects-viewport">
-        <MudStack Direction="Direction.Column" Spacing="0" Class="projects-list">
-            @foreach (var p in Projects)
-            {
-                var sel = SelectedIds.Contains(p.Id);
-                <MudPaper Elevation="1"
-                          Class="@($"project-card {(sel ? "selected" : "")}")"
-                          @onclick="() => Toggle(p.Id)">
-                    <div class="project-card-body">
-                        <MudImage Src="images/Icons/DisplayMode.png" Alt="Project" Width="24" Height="24" Class="object-contain" />
-                        <span class="title">@p.Name</span>
-                    </div>
-                </MudPaper>
-            }
-        </MudStack>
+<MudPaper Elevation="0" Style="@RootStyle">
+    <div style="width:100%;display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden;">
+        <div class="org-scroll" style="flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+            <MudStack Direction="Direction.Column" Spacing="0" Style="width:100%;display:flex;flex-direction:column;gap:.75rem;">
+                @foreach (var p in Projects)
+                {
+                    var sel = SelectedIds.Contains(p.Id);
+                    <MudPaper Elevation="1" Style="@CardStyle(sel)" @onclick="() => Toggle(p.Id)">
+                        <div style="display:flex;align-items:center;gap:.75rem;padding:0 1rem;height:100%;">
+                            <MudImage Src="images/Icons/DisplayMode.png" Alt="Project" Width="24" Height="24" Class="object-contain" />
+                            <span style="color:var(--mud-palette-text-primary);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;">@p.Name</span>
+                        </div>
+                    </MudPaper>
+                }
+            </MudStack>
+        </div>
     </div>
 </MudPaper>
 
-<style>
-    .projects-sidebar {
-        width: var(--sidebar-w);
-        padding: 1rem;
-        height: 100%;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-    }
-
-    .projects-viewport {
-        width: var(--card-w);
-        margin-left: auto;
-        max-height: 300px;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: #1e3a8a transparent;
-    }
-
-        .projects-viewport::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .projects-viewport::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .projects-viewport::-webkit-scrollbar-thumb {
-            background-color: #1e3a8a;
-            border-radius: 8px;
-        }
-
-    .projects-list {
-        display: flex;
-        flex-direction: column;
-        gap: calc(var(--gap) + .5rem);
-    }
-
-    .project-card {
-        width: 100%;
-        height: var(--item-h);
-        border: 1px solid #e5e7eb;
-        border-radius: 1rem;
-        cursor: pointer;
-        transition: background-color .2s, border-color .2s;
-    }
-
-    .project-card-body {
-        display: flex;
-        align-items: center;
-        gap: .75rem;
-        padding: 0 1rem;
-        height: 100%;
-    }
-
-    .project-card .title {
-        color: #374151;
-        font-weight: 500;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .project-card.selected {
-        background-color: #d1fae5;
-        border-color: #86efac;
-    }
-</style>
-
 @code {
+    [Parameter] public string HeightCss { get; set; } = "auto";
+
+    private string RootStyle => $"width:100%;max-width:280px;height:{HeightCss};max-height:300px;box-sizing:border-box;display:flex;flex-direction:column;background:transparent;padding:1rem;";
+
     private class ProjectItem { public int Id { get; set; } public string Name { get; set; } = ""; }
     private List<ProjectItem> Projects = new();
     private HashSet<int> SelectedIds = new();
@@ -106,10 +39,16 @@
             Projects.Add(new ProjectItem { Id = i + 1, Name = names[i] });
     }
 
+    private string CardStyle(bool selected)
+    {
+        var s = "width:100%;height:64px;border:1px solid var(--mud-palette-action-default);background-color:var(--mud-palette-surface);border-radius:1rem;cursor:pointer;box-sizing:border-box;";
+        if (selected) s += "border-color:var(--mud-palette-success);background-color:var(--mud-palette-action-default);";
+        return s;
+    }
+
     private void Toggle(int id)
     {
-        if (!SelectedIds.Add(id))
-            SelectedIds.Remove(id);
+        if (!SelectedIds.Add(id)) SelectedIds.Remove(id);
         StateHasChanged();
     }
 }

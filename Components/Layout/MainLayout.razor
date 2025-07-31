@@ -40,11 +40,7 @@
 @code {
     private bool _isDarkMode = false;
     private bool _sidebarOpen = true;
-
-    private void HandleSidebarToggle(bool isOpen)
-    {
-        _sidebarOpen = isOpen;
-    }
+    private void HandleSidebarToggle(bool isOpen) { _sidebarOpen = isOpen; }
 
     private string MainContentStyle =>
         $"padding-left:{(_sidebarOpen ? "250px" : "56px")};" +
