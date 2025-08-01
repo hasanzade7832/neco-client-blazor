@@ -1,6 +1,8 @@
 ﻿@page "/tasks"
 @using MudBlazor
 @using BlazorApp12.Models
+@using Microsoft.AspNetCore.Components.Web
+@inject IDialogService DialogService
 
 <style>
     .task-scroll {
@@ -28,6 +30,10 @@
             .task-scroll::-webkit-scrollbar-thumb:hover {
                 filter: brightness(.9)
             }
+
+    .dlg-blur {
+        backdrop-filter: blur(10px)
+    }
 </style>
 
 <div style="height:100%;display:flex;flex-direction:column;gap:8px;overflow:hidden;">
@@ -48,49 +54,101 @@
         <span style="font-size:.9rem;font-weight:500;white-space:nowrap;">View</span>
     </div>
 
-    <div style="display:flex;align-items:stretch;gap:12px;padding:8px;box-sizing:border-box;height:calc((100vh - 140px)*2/3);overflow-x:auto;">
-        <TaskColumn Title="In Progress"
-                    Items="@InProgressTasks"
-                    BackgroundCss="rgba(245,158,11,.15)"
-                    @bind-Collapsed="ColInProgressCollapsed" />
+    <div style="position:relative;display:flex;align-items:stretch;gap:12px;padding:8px;box-sizing:border-box;height:calc((100vh - 140px)*2/3);overflow-x:auto;">
+        @foreach (var col in Columns)
+        {
+            <TaskColumn Title="@col.Title"
+                        Items="@col.Items"
+                        BackgroundCss="@col.BackgroundCss"
+                        ExpandedWidth="@col.ExpandedWidth"
+                        CollapsedWidth="@col.CollapsedWidth"
+                        GlassOnSecond="@col.GlassOnSecond"
+                        Appear="@col.Appear"
+                        @bind-Collapsed="col.Collapsed" />
+        }
 
-        <TaskColumn Title="To Do"
-                    Items="@ToDoTasks"
-                    BackgroundCss="rgba(22,163,74,.15)"
-                    @bind-Collapsed="ColToDoCollapsed" />
-
-        <TaskColumn Title="Done"
-                    Items="@DoneTasks"
-                    BackgroundCss="var(--mud-palette-action-default)"
-                    GlassOnSecond="true"
-                    @bind-Collapsed="ColDoneCollapsed" />
-
-        <div style="flex:0 0 280px;width:280px;display:flex;align-items:center;justify-content:center;border:2px dashed rgba(0,0,0,.2);border-radius:12px;background:var(--mud-palette-background);">
+        <div @onclick="OpenAddDialog"
+             style="flex:0 0 280px;width:280px;display:flex;align-items:center;justify-content:center;border:2px dashed rgba(0,0,0,.2);border-radius:12px;background:var(--mud-palette-background);cursor:pointer;">
             <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:64px;color:rgba(0,0,0,.3);" />
         </div>
     </div>
 </div>
 
 @code {
-    bool ColInProgressCollapsed;
-    bool ColToDoCollapsed;
-    bool ColDoneCollapsed;
-
     List<TaskItem> InProgressTasks = new()
-    {
+        {
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
-    };
+        };
 
     List<TaskItem> ToDoTasks = new()
-    {
+        {
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
-    };
+        };
 
     List<TaskItem> DoneTasks = new()
-    {
+        {
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
-    };
+        };
+
+    List<ColumnModel> Columns = new();
+
+    MudBlazor.IDialogReference _dialogRef;
+
+    readonly List<string> DotColors = new()
+        {
+        "#8b5cf6","#3b82f6","#0ea5e9","#10b981","#34d399","#059669","#f59e0b","#f97316","#ef4444","#ec4899","#a78bfa","#a3a3a3","#9ca3af","#6b7280"
+        };
+
+    readonly List<string> BackgroundValues = new()
+        {
+        "rgba(139,92,246,.15)","rgba(59,130,246,.15)","rgba(14,165,233,.15)","rgba(16,185,129,.15)","rgba(52,211,153,.15)","rgba(5,150,105,.15)",
+        "rgba(245,158,11,.15)","rgba(249,115,22,.15)","rgba(239,68,68,.15)","rgba(236,72,153,.15)","rgba(167,139,250,.15)","rgba(163,163,163,.15)","rgba(156,163,175,.15)","rgba(107,114,128,.15)"
+        };
+
+    RenderFragment TitleFrag => @<div>Add Column</div>;
+
+    RenderFragment AddColumnBody => @<AddColumnDialog DotColors="DotColors"
+                 BackgroundValues="BackgroundValues"
+                 OnConfirm="OnAddColumnConfirmed" />;
+
+    protected override void OnInitialized()
+    {
+        Columns = new()
+        {
+            new ColumnModel { Title="In Progress", Items=InProgressTasks.ToList(), BackgroundCss="rgba(245,158,11,.15)", Collapsed=false, GlassOnSecond=true },
+            new ColumnModel { Title="To Do", Items=ToDoTasks.ToList(), BackgroundCss="rgba(22,163,74,.15)", Collapsed=false },
+            new ColumnModel { Title="Done", Items=DoneTasks.ToList(), BackgroundCss="var(--mud-palette-action-default)", Collapsed=false }
+        };
+    }
+
+    async System.Threading.Tasks.Task OpenAddDialog()
+    {
+        var parameters = new DialogParameters
+        {
+            { "Title", TitleFrag },
+            { "Body", AddColumnBody }
+        };
+        var options = new DialogOptions { BackgroundClass = "dlg-blur", MaxWidth = MaxWidth.Small, FullWidth = true, CloseOnEscapeKey = true };
+        _dialogRef = await DialogService.ShowAsync<Dialog>(string.Empty, parameters, options);
+    }
+
+    async System.Threading.Tasks.Task OnAddColumnConfirmed(AddColumnResult data)
+    {
+        var newCol = new ColumnModel
+            {
+                Title = data.Title,
+                Items = new List<TaskItem>(),
+                BackgroundCss = string.IsNullOrWhiteSpace(data.Background) ? "var(--mud-palette-action-default)" : data.Background,
+                Collapsed = false,
+                GlassOnSecond = false,
+                Appear = true
+            };
+
+        Columns.Add(newCol);
+        _dialogRef?.Close(DialogResult.Ok(true));
+        await InvokeAsync(StateHasChanged);
+    }
 }

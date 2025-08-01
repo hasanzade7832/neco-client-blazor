@@ -1,0 +1,38 @@
+﻿@using System.Linq
+@using MudBlazor
+@using Microsoft.AspNetCore.Components
+@using BlazorApp12.Models
+
+<div style="padding:10px;min-width:300px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+        <MudTextField @bind-Value="_name" Placeholder="Column Name" Immediate="true" Style="flex:1;" />
+        <MudButton Disabled="@string.IsNullOrWhiteSpace(_name)" OnClick="Save" Variant="Variant.Filled" Color="Color.Success" Style="min-width:72px;height:36px;">SAVE</MudButton>
+    </div>
+    <div style="height:1px;background:rgba(0,0,0,.08);margin:10px 0;"></div>
+    <div style="font-size:.9rem;font-weight:600;margin-bottom:8px;">Color</div>
+    <ColorPicker DotColors="@DotColors"
+                 Values="@BackgroundValues"
+                 @bind-SelectedValue="_selected" />
+</div>
+
+@code {
+    [Parameter] public IEnumerable<string> DotColors { get; set; } = Array.Empty<string>();
+    [Parameter] public IEnumerable<string> BackgroundValues { get; set; } = Array.Empty<string>();
+    [Parameter] public EventCallback<AddColumnResult> OnConfirm { get; set; }
+
+    string _name = "";
+    string _selected = "";
+
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrWhiteSpace(_selected))
+            _selected = BackgroundValues.FirstOrDefault() ?? "";
+    }
+
+    private System.Threading.Tasks.Task Save()
+    {
+        if (string.IsNullOrWhiteSpace(_name)) return System.Threading.Tasks.Task.CompletedTask;
+        var result = new AddColumnResult { Title = _name.Trim(), Background = _selected };
+        return OnConfirm.InvokeAsync(result);
+    }
+}

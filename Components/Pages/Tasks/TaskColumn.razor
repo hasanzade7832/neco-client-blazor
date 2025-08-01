@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
 
-<div style="@($"flex:0 0 {(Collapsed ? CollapsedWidth : ExpandedWidth)}px;width:{(Collapsed ? CollapsedWidth : ExpandedWidth)}px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:{BackgroundCss};transition:width .25s ease,flex-basis .25s ease;")">
+<div style="@($"flex:0 0 {ContainerWidth}px;width:{ContainerWidth}px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:{BackgroundCss};transition:width .25s ease,flex-basis .25s ease;")">
     @if (!Collapsed)
     {
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
@@ -73,6 +73,7 @@
     [Parameter] public int ExpandedWidth { get; set; } = 280;
     [Parameter] public int CollapsedWidth { get; set; } = 64;
     [Parameter] public bool GlassOnSecond { get; set; }
+    [Parameter] public bool Appear { get; set; }
 
     private bool _headerMenuOpen;
     private double _headerX;
@@ -115,6 +116,24 @@
         new PropertyItemModel { Text="Delay" },
         new PropertyItemModel { Text="Status" }
     };
+
+    private int _appearWidth = 1;
+    private bool _appeared;
+
+    private int ContainerWidth => Appear && !_appeared ? _appearWidth : (Collapsed ? CollapsedWidth : ExpandedWidth);
+
+    protected override async System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Appear && !_appeared)
+        {
+            await System.Threading.Tasks.Task.Delay(25);
+            _appearWidth = ExpandedWidth;
+            await InvokeAsync(StateHasChanged);
+            await System.Threading.Tasks.Task.Delay(300);
+            _appeared = true;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
 
     private void Toggle() => CollapsedChanged.InvokeAsync(!Collapsed);
 

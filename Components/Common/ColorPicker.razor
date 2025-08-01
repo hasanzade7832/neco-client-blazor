@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Components
+
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    @foreach (var pair in _pairs)
+    {
+        var isSel = pair.Value == SelectedValue;
+        <div @onclick="@(()=>Select(pair.Value))"
+             style="@($"width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-sizing:border-box;{(isSel ? "border:3px solid #22c55e;padding:1px;" : "border:2px solid transparent;")}")">
+            <div style="@($"width:18px;height:18px;border-radius:50%;background:{pair.Dot};")"></div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public IEnumerable<string> DotColors { get; set; } = Array.Empty<string>();
+    [Parameter] public IEnumerable<string> Values { get; set; } = Array.Empty<string>();
+    [Parameter] public string SelectedValue { get; set; } = "";
+    [Parameter] public EventCallback<string> SelectedValueChanged { get; set; }
+
+    private List<(string Dot, string Value)> _pairs = new();
+
+    protected override void OnParametersSet()
+    {
+        _pairs = DotColors.Zip(Values, (d, v) => (d, v)).ToList();
+    }
+
+    private System.Threading.Tasks.Task Select(string v)
+    {
+        return SelectedValueChanged.InvokeAsync(v);
+    }
+}
