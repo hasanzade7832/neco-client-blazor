@@ -1,5 +1,6 @@
 ﻿@using MudBlazor
 @using BlazorApp12.Models
+@using Microsoft.AspNetCore.Components.Web
 
 <div style="@($"flex:0 0 {(Collapsed ? CollapsedWidth : ExpandedWidth)}px;width:{(Collapsed ? CollapsedWidth : ExpandedWidth)}px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:{BackgroundCss};transition:width .25s ease,flex-basis .25s ease;")">
     @if (!Collapsed)
@@ -8,10 +9,21 @@
             <div style="font-weight:600;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@Title</div>
             <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="Toggle" Style="color:var(--mud-palette-text-primary);font-size:24px;" />
         </div>
+
         <div class="task-scroll" style="flex:1;overflow-y:auto;padding:0 8px 12px;box-sizing:border-box;">
-            @foreach (var it in Items)
-            {
-                <TaskCard Item="it" />
+            @{
+                var list = Items?.ToList() ?? new();
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var card = list[i];
+
+                    // فقط کارت دوم اگر GlassOnSecond=true باشد منو را باز می‌کند
+                    var handler = (GlassOnSecond && i == 1)
+                    ? EventCallback.Factory.Create<MouseEventArgs>(this, OpenOverlay)
+                    : EventCallback<MouseEventArgs>.Empty;
+
+                    <TaskCard Item="card" MenuClicked="handler" />
+                }
             }
         </div>
     }
@@ -26,6 +38,49 @@
     }
 </div>
 
+@if (_overlayOpen)
+{
+    <!-- بک‌دراپ برای بستن با کلیک خارج -->
+    <div style="position:fixed;inset:0;z-index:19;background:transparent;" @onclick="CloseOverlay"></div>
+
+    <!-- منوی شیشه‌ای مجزا از کارت؛ کنار محل کلیک موس، رو به پایین -->
+    <div class="task-scroll"
+         style="@($"position:fixed;left:{_overlayX}px;top:{_overlayY}px;z-index:20;")
+                background:rgba(120,120,120,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+                border-radius:12px;border:1px solid rgba(255,255,255,.35);
+                box-shadow:0 8px 24px rgba(0,0,0,.25);padding:8px 0;min-width:240px;
+                max-height:320px;overflow-y:auto;">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+            <MudIcon Icon="@Icons.Material.Filled.SubdirectoryArrowRight" Style="opacity:.9;" />
+            <span style="font-weight:600;">Follow Up</span>
+        </div>
+        <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+            <MudIcon Icon="@Icons.Material.Filled.Notifications" Style="opacity:.9;" />
+            <span style="font-weight:600;">Alert</span>
+        </div>
+        <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+            <MudIcon Icon="@Icons.Material.Filled.DoubleArrow" Style="opacity:.9;" />
+            <span style="font-weight:600;">Expedite</span>
+        </div>
+        <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+            <MudIcon Icon="@Icons.Material.Filled.Groups" Style="opacity:.9;" />
+            <span style="font-weight:600;">Consult</span>
+        </div>
+        <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
+            <MudIcon Icon="@Icons.Material.Filled.ChangeCircle" Style="opacity:.9;" />
+            <span style="font-weight:600;">Reassign</span>
+        </div>
+    </div>
+}
+
 @code {
     [Parameter] public string Title { get; set; } = "";
     [Parameter] public IEnumerable<TaskItem> Items { get; set; } = Array.Empty<TaskItem>();
@@ -34,6 +89,22 @@
     [Parameter] public string BackgroundCss { get; set; } = "var(--mud-palette-action-default)";
     [Parameter] public int ExpandedWidth { get; set; } = 280;
     [Parameter] public int CollapsedWidth { get; set; } = 64;
+    [Parameter] public bool GlassOnSecond { get; set; }  // برای ستون Done
 
     void Toggle() => CollapsedChanged.InvokeAsync(!Collapsed);
+
+    bool _overlayOpen;
+    double _overlayX;
+    double _overlayY;
+
+    void OpenOverlay(MouseEventArgs e)
+    {
+        // کمی آفست تا منو پایین و راستِ نقطه کلیک دیده شود
+        _overlayX = e.ClientX + 12;
+        _overlayY = e.ClientY + 10;
+        _overlayOpen = true;
+        StateHasChanged();
+    }
+
+    void CloseOverlay() => _overlayOpen = false;
 }
