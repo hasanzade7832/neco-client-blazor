@@ -1,0 +1,42 @@
+﻿@using System.Linq
+@using BlazorApp12.Models
+@using MudBlazor
+
+@if (Show)
+{
+    <div style="position:fixed;inset:0;z-index:1999;background:transparent;" @onclick="HandleBackdrop"></div>
+    <div style="@ContainerStyle">
+        <OrgScrollHost MaxHeight="@MaxHeight" Style="@($"padding:8px 0;min-width:{MinWidth};")">
+            @foreach (var item in Items)
+            {
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;" @onclick="@(()=>OnItemClick.InvokeAsync(item.Text))">
+                    <MudIcon Icon="@item.Icon" Style="opacity:.9;" />
+                    <span style="font-weight:600;">@item.Text</span>
+                </div>
+                @if (!item.Equals(Items.Last()))
+                {
+                    <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
+                }
+            }
+        </OrgScrollHost>
+    </div>
+}
+
+@code {
+    [Parameter] public IEnumerable<MenuItemModel> Items { get; set; } = Array.Empty<MenuItemModel>();
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public EventCallback<bool> ShowChanged { get; set; }
+    [Parameter] public double Left { get; set; }
+    [Parameter] public double Top { get; set; }
+    [Parameter] public string MinWidth { get; set; } = "240px";
+    [Parameter] public string MaxHeight { get; set; } = "320px";
+    [Parameter] public EventCallback<string> OnItemClick { get; set; }
+
+    private string ContainerStyle => $"position:fixed;left:{Left}px;top:{Top}px;z-index:2000;background:rgba(120,120,120,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:12px;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 24px rgba(0,0,0,.25);";
+
+    private Task HandleBackdrop()
+    {
+        if (ShowChanged.HasDelegate) return ShowChanged.InvokeAsync(false);
+        return Task.CompletedTask;
+    }
+}

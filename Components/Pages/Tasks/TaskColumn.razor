@@ -7,32 +7,29 @@
     {
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
             <div style="font-weight:600;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@Title</div>
-
-            <!-- دکمه جمع‌شونده + سه‌نقطه در سمت راست آن -->
             <div style="display:flex;align-items:center;gap:8px;">
                 <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft"
                                OnClick="Toggle"
                                Style="color:var(--mud-palette-text-primary);font-size:24px;" />
-
                 <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"
                                Style="font-size:22px;color:var(--mud-palette-text-primary);margin:0;padding:4px;"
-                               OnClick="OpenHeaderMenu" />
+                               OnClick="@(e=>OpenHeaderMenu(e))" />
             </div>
         </div>
 
-        <div class="task-scroll" style="flex:1;overflow-y:auto;padding:0 8px 12px;box-sizing:border-box;">
+        <OrgScrollHost Style="flex:1;padding:0 8px 12px;box-sizing:border-box;height:100%;">
             @{
                 var list = Items?.ToList() ?? new();
                 for (int i = 0; i < list.Count; i++)
                 {
                     var handler = (GlassOnSecond && i == 1)
-                        ? EventCallback.Factory.Create<MouseEventArgs>(this, OpenOverlay)
-                        : EventCallback<MouseEventArgs>.Empty;
+                    ? EventCallback.Factory.Create<MouseEventArgs>(this, OpenOverlay)
+                    : EventCallback<MouseEventArgs>.Empty;
 
                     <TaskCard Item="list[i]" MenuClicked="handler" />
                 }
             }
-        </div>
+        </OrgScrollHost>
     }
     else
     {
@@ -47,70 +44,22 @@
     }
 </div>
 
-@if (_overlayOpen || _headerMenuOpen)
-{
-    <!-- بک‌دراپ برای بستن هر دو منو -->
-    <div style="position:fixed;inset:0;z-index:19;background:transparent;" @onclick="CloseAll"></div>
-}
+<GlassMenu Items="@CardMenuItems"
+           Show="@_overlayOpen"
+           ShowChanged="@(v=>_overlayOpen=v)"
+           Left="@_overlayX"
+           Top="@_overlayY"
+           OnItemClick="OnCardMenuItem" />
 
-<!-- منوی شیشه‌ای کارت Done (روی کلیک منو داخل کارت) -->
-@if (_overlayOpen)
-{
-    <div class="task-scroll"
-         style="@($"position:fixed;left:{_overlayX}px;top:{_overlayY}px;z-index:20;")
-                background:rgba(120,120,120,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-                border-radius:12px;border:1px solid rgba(255,255,255,.35);
-                box-shadow:0 8px 24px rgba(0,0,0,.25);padding:8px 0;min-width:240px;
-                max-height:320px;overflow-y:auto;">
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
-            <MudIcon Icon="@Icons.Material.Filled.SubdirectoryArrowRight" Style="opacity:.9;" />
-            <span style="font-weight:600;">Follow Up</span>
-        </div>
-        <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
-            <MudIcon Icon="@Icons.Material.Filled.Notifications" Style="opacity:.9;" />
-            <span style="font-weight:600;">Alert</span>
-        </div>
-        <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
-            <MudIcon Icon="@Icons.Material.Filled.DoubleArrow" Style="opacity:.9;" />
-            <span style="font-weight:600;">Expedite</span>
-        </div>
-        <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
-            <MudIcon Icon="@Icons.Material.Filled.Groups" Style="opacity:.9;" />
-            <span style="font-weight:600;">Consult</span>
-        </div>
-        <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
-            <MudIcon Icon="@Icons.Material.Filled.ChangeCircle" Style="opacity:.9;" />
-            <span style="font-weight:600;">Reassign</span>
-        </div>
-    </div>
-}
+<GlassMenu Items="@HeaderMenuItems"
+           Show="@_headerMenuOpen"
+           ShowChanged="@(v=>_headerMenuOpen=v)"
+           Left="@_headerX"
+           Top="@_headerY"
+           MaxHeight="260px"
+           OnItemClick="OnHeaderMenuItem" />
 
-<!-- منوی شیشه‌ای هدر ستون: Properties / Sort با همان استایل -->
-@if (_headerMenuOpen)
-{
-    <div class="task-scroll"
-         style="@($"position:fixed;left:{_headerX}px;top:{_headerY}px;z-index:21;")
-                background:rgba(120,120,120,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-                border-radius:12px;border:1px solid rgba(255,255,255,.35);
-                box-shadow:0 8px 24px rgba(0,0,0,.25);padding:8px 0;min-width:220px;
-                max-height:260px;overflow-y:auto;">
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
-            <MudIcon Icon="@Icons.Material.Filled.Tune" Style="opacity:.9;" />
-            <span style="font-weight:600;">Properties</span>
-        </div>
-        <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;">
-            <MudIcon Icon="@Icons.Material.Filled.Sort" Style="opacity:.9;" />
-            <span style="font-weight:600;">Sort</span>
-        </div>
-    </div>
-}
-
-@code{
+@code {
     [Parameter] public string Title { get; set; } = "";
     [Parameter] public IEnumerable<TaskItem> Items { get; set; } = Array.Empty<TaskItem>();
     [Parameter] public bool Collapsed { get; set; }
@@ -120,35 +69,49 @@
     [Parameter] public int CollapsedWidth { get; set; } = 64;
     [Parameter] public bool GlassOnSecond { get; set; }
 
-    void Toggle() => CollapsedChanged.InvokeAsync(!Collapsed);
+    private bool _overlayOpen;
+    private double _overlayX;
+    private double _overlayY;
 
-    bool _overlayOpen;
-    double _overlayX;
-    double _overlayY;
+    private bool _headerMenuOpen;
+    private double _headerX;
+    private double _headerY;
 
-    bool _headerMenuOpen;
-    double _headerX;
-    double _headerY;
+    private readonly List<MenuItemModel> CardMenuItems = new()
+    {
+        new MenuItemModel(Icons.Material.Filled.SubdirectoryArrowRight,"Follow Up"),
+        new MenuItemModel(Icons.Material.Filled.Notifications,"Alert"),
+        new MenuItemModel(Icons.Material.Filled.DoubleArrow,"Expedite"),
+        new MenuItemModel(Icons.Material.Filled.Groups,"Consult"),
+        new MenuItemModel(Icons.Material.Filled.ChangeCircle,"Reassign")
+    };
 
-    void OpenOverlay(MouseEventArgs e)
+    private readonly List<MenuItemModel> HeaderMenuItems = new()
+    {
+        new MenuItemModel(Icons.Material.Filled.Tune,"Properties"),
+        new MenuItemModel(Icons.Material.Filled.Sort,"Sort")
+    };
+
+    private void Toggle() => CollapsedChanged.InvokeAsync(!Collapsed);
+
+    private void OpenOverlay(MouseEventArgs e)
     {
         _overlayX = e.ClientX + 12;
         _overlayY = e.ClientY + 10;
         _overlayOpen = true;
+        _headerMenuOpen = false;
         StateHasChanged();
     }
 
-    void OpenHeaderMenu(MouseEventArgs e)
+    private void OpenHeaderMenu(MouseEventArgs e)
     {
         _headerX = e.ClientX + 8;
-        _headerY = e.ClientY + 8;   // دقیقاً زیر سه‌نقطه
+        _headerY = e.ClientY + 8;
         _headerMenuOpen = true;
+        _overlayOpen = false;
         StateHasChanged();
     }
 
-    void CloseAll()
-    {
-        _overlayOpen = false;
-        _headerMenuOpen = false;
-    }
+    private Task OnCardMenuItem(string key) => Task.CompletedTask;
+    private Task OnHeaderMenuItem(string key) => Task.CompletedTask;
 }
