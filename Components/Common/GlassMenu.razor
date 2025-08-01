@@ -1,21 +1,86 @@
 ﻿@using System.Linq
 @using BlazorApp12.Models
 @using MudBlazor
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+
+<style>
+    .gm-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+        border-left: 3px solid transparent;
+        transition: background .15s ease,border-color .15s ease;
+    }
+
+        .gm-row:hover {
+            background-color: rgba(37,99,235,.12);
+            border-left-color: var(--mud-palette-primary,#2563EB);
+        }
+
+        .gm-row.smallpad {
+            padding: 8px 14px;
+        }
+
+    .gm-sep {
+        height: 1px;
+        background: rgba(0,0,0,.08);
+        margin: 0 12px;
+    }
+</style>
 
 @if (Show)
 {
-    <div style="position:fixed;inset:0;z-index:1999;background:transparent;" @onclick="HandleBackdrop"></div>
+    <div style="position:fixed;inset:0;z-index:1999;background:transparent;" @onclick="@( (MouseEventArgs e) => HandleBackdrop() )"></div>
     <div style="@ContainerStyle">
+        @if (UseCheckboxes)
+        {
+            <div class="gm-row" style="padding:10px 12px;border-bottom:3px solid #000;">
+                <MudCheckBox T="bool"
+                             Color="Color.Primary"
+                             @bind-Checked="HeaderAll"
+                             Indeterminate="@Indeterminate"
+                             Style="--mud-palette-primary:var(--mud-palette-text-primary);margin:0;" />
+                <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@HeaderTitle</div>
+            </div>
+        }
+
         <OrgScrollHost MaxHeight="@MaxHeight" Style="@($"padding:8px 0;min-width:{MinWidth};")">
-            @foreach (var item in Items)
+            @if (!UseCheckboxes)
             {
-                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;" @onclick="@(()=>OnItemClick.InvokeAsync(item.Text))">
-                    <MudIcon Icon="@item.Icon" Style="opacity:.9;" />
-                    <span style="font-weight:600;">@item.Text</span>
-                </div>
-                @if (!item.Equals(Items.Last()))
+                @foreach (var item in Items)
                 {
-                    <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
+                    <div class="gm-row" @onclick="@( (MouseEventArgs e) => HandleItemClick(item.Text) )">
+                        <MudIcon Icon="@item.Icon" />
+                        <div style="flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@item.Text</div>
+                        @if (item.HasSubmenu)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Style="opacity:.55;" />
+                        }
+                    </div>
+                    @if (!item.Equals(Items.Last()))
+                    {
+                        <div class="gm-sep"></div>
+                    }
+                }
+            }
+            else
+            {
+                @foreach (var p in PropertyItems)
+                {
+                    <div class="gm-row smallpad" style="cursor:default;">
+                        <MudCheckBox T="bool"
+                                     Color="Color.Primary"
+                                     @bind-Checked="p.Checked"
+                                     Style="--mud-palette-primary:var(--mud-palette-text-primary);margin:0;" />
+                        <div style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@p.Text</div>
+                    </div>
+                    @if (p != PropertyItems.Last())
+                    {
+                        <div class="gm-sep"></div>
+                    }
                 }
             }
         </OrgScrollHost>
@@ -24,6 +89,10 @@
 
 @code {
     [Parameter] public IEnumerable<MenuItemModel> Items { get; set; } = Array.Empty<MenuItemModel>();
+    [Parameter] public List<PropertyItemModel> PropertyItems { get; set; } = new();
+    [Parameter] public bool UseCheckboxes { get; set; }
+    [Parameter] public bool HeaderCheckbox { get; set; }
+    [Parameter] public string HeaderTitle { get; set; } = "Select All";
     [Parameter] public bool Show { get; set; }
     [Parameter] public EventCallback<bool> ShowChanged { get; set; }
     [Parameter] public double Left { get; set; }
@@ -31,12 +100,37 @@
     [Parameter] public string MinWidth { get; set; } = "240px";
     [Parameter] public string MaxHeight { get; set; } = "320px";
     [Parameter] public EventCallback<string> OnItemClick { get; set; }
+    [Parameter] public EventCallback<PropertyItemModel> OnPropertyToggled { get; set; }
+    [Parameter] public EventCallback<bool> OnToggleAll { get; set; }
 
-    private string ContainerStyle => $"position:fixed;left:{Left}px;top:{Top}px;z-index:2000;background:rgba(120,120,120,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:12px;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 24px rgba(0,0,0,.25);";
+    private string ContainerStyle =>
+        $"position:fixed;left:{Left}px;top:{Top}px;z-index:2000;" +
+        "background:rgba(120,120,120,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);" +
+        "border-radius:12px;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 24px rgba(0,0,0,.25);";
 
-    private Task HandleBackdrop()
+    private bool AllChecked => PropertyItems.Count > 0 && PropertyItems.All(x => x.Checked);
+    private bool Indeterminate => PropertyItems.Any(x => x.Checked) && !AllChecked;
+
+    private bool HeaderAll
+    {
+        get => AllChecked;
+        set
+        {
+            foreach (var i in PropertyItems) i.Checked = value;
+            StateHasChanged();
+            if (OnToggleAll.HasDelegate) OnToggleAll.InvokeAsync(value);
+        }
+    }
+
+    private System.Threading.Tasks.Task HandleBackdrop()
     {
         if (ShowChanged.HasDelegate) return ShowChanged.InvokeAsync(false);
-        return Task.CompletedTask;
+        return System.Threading.Tasks.Task.CompletedTask;
+    }
+
+    private System.Threading.Tasks.Task HandleItemClick(string text)
+    {
+        if (OnItemClick.HasDelegate) return OnItemClick.InvokeAsync(text);
+        return System.Threading.Tasks.Task.CompletedTask;
     }
 }

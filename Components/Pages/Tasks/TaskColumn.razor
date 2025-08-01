@@ -1,5 +1,6 @@
 ﻿@using MudBlazor
 @using BlazorApp12.Models
+@using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
 
 <div style="@($"flex:0 0 {(Collapsed ? CollapsedWidth : ExpandedWidth)}px;width:{(Collapsed ? CollapsedWidth : ExpandedWidth)}px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:{BackgroundCss};transition:width .25s ease,flex-basis .25s ease;")">
@@ -8,12 +9,8 @@
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
             <div style="font-weight:600;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@Title</div>
             <div style="display:flex;align-items:center;gap:8px;">
-                <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft"
-                               OnClick="Toggle"
-                               Style="color:var(--mud-palette-text-primary);font-size:24px;" />
-                <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"
-                               Style="font-size:22px;color:var(--mud-palette-text-primary);margin:0;padding:4px;"
-                               OnClick="@(e=>OpenHeaderMenu(e))" />
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="@(() => Toggle())" Style="color:var(--mud-palette-text-primary);font-size:24px;" />
+                <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz" Style="font-size:22px;color:var(--mud-palette-text-primary);margin:0;padding:4px;" OnClick="@(e=>OpenHeaderMenu(e))" />
             </div>
         </div>
 
@@ -23,7 +20,7 @@
                 for (int i = 0; i < list.Count; i++)
                 {
                     var handler = (GlassOnSecond && i == 1)
-                    ? EventCallback.Factory.Create<MouseEventArgs>(this, OpenOverlay)
+                    ? EventCallback.Factory.Create<MouseEventArgs>(this, OpenCardMenu)
                     : EventCallback<MouseEventArgs>.Empty;
 
                     <TaskCard Item="list[i]" MenuClicked="handler" />
@@ -34,9 +31,7 @@
     else
     {
         <div style="position:absolute;top:6px;right:6px;">
-            <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight"
-                           OnClick="Toggle"
-                           Style="color:var(--mud-palette-text-primary);font-size:24px;" />
+            <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="@(() => Toggle())" Style="color:var(--mud-palette-text-primary);font-size:24px;" />
         </div>
         <div style="flex:1;display:flex;align-items:center;justify-content:center;">
             <div style="transform:rotate(-90deg);font-weight:700;font-size:1.1rem;color:rgba(0,0,0,.55);letter-spacing:.5px;white-space:nowrap;">@Title</div>
@@ -44,20 +39,30 @@
     }
 </div>
 
-<GlassMenu Items="@CardMenuItems"
-           Show="@_overlayOpen"
-           ShowChanged="@(v=>_overlayOpen=v)"
-           Left="@_overlayX"
-           Top="@_overlayY"
-           OnItemClick="OnCardMenuItem" />
-
 <GlassMenu Items="@HeaderMenuItems"
            Show="@_headerMenuOpen"
            ShowChanged="@(v=>_headerMenuOpen=v)"
            Left="@_headerX"
            Top="@_headerY"
-           MaxHeight="260px"
            OnItemClick="OnHeaderMenuItem" />
+
+<GlassMenu Items="@CardMenuItems"
+           Show="@_cardMenuOpen"
+           ShowChanged="@(v=>_cardMenuOpen=v)"
+           Left="@_cardX"
+           Top="@_cardY"
+           OnItemClick="OnCardMenuItem" />
+
+<GlassMenu UseCheckboxes="true"
+           HeaderCheckbox="true"
+           HeaderTitle="Select All"
+           PropertyItems="@PropertyItems"
+           Show="@_propertiesOpen"
+           ShowChanged="@(v=>_propertiesOpen=v)"
+           Left="@_propertiesX"
+           Top="@_propertiesY"
+           OnPropertyToggled="@(i=>StateHasChanged())"
+           OnToggleAll="@(v=>StateHasChanged())" />
 
 @code {
     [Parameter] public string Title { get; set; } = "";
@@ -69,49 +74,81 @@
     [Parameter] public int CollapsedWidth { get; set; } = 64;
     [Parameter] public bool GlassOnSecond { get; set; }
 
-    private bool _overlayOpen;
-    private double _overlayX;
-    private double _overlayY;
-
     private bool _headerMenuOpen;
     private double _headerX;
     private double _headerY;
 
-    private readonly List<MenuItemModel> CardMenuItems = new()
-    {
-        new MenuItemModel(Icons.Material.Filled.SubdirectoryArrowRight,"Follow Up"),
-        new MenuItemModel(Icons.Material.Filled.Notifications,"Alert"),
-        new MenuItemModel(Icons.Material.Filled.DoubleArrow,"Expedite"),
-        new MenuItemModel(Icons.Material.Filled.Groups,"Consult"),
-        new MenuItemModel(Icons.Material.Filled.ChangeCircle,"Reassign")
-    };
+    private bool _cardMenuOpen;
+    private double _cardX;
+    private double _cardY;
+
+    private bool _propertiesOpen;
+    private double _propertiesX;
+    private double _propertiesY;
 
     private readonly List<MenuItemModel> HeaderMenuItems = new()
     {
-        new MenuItemModel(Icons.Material.Filled.Tune,"Properties"),
-        new MenuItemModel(Icons.Material.Filled.Sort,"Sort")
+        new MenuItemModel(Icons.Material.Filled.Tune,"Properties", true),
+        new MenuItemModel(Icons.Material.Filled.Sort,"Sort", false)
+    };
+
+    private readonly List<MenuItemModel> CardMenuItems = new()
+    {
+        new MenuItemModel(Icons.Material.Filled.SubdirectoryArrowRight,"Follow Up", false),
+        new MenuItemModel(Icons.Material.Filled.Notifications,"Alert", false),
+        new MenuItemModel(Icons.Material.Filled.DoubleArrow,"Expedite", false),
+        new MenuItemModel(Icons.Material.Filled.Groups,"Consult", false),
+        new MenuItemModel(Icons.Material.Filled.ChangeCircle,"Reassign", false)
+    };
+
+    private List<PropertyItemModel> PropertyItems = new()
+    {
+        new PropertyItemModel { Text="Title", Checked=true },
+        new PropertyItemModel { Text="From", Checked=true },
+        new PropertyItemModel { Text="To", Checked=true },
+        new PropertyItemModel { Text="Program" },
+        new PropertyItemModel { Text="Project", Checked=true },
+        new PropertyItemModel { Text="Send Date" },
+        new PropertyItemModel { Text="Seen Date" },
+        new PropertyItemModel { Text="Completion Date", Checked=true },
+        new PropertyItemModel { Text="Due Date" },
+        new PropertyItemModel { Text="Delay" },
+        new PropertyItemModel { Text="Status" }
     };
 
     private void Toggle() => CollapsedChanged.InvokeAsync(!Collapsed);
-
-    private void OpenOverlay(MouseEventArgs e)
-    {
-        _overlayX = e.ClientX + 12;
-        _overlayY = e.ClientY + 10;
-        _overlayOpen = true;
-        _headerMenuOpen = false;
-        StateHasChanged();
-    }
 
     private void OpenHeaderMenu(MouseEventArgs e)
     {
         _headerX = e.ClientX + 8;
         _headerY = e.ClientY + 8;
         _headerMenuOpen = true;
-        _overlayOpen = false;
+        _cardMenuOpen = false;
+        _propertiesOpen = false;
         StateHasChanged();
     }
 
-    private Task OnCardMenuItem(string key) => Task.CompletedTask;
-    private Task OnHeaderMenuItem(string key) => Task.CompletedTask;
+    private void OpenCardMenu(MouseEventArgs e)
+    {
+        _cardX = e.ClientX + 12;
+        _cardY = e.ClientY + 10;
+        _cardMenuOpen = true;
+        _headerMenuOpen = false;
+        _propertiesOpen = false;
+        StateHasChanged();
+    }
+
+    private System.Threading.Tasks.Task OnHeaderMenuItem(string key)
+    {
+        if (key == "Properties")
+        {
+            _propertiesX = _headerX + 260;
+            _propertiesY = _headerY;
+            _propertiesOpen = true;
+            _headerMenuOpen = true;
+        }
+        return System.Threading.Tasks.Task.CompletedTask;
+    }
+
+    private System.Threading.Tasks.Task OnCardMenuItem(string key) => System.Threading.Tasks.Task.CompletedTask;
 }

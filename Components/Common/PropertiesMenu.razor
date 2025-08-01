@@ -1,0 +1,74 @@
+﻿@using MudBlazor
+@using BlazorApp12.Models
+@using System.Linq
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+
+@if (Show)
+{
+    <div style="position:fixed;inset:0;z-index:1999;background:transparent;" @onclick="@( (MouseEventArgs e) => ShowChanged.InvokeAsync(false) )"></div>
+
+    <div style="@ContainerStyle">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.2);">
+            <MudCheckBox T="bool"
+                         Checked="@AllChecked"
+                         Indeterminate="@IsIndeterminate"
+                         OnCheckedChanged="@((bool? v)=>MasterToggled(v))"
+                         Style="margin:0;" />
+            <div style="font-weight:600;">@Header</div>
+        </div>
+
+        <OrgScrollHost MaxHeight="260px" Style="@($"padding:0;min-width:{MinWidth};")">
+            @foreach (var item in Items)
+            {
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;">
+                    <MudCheckBox T="bool"
+                                 Checked="@item.Checked"
+                                 OnCheckedChanged="@((bool? v)=>ItemChanged(item, v))"
+                                 Style="margin:0;" />
+                    <div style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@item.Text</div>
+                </div>
+                @if (item != Items.Last())
+                {
+                    <div style="height:1px;background:rgba(0,0,0,.08);margin:0 12px;"></div>
+                }
+            }
+        </OrgScrollHost>
+    </div>
+}
+
+@code {
+    [Parameter] public List<PropertyItemModel> Items { get; set; } = new();
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public EventCallback<bool> ShowChanged { get; set; }
+    [Parameter] public double Left { get; set; }
+    [Parameter] public double Top { get; set; }
+    [Parameter] public string Header { get; set; } = "Properties";
+    [Parameter] public string MinWidth { get; set; } = "220px";
+    [Parameter] public EventCallback<List<PropertyItemModel>> OnChanged { get; set; }
+
+    private string ContainerStyle =>
+        $"position:fixed;left:{Left}px;top:{Top}px;z-index:2000;" +
+        "background:rgba(120,120,120,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);" +
+        "border-radius:12px;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 24px rgba(0,0,0,.25);";
+
+    private bool AllChecked => Items.Count > 0 && Items.All(i => i.Checked);
+    private bool IsIndeterminate => Items.Any(i => i.Checked) && !AllChecked;
+
+    private System.Threading.Tasks.Task MasterToggled(bool? _)
+    {
+        var setAll = !AllChecked;
+        foreach (var i in Items) i.Checked = setAll;
+        if (OnChanged.HasDelegate) return OnChanged.InvokeAsync(Items);
+        StateHasChanged();
+        return System.Threading.Tasks.Task.CompletedTask;
+    }
+
+    private System.Threading.Tasks.Task ItemChanged(PropertyItemModel item, bool? val)
+    {
+        item.Checked = val == true;
+        if (OnChanged.HasDelegate) return OnChanged.InvokeAsync(Items);
+        StateHasChanged();
+        return System.Threading.Tasks.Task.CompletedTask;
+    }
+}
