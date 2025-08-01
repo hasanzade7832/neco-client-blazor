@@ -1,0 +1,30 @@
+﻿@inject IJSRuntime JS
+@using Microsoft.AspNetCore.Components
+
+<div style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;@Style">
+    <input type="checkbox"
+           checked="@(Value == true)"
+           @onchange="OnChanged"
+           @ref="inputRef"
+           style="width:@(Dense ? "16px" : "18px");height:@(Dense ? "16px" : "18px");accent-color:var(--mud-palette-text-primary);border-radius:4px;" />
+    <div style="color:var(--mud-palette-text-primary);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" @onclick="ToggleFromLabel">@Label</div>
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public bool? Value { get; set; }
+    [Parameter] public EventCallback<bool?> ValueChanged { get; set; }
+    [Parameter] public bool TriState { get; set; }
+    [Parameter] public bool Dense { get; set; }
+    [Parameter] public string Style { get; set; } = "";
+    private ElementReference inputRef;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+        => JS.InvokeVoidAsync("setIndeterminate", inputRef, TriState && Value == null).AsTask();
+
+    private Task OnChanged(ChangeEventArgs e)
+        => ValueChanged.InvokeAsync(e.Value is bool b && b);
+
+    private Task ToggleFromLabel()
+        => ValueChanged.InvokeAsync(!(Value == true));
+}

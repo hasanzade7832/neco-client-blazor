@@ -1,5 +1,72 @@
-﻿<h3>Test</h3>
+﻿@page "/test"
+@inject IJSRuntime JS
+
+<div style="display:flex;flex-direction:column;gap:8px;max-width:220px;">
+    <label style="display:flex;align-items:center;gap:6px;">
+        <input type="checkbox" @onchange="HeaderChanged" checked="@HeaderChecked" @ref="headerRef" />
+        <span>Select All</span>
+    </label>
+    <div style="margin-left:16px;display:flex;flex-direction:column;gap:4px;">
+        <label style="display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" checked="@A" @onchange="OnChangeA" />
+            <span>A</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" checked="@B" @onchange="OnChangeB" />
+            <span>B</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" checked="@C" @onchange="OnChangeC" />
+            <span>C</span>
+        </label>
+    </div>
+</div>
 
 @code {
+    bool A;
+    bool B;
+    bool C;
+    ElementReference headerRef;
 
+    bool HeaderChecked => A && B && C;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await UpdateHeaderIndeterminate();
+    }
+
+    async Task UpdateHeaderIndeterminate()
+    {
+        var indeterminate = (A || B || C) && !(A && B && C);
+        await JS.InvokeVoidAsync("setIndeterminate", headerRef, indeterminate);
+    }
+
+    async Task HeaderChanged(ChangeEventArgs e)
+    {
+        var isChecked = e.Value is bool b && b;
+        A = B = C = isChecked;
+        await UpdateHeaderIndeterminate();
+        StateHasChanged();
+    }
+
+    async Task OnChangeA(ChangeEventArgs e)
+    {
+        A = e.Value is bool b && b;
+        await UpdateHeaderIndeterminate();
+        StateHasChanged();
+    }
+
+    async Task OnChangeB(ChangeEventArgs e)
+    {
+        B = e.Value is bool b && b;
+        await UpdateHeaderIndeterminate();
+        StateHasChanged();
+    }
+
+    async Task OnChangeC(ChangeEventArgs e)
+    {
+        C = e.Value is bool b && b;
+        await UpdateHeaderIndeterminate();
+        StateHasChanged();
+    }
 }

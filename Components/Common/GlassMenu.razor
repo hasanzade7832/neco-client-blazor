@@ -38,12 +38,11 @@
         @if (UseCheckboxes)
         {
             <div class="gm-row" style="padding:10px 12px;border-bottom:3px solid #000;">
-                <MudCheckBox T="bool"
-                             Color="Color.Primary"
-                             @bind-Checked="HeaderAll"
-                             Indeterminate="@Indeterminate"
-                             Style="--mud-palette-primary:var(--mud-palette-text-primary);margin:0;" />
-                <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@HeaderTitle</div>
+                <GlassCheck Label="@HeaderTitle"
+                            TriState="true"
+                            Dense="true"
+                            Value="@HeaderTri"
+                            ValueChanged="@(v => OnHeaderTriChanged(v))" />
             </div>
         }
 
@@ -71,11 +70,10 @@
                 @foreach (var p in PropertyItems)
                 {
                     <div class="gm-row smallpad" style="cursor:default;">
-                        <MudCheckBox T="bool"
-                                     Color="Color.Primary"
-                                     @bind-Checked="p.Checked"
-                                     Style="--mud-palette-primary:var(--mud-palette-text-primary);margin:0;" />
-                        <div style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@p.Text</div>
+                        <GlassCheck Label="@p.Text"
+                                    Dense="true"
+                                    Value="@((bool?)p.Checked)"
+                                    ValueChanged="@( (bool? v) => OnPropertyCheckboxChanged(p, v == true) )" />
                     </div>
                     @if (p != PropertyItems.Last())
                     {
@@ -109,28 +107,43 @@
         "border-radius:12px;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 24px rgba(0,0,0,.25);";
 
     private bool AllChecked => PropertyItems.Count > 0 && PropertyItems.All(x => x.Checked);
-    private bool Indeterminate => PropertyItems.Any(x => x.Checked) && !AllChecked;
+    private bool AnyChecked => PropertyItems.Any(x => x.Checked);
+    private bool? HeaderTri => AllChecked ? true : (!AnyChecked ? false : (bool?)null);
 
-    private bool HeaderAll
+    private Task HandleBackdrop()
     {
-        get => AllChecked;
-        set
+        if (ShowChanged.HasDelegate)
+            return ShowChanged.InvokeAsync(false);
+        return Task.CompletedTask;
+    }
+
+    private Task HandleItemClick(string text)
+    {
+        if (OnItemClick.HasDelegate)
+            return OnItemClick.InvokeAsync(text);
+        return Task.CompletedTask;
+    }
+
+    private void OnHeaderTriChanged(bool? value)
+    {
+        if (value == true)
         {
-            foreach (var i in PropertyItems) i.Checked = value;
-            StateHasChanged();
-            if (OnToggleAll.HasDelegate) OnToggleAll.InvokeAsync(value);
+            foreach (var i in PropertyItems) i.Checked = true;
+            if (OnToggleAll.HasDelegate) OnToggleAll.InvokeAsync(true);
         }
+        else if (value == false)
+        {
+            foreach (var i in PropertyItems) i.Checked = false;
+            if (OnToggleAll.HasDelegate) OnToggleAll.InvokeAsync(false);
+        }
+        StateHasChanged();
     }
 
-    private System.Threading.Tasks.Task HandleBackdrop()
+    private void OnPropertyCheckboxChanged(PropertyItemModel item, bool value)
     {
-        if (ShowChanged.HasDelegate) return ShowChanged.InvokeAsync(false);
-        return System.Threading.Tasks.Task.CompletedTask;
-    }
-
-    private System.Threading.Tasks.Task HandleItemClick(string text)
-    {
-        if (OnItemClick.HasDelegate) return OnItemClick.InvokeAsync(text);
-        return System.Threading.Tasks.Task.CompletedTask;
+        item.Checked = value;
+        if (OnPropertyToggled.HasDelegate)
+            OnPropertyToggled.InvokeAsync(item);
+        StateHasChanged();
     }
 }

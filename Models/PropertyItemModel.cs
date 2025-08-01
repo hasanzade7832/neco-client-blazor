@@ -1,7 +1,8 @@
-﻿namespace BlazorApp12.Models;
-
-public class PropertyItemModel
+﻿namespace BlazorApp12.Models
 {
-    public string Text { get; set; } = "";
-    public bool Checked { get; set; }
+    public class PropertyItemModel
+    {
+        public string Text { get; set; }
+        public bool Checked { get; set; }
+    }
 }
