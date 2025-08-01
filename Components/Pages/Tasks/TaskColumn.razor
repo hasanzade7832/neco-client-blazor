@@ -1,0 +1,39 @@
+﻿@using MudBlazor
+@using BlazorApp12.Models
+
+<div style="@($"flex:0 0 {(Collapsed ? CollapsedWidth : ExpandedWidth)}px;width:{(Collapsed ? CollapsedWidth : ExpandedWidth)}px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:{BackgroundCss};transition:width .25s ease,flex-basis .25s ease;")">
+    @if (!Collapsed)
+    {
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
+            <div style="font-weight:600;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@Title</div>
+            <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="Toggle" Style="color:var(--mud-palette-text-primary);font-size:24px;" />
+        </div>
+        <div class="task-scroll" style="flex:1;overflow-y:auto;padding:0 8px 12px;box-sizing:border-box;">
+            @foreach (var it in Items)
+            {
+                <TaskCard Item="it" />
+            }
+        </div>
+    }
+    else
+    {
+        <div style="position:absolute;top:6px;right:6px;">
+            <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="Toggle" Style="color:var(--mud-palette-text-primary);font-size:24px;" />
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+            <div style="transform:rotate(-90deg);font-weight:700;font-size:1.1rem;color:rgba(0,0,0,.55);letter-spacing:.5px;white-space:nowrap;">@Title</div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public IEnumerable<TaskItem> Items { get; set; } = Array.Empty<TaskItem>();
+    [Parameter] public bool Collapsed { get; set; }
+    [Parameter] public EventCallback<bool> CollapsedChanged { get; set; }
+    [Parameter] public string BackgroundCss { get; set; } = "var(--mud-palette-action-default)";
+    [Parameter] public int ExpandedWidth { get; set; } = 280;
+    [Parameter] public int CollapsedWidth { get; set; } = 64;
+
+    void Toggle() => CollapsedChanged.InvokeAsync(!Collapsed);
+}

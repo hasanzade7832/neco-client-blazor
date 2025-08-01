@@ -1,5 +1,6 @@
 ﻿@page "/tasks"
 @using MudBlazor
+@using BlazorApp12.Models
 
 <style>
     .task-scroll {
@@ -8,7 +9,8 @@
     }
 
         .task-scroll::-webkit-scrollbar {
-            width: 10px
+            width: 10px;
+            height: 10px
         }
 
         .task-scroll::-webkit-scrollbar-track {
@@ -47,101 +49,20 @@
     </div>
 
     <div style="display:flex;align-items:stretch;gap:12px;padding:8px;box-sizing:border-box;height:calc((100vh - 140px)*2/3);overflow-x:auto;">
-        <div style="@($"flex:0 0 {(ColInProgressCollapsed ? "64px" : "280px")};width:{(ColInProgressCollapsed ? "64px" : "280px")};display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:rgba(245,158,11,.15);transition:width .25s ease,flex-basis .25s ease;")">
-            @if (!ColInProgressCollapsed)
-            {
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
-                    <div style="font-weight:600;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">In Progress</div>
-                    <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="ToggleInProgress" Style="color:var(--mud-palette-text-primary);font-size:22px;" />
-                </div>
-                <div class="task-scroll" style="flex:1;overflow-y:auto;padding:0 8px 12px;box-sizing:border-box;">
-                    @foreach (var t in InProgressTasks)
-                    {
-                        <MudCard Elevation="1" Style="margin-bottom:8px;transition:transform .2s ease,opacity .2s ease;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
-                                <div style="display:flex;flex-direction:column;min-width:0;">
-                                    <MudText Typo="Typo.subtitle2" Style="margin:0;overflow:hidden;text-overflow:ellipsis;">@t.Title</MudText>
-                                    <MudText Typo="Typo.caption" Style="margin-top:4px;">@t.Date</MudText>
-                                </div>
-                            </div>
-                        </MudCard>
-                    }
-                </div>
-            }
-            else
-            {
-                <div style="position:absolute;top:6px;right:6px;">
-                    <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="ToggleInProgress" Style="color:var(--mud-palette-text-primary);font-size:22px;" />
-                </div>
-                <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-                    <div style="transform:rotate(-90deg);font-weight:700;font-size:1.1rem;color:rgba(0,0,0,.55);letter-spacing:.5px;white-space:nowrap;">In Progress</div>
-                </div>
-            }
-        </div>
+        <TaskColumn Title="In Progress"
+                    Items="@InProgressTasks"
+                    BackgroundCss="rgba(245,158,11,.15)"
+                    @bind-Collapsed="ColInProgressCollapsed" />
 
-        <div style="@($"flex:0 0 {(ColToDoCollapsed ? "64px" : "280px")};width:{(ColToDoCollapsed ? "64px" : "280px")};display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:rgba(22,163,74,.15);transition:width .25s ease,flex-basis .25s ease;")">
-            @if (!ColToDoCollapsed)
-            {
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
-                    <div style="font-weight:600;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">To Do</div>
-                    <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="ToggleToDo" Style="color:var(--mud-palette-text-primary);font-size:22px;" />
-                </div>
-                <div class="task-scroll" style="flex:1;overflow-y:auto;padding:0 8px 12px;box-sizing:border-box;">
-                    @foreach (var t in ToDoTasks)
-                    {
-                        <MudCard Elevation="1" Style="margin-bottom:8px;transition:transform .2s ease,opacity .2s ease;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
-                                <div style="display:flex;flex-direction:column;min-width:0;">
-                                    <MudText Typo="Typo.subtitle2" Style="margin:0;overflow:hidden;text-overflow:ellipsis;">@t.Title</MudText>
-                                    <MudText Typo="Typo.caption" Style="margin-top:4px;">@t.Date</MudText>
-                                </div>
-                            </div>
-                        </MudCard>
-                    }
-                </div>
-            }
-            else
-            {
-                <div style="position:absolute;top:6px;right:6px;">
-                    <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="ToggleToDo" Style="color:var(--mud-palette-text-primary);font-size:22px;" />
-                </div>
-                <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-                    <div style="transform:rotate(-90deg);font-weight:700;font-size:1.1rem;color:rgba(0,0,0,.55);letter-spacing:.5px;white-space:nowrap;">To Do</div>
-                </div>
-            }
-        </div>
+        <TaskColumn Title="To Do"
+                    Items="@ToDoTasks"
+                    BackgroundCss="rgba(22,163,74,.15)"
+                    @bind-Collapsed="ColToDoCollapsed" />
 
-        <div style="@($"flex:0 0 {(ColDoneCollapsed ? "64px" : "280px")};width:{(ColDoneCollapsed ? "64px" : "280px")};display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:var(--mud-palette-action-default);transition:width .25s ease,flex-basis .25s ease;")">
-            @if (!ColDoneCollapsed)
-            {
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
-                    <div style="font-weight:600;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Done</div>
-                    <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="ToggleDone" Style="color:var(--mud-palette-text-primary);font-size:22px;" />
-                </div>
-                <div class="task-scroll" style="flex:1;overflow-y:auto;padding:0 8px 12px;box-sizing:border-box;">
-                    @foreach (var t in DoneTasks)
-                    {
-                        <MudCard Elevation="1" Style="margin-bottom:8px;transition:transform .2s ease,opacity .2s ease;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
-                                <div style="display:flex;flex-direction:column;min-width:0;">
-                                    <MudText Typo="Typo.subtitle2" Style="margin:0;overflow:hidden;text-overflow:ellipsis;">@t.Title</MudText>
-                                    <MudText Typo="Typo.caption" Style="margin-top:4px;">@t.Date</MudText>
-                                </div>
-                            </div>
-                        </MudCard>
-                    }
-                </div>
-            }
-            else
-            {
-                <div style="position:absolute;top:6px;right:6px;">
-                    <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="ToggleDone" Style="color:var(--mud-palette-text-primary);font-size:22px;" />
-                </div>
-                <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-                    <div style="transform:rotate(-90deg);font-weight:700;font-size:1.1rem;color:rgba(0,0,0,.55);letter-spacing:.5px;white-space:nowrap;">Done</div>
-                </div>
-            }
-        </div>
+        <TaskColumn Title="Done"
+                    Items="@DoneTasks"
+                    BackgroundCss="var(--mud-palette-action-default)"
+                    @bind-Collapsed="ColDoneCollapsed" />
 
         <div style="flex:0 0 280px;width:280px;display:flex;align-items:center;justify-content:center;border:2px dashed rgba(0,0,0,.2);border-radius:12px;background:var(--mud-palette-background);">
             <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:64px;color:rgba(0,0,0,.3);" />
@@ -150,29 +71,25 @@
 </div>
 
 @code {
-    private bool ColInProgressCollapsed;
-    private bool ColToDoCollapsed;
-    private bool ColDoneCollapsed;
+    bool ColInProgressCollapsed;
+    bool ColToDoCollapsed;
+    bool ColDoneCollapsed;
 
-    private class TaskItem { public string Title { get; set; } = ""; public string Date { get; set; } = ""; }
-
-    private List<TaskItem> InProgressTasks = new()
-    {
-        new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
-        new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
-    };
-    private List<TaskItem> ToDoTasks = new()
-    {
-        new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
-        new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
-    };
-    private List<TaskItem> DoneTasks = new()
+    List<TaskItem> InProgressTasks = new()
     {
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
     };
 
-    private void ToggleInProgress() => ColInProgressCollapsed = !ColInProgressCollapsed;
-    private void ToggleToDo() => ColToDoCollapsed = !ColToDoCollapsed;
-    private void ToggleDone() => ColDoneCollapsed = !ColDoneCollapsed;
+    List<TaskItem> ToDoTasks = new()
+    {
+        new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
+        new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
+    };
+
+    List<TaskItem> DoneTasks = new()
+    {
+        new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
+        new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
+    };
 }

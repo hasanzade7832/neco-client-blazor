@@ -1,0 +1,30 @@
+﻿@using MudBlazor
+@using BlazorApp12.Models
+
+@if (!Item.IsCollapsed)
+{
+    <MudCard Elevation="1" Style="margin-bottom:8px;position:relative;transition:transform .25s ease,opacity .25s ease;">
+        <div style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;">
+            <div style="display:flex;flex-direction:column;min-width:0;">
+                <MudText Typo="Typo.subtitle2" Style="margin:0;overflow:hidden;text-overflow:ellipsis;">@Item.Title</MudText>
+                <MudText Typo="Typo.caption" Style="margin-top:4px;">@Item.Date</MudText>
+            </div>
+            <div style="display:flex;justify-content:flex-end;align-items:center;gap:1px;">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Style="font-size:20px;color:var(--mud-palette-text-primary);margin:0;padding:4px;" />
+                <MudIconButton Icon="@Icons.Material.Filled.ExpandLess" Style="font-size:20px;color:var(--mud-palette-text-primary);margin:0;padding:4px;" OnClick="@(()=> Item.IsCollapsed=true)" />
+            </div>
+        </div>
+    </MudCard>
+}
+else
+{
+    <div style="margin-bottom:8px;">
+        <div @onclick="(()=> Item.IsCollapsed=false)" style="width:100%;height:44px;display:flex;align-items:center;justify-content:center;border-radius:8px;background-color:rgba(255,255,255,.9);border:1px solid var(--mud-palette-action-default);box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:pointer;transition:background-color .2s ease;">
+            <MudIcon Icon="@Icons.Material.Filled.ExpandMore" Style="font-size:20px;color:var(--mud-palette-text-primary);" />
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public TaskItem Item { get; set; } = new();
+}
