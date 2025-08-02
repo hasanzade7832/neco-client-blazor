@@ -2,8 +2,9 @@
 @using BlazorApp12.Models
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
+@inject IJSRuntime JS
 
-<div style="@($"height:100%;flex:0 0 {ContainerWidth}px;width:{ContainerWidth}px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:{BackgroundCss};transition:width .25s ease,flex-basis .25s ease;")">
+<div @ref="_rootRef" style="@($"height:100%;flex:0 0 {ContainerWidth}px;width:{ContainerWidth}px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:{BackgroundCss};transition:width .25s ease,flex-basis .25s ease;")">
     @if (!Collapsed)
     {
         <div style="flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
@@ -133,6 +134,8 @@
 
     private int ContainerWidth => Appear && !_appeared ? _appearWidth : (Collapsed ? CollapsedWidth : ExpandedWidth);
 
+    private ElementReference _rootRef;
+
     protected override async System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender)
     {
         if (Appear && !_appeared)
@@ -148,20 +151,22 @@
 
     private void Toggle() => CollapsedChanged.InvokeAsync(!Collapsed);
 
-    private void OpenHeaderMenu(MouseEventArgs e)
+    private async System.Threading.Tasks.Task OpenHeaderMenu(MouseEventArgs e)
     {
-        _headerX = e.ClientX + 8;
-        _headerY = e.ClientY + 8;
+        var rect = await JS.InvokeAsync<DomRect>("tc_getRect", _rootRef);
+        _headerX = e.ClientX - rect.Left + 8;
+        _headerY = e.ClientY - rect.Top + 8;
         _headerMenuOpen = true;
         _cardMenuOpen = false;
         _propertiesOpen = false;
         StateHasChanged();
     }
 
-    private void OpenCardMenu(MouseEventArgs e)
+    private async System.Threading.Tasks.Task OpenCardMenu(MouseEventArgs e)
     {
-        _cardX = e.ClientX + 12;
-        _cardY = e.ClientY + 10;
+        var rect = await JS.InvokeAsync<DomRect>("tc_getRect", _rootRef);
+        _cardX = e.ClientX - rect.Left + 12;
+        _cardY = e.ClientY - rect.Top + 10;
         _cardMenuOpen = true;
         _headerMenuOpen = false;
         _propertiesOpen = false;
@@ -181,4 +186,14 @@
     }
 
     private System.Threading.Tasks.Task OnCardMenuItem(string key) => System.Threading.Tasks.Task.CompletedTask;
+
+    public class DomRect
+    {
+        public double Left { get; set; }
+        public double Top { get; set; }
+    }
 }
+
+<script>
+    window.tc_getRect = function (el) { return el.getBoundingClientRect(); };
+</script>
