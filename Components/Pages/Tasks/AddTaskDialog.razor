@@ -1,0 +1,26 @@
+﻿@using MudBlazor
+@using BlazorApp12.Models
+
+@code {
+    [Parameter] public EventCallback<TaskItem> OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    string _text = "";
+    DateTime? _date = DateTime.Today;
+    async System.Threading.Tasks.Task Confirm()
+    {
+        if (string.IsNullOrWhiteSpace(_text)) return;
+        var item = new TaskItem { Title = _text, Date = (_date ?? DateTime.Today).ToString("yyyy/MM/dd") };
+        await OnConfirm.InvokeAsync(item);
+    }
+    async System.Threading.Tasks.Task Cancel() => await OnCancel.InvokeAsync();
+}
+
+<div style="display:flex;flex-direction:column;gap:16px;min-width:320px;padding:8px;">
+    <MudText Typo="Typo.subtitle2">New task</MudText>
+    <MudTextField @bind-Value="_text" Lines="5" Placeholder="Write your task..." FullWidth="true" />
+    <MudDatePicker @bind-Date="_date" />
+    <div style="display:flex;justify-content:center;gap:12px;">
+        <MudButton OnClick="Confirm" Color="Color.Primary" Variant="Variant.Filled">Add</MudButton>
+        <MudButton OnClick="Cancel" Color="Color.Default" Variant="Variant.Outlined">Cancel</MudButton>
+    </div>
+</div>

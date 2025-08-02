@@ -11,12 +11,16 @@
                 <MudText Typo="Typo.caption" Style="margin-top:4px;">@Item.Date</MudText>
             </div>
             <div style="display:flex;justify-content:flex-end;align-items:center;gap:1px;">
-                <MudIconButton Icon="@Icons.Material.Filled.Menu"
-                               Style="font-size:20px;color:var(--mud-palette-text-primary);margin:0;padding:4px;"
-                               OnClick="MenuClicked" />
-                <MudIconButton Icon="@Icons.Material.Filled.ExpandLess"
-                               Style="font-size:20px;color:var(--mud-palette-text-primary);margin:0;padding:4px;"
-                               OnClick="@(()=> Item.IsCollapsed=true)" />
+                <div @onclick:stopPropagation @onmousedown:stopPropagation>
+                    <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                                   Style="font-size:20px;color:var(--mud-palette-text-primary);margin:0;padding:4px;"
+                                   OnClick="MenuClicked" />
+                </div>
+                <div @onclick:stopPropagation @onmousedown:stopPropagation>
+                    <MudIconButton Icon="@Icons.Material.Filled.ExpandLess"
+                                   Style="font-size:20px;color:var(--mud-palette-text-primary);margin:0;padding:4px;"
+                                   OnClick="@ToggleCollapse" />
+                </div>
             </div>
         </div>
     </MudCard>
@@ -24,7 +28,7 @@
 else
 {
     <div style="margin-bottom:8px;">
-        <div @onclick="(()=> Item.IsCollapsed=false)"
+        <div @onclick="@ToggleExpand" @onclick:stopPropagation @onmousedown:stopPropagation
              style="width:100%;height:44px;display:flex;align-items:center;justify-content:center;border-radius:8px;background-color:rgba(255,255,255,.9);border:1px solid var(--mud-palette-action-default);box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:pointer;transition:background-color .2s ease;">
             <MudIcon Icon="@Icons.Material.Filled.ExpandMore" Style="font-size:20px;color:var(--mud-palette-text-primary);" />
         </div>
@@ -34,4 +38,7 @@ else
 @code {
     [Parameter] public TaskItem Item { get; set; } = new();
     [Parameter] public EventCallback<MouseEventArgs> MenuClicked { get; set; }
+
+    void ToggleCollapse() { Item.IsCollapsed = true; StateHasChanged(); }
+    void ToggleExpand() { Item.IsCollapsed = false; StateHasChanged(); }
 }

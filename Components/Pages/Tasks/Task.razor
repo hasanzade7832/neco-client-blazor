@@ -54,24 +54,52 @@
         <span style="font-size:.9rem;font-weight:500;white-space:nowrap;">View</span>
     </div>
 
-    <div style="position:relative;display:flex;align-items:stretch;gap:12px;padding:8px;box-sizing:border-box;height:calc((100vh - 140px)*2/3);overflow-x:auto;">
-        @foreach (var col in Columns)
-        {
-            <TaskColumn Title="@col.Title"
-                        Items="@col.Items"
-                        BackgroundCss="@col.BackgroundCss"
-                        ExpandedWidth="@col.ExpandedWidth"
-                        CollapsedWidth="@col.CollapsedWidth"
-                        GlassOnSecond="@col.GlassOnSecond"
-                        Appear="@col.Appear"
-                        @bind-Collapsed="col.Collapsed" />
-        }
-
-        <div @onclick="OpenAddDialog"
-             style="flex:0 0 280px;width:280px;display:flex;align-items:center;justify-content:center;border:2px dashed rgba(0,0,0,.2);border-radius:12px;background:var(--mud-palette-background);cursor:pointer;">
-            <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:64px;color:rgba(0,0,0,.3);" />
-        </div>
-    </div>
+    <MudDropContainer T="CardWrap"
+                      @ref="_cardContainer"
+                      Items="@_cards"
+                      ItemsSelector="@((item,column) => item.Column == column)"
+                      ItemDropped="OnCardDropped"
+                      Style="position:relative;display:flex;align-items:stretch;gap:12px;padding:8px;box-sizing:border-box;height:calc((100vh - 140px)*2/3);overflow-x:auto;">
+        <ChildContent>
+            <MudDropContainer T="SectionItem"
+                              @ref="_sectionContainer"
+                              Items="@_sections"
+                              ItemsSelector="@((s,slot) => s.Order.ToString() == slot)"
+                              ItemDropped="OnSectionDropped"
+                              Class="d-flex flex-row"
+                              Style="display:flex;align-items:stretch;gap:12px;height:100%;">
+                <ChildContent>
+                    @for (var i = 0; i < _sections.Count; i++)
+                    {
+                        <MudDropZone T="SectionItem" Identifier="@i.ToString()" Class="d-flex" />
+                    }
+                    <div @onclick="OpenAddDialog"
+                         style="flex:0 0 280px;width:280px;display:flex;align-items:center;justify-content:center;border:2px dashed rgba(0,0,0,.2);border-radius:12px;background:var(--mud-palette-background);cursor:pointer;height:100%;">
+                        <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:64px;color:rgba(0,0,0,.3);" />
+                    </div>
+                </ChildContent>
+                <ItemRenderer>
+                    <TaskColumn Title="@context.Name"
+                                Items="@(context.Items)"
+                                BackgroundCss="@context.BackgroundCss"
+                                ExpandedWidth="280"
+                                CollapsedWidth="64"
+                                GlassOnSecond="false"
+                                Appear="true"
+                                Collapsed="@context.Collapsed"
+                                CollapsedChanged="@(v => OnCollapsedChanged(context, v))"
+                                AddTaskRequested="OpenAddTaskDialog">
+                        <CardsHost>
+                            <MudDropZone T="CardWrap" Identifier="@context.Name" Class="mud-height-full" />
+                        </CardsHost>
+                    </TaskColumn>
+                </ItemRenderer>
+            </MudDropContainer>
+        </ChildContent>
+        <ItemRenderer>
+            <TaskCard Item="@context.Task" />
+        </ItemRenderer>
+    </MudDropContainer>
 </div>
 
 @code {
@@ -80,20 +108,16 @@
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
         };
-
     List<TaskItem> ToDoTasks = new()
         {
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
         };
-
     List<TaskItem> DoneTasks = new()
         {
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" },
         new TaskItem { Title = "Execute Related Text for Post for Issue and Fill in Form, Please.", Date = "2024/03/03" }
         };
-
-    List<ColumnModel> Columns = new();
 
     MudBlazor.IDialogReference _dialogRef;
 
@@ -109,19 +133,33 @@
         };
 
     RenderFragment TitleFrag => @<div>Add Column</div>;
+    RenderFragment TitleFragTask => @<div>Add Task</div>;
 
     RenderFragment AddColumnBody => @<AddColumnDialog DotColors="DotColors"
                  BackgroundValues="BackgroundValues"
                  OnConfirm="OnAddColumnConfirmed" />;
 
+    RenderFragment AddTaskBody => @<AddTaskDialog OnConfirm="OnAddTaskConfirmed" OnCancel="CloseDialog" />;
+
+    private MudDropContainer<CardWrap> _cardContainer;
+    private MudDropContainer<SectionItem> _sectionContainer;
+    private List<CardWrap> _cards = new();
+    private List<SectionItem> _sections = new();
+    private SectionItem _targetSectionForTask;
+
     protected override void OnInitialized()
     {
-        Columns = new()
+        _sections = new()
         {
-            new ColumnModel { Title="In Progress", Items=InProgressTasks.ToList(), BackgroundCss="rgba(245,158,11,.15)", Collapsed=false, GlassOnSecond=true },
-            new ColumnModel { Title="To Do", Items=ToDoTasks.ToList(), BackgroundCss="rgba(22,163,74,.15)", Collapsed=false },
-            new ColumnModel { Title="Done", Items=DoneTasks.ToList(), BackgroundCss="var(--mud-palette-action-default)", Collapsed=false }
+            new SectionItem { Name="In Progress", BackgroundCss="rgba(245,158,11,.15)", Collapsed=false, Order=0, Items=InProgressTasks.ToList() },
+            new SectionItem { Name="To Do", BackgroundCss="rgba(22,163,74,.15)", Collapsed=false, Order=1, Items=ToDoTasks.ToList() },
+            new SectionItem { Name="Done", BackgroundCss="var(--mud-palette-action-default)", Collapsed=false, Order=2, Items=DoneTasks.ToList() }
         };
+
+        _cards = InProgressTasks.Select(x => new CardWrap { Task = x, Column = "In Progress" })
+                 .Concat(ToDoTasks.Select(x => new CardWrap { Task = x, Column = "To Do" }))
+                 .Concat(DoneTasks.Select(x => new CardWrap { Task = x, Column = "Done" }))
+                 .ToList();
     }
 
     async System.Threading.Tasks.Task OpenAddDialog()
@@ -135,20 +173,100 @@
         _dialogRef = await DialogService.ShowAsync<Dialog>(string.Empty, parameters, options);
     }
 
+    void OpenAddTaskDialog(string sectionName)
+    {
+        _targetSectionForTask = _sections.FirstOrDefault(x => x.Name == sectionName);
+        if (_targetSectionForTask == null) return;
+        var parameters = new DialogParameters
+        {
+            { "Title", TitleFragTask },
+            { "Body", AddTaskBody }
+        };
+        var options = new DialogOptions { BackgroundClass = "dlg-blur", MaxWidth = MaxWidth.Small, FullWidth = true, CloseOnEscapeKey = true };
+        _ = DialogService.ShowAsync<Dialog>(string.Empty, parameters, options).ContinueWith(t => _dialogRef = t.Result);
+    }
+
     async System.Threading.Tasks.Task OnAddColumnConfirmed(AddColumnResult data)
     {
-        var newCol = new ColumnModel
+        var newOrder = _sections.Count;
+        var newSection = new SectionItem
             {
-                Title = data.Title,
-                Items = new List<TaskItem>(),
+                Name = data.Title,
                 BackgroundCss = string.IsNullOrWhiteSpace(data.Background) ? "var(--mud-palette-action-default)" : data.Background,
                 Collapsed = false,
-                GlassOnSecond = false,
+                Order = newOrder,
+                Items = new List<TaskItem>(),
                 Appear = true
             };
 
-        Columns.Add(newCol);
+        _sections.Add(newSection);
+        _cardContainer.Refresh();
         _dialogRef?.Close(DialogResult.Ok(true));
         await InvokeAsync(StateHasChanged);
+    }
+
+    async System.Threading.Tasks.Task OnAddTaskConfirmed(TaskItem item)
+    {
+        if (_targetSectionForTask == null) return;
+        _targetSectionForTask.Items.Add(item);
+        _cards.Add(new CardWrap { Task = item, Column = _targetSectionForTask.Name });
+        _cardContainer.Refresh();
+        _dialogRef?.Close(DialogResult.Ok(true));
+        await InvokeAsync(StateHasChanged);
+    }
+
+    void CloseDialog()
+    {
+        _dialogRef?.Close();
+    }
+
+    void OnCardDropped(MudItemDropInfo<CardWrap> info)
+    {
+        info.Item.Column = info.DropzoneIdentifier;
+        _cardContainer.Refresh();
+    }
+
+    void OnSectionDropped(MudItemDropInfo<SectionItem> info)
+    {
+        var newIndex = int.Parse(info.DropzoneIdentifier);
+        var oldIndex = info.Item.Order;
+        if (newIndex == oldIndex) return;
+
+        if (newIndex > oldIndex)
+        {
+            foreach (var s in _sections.Where(x => x.Order > oldIndex && x.Order <= newIndex))
+                s.Order--;
+        }
+        else
+        {
+            foreach (var s in _sections.Where(x => x.Order >= newIndex && x.Order < oldIndex))
+                s.Order++;
+        }
+
+        info.Item.Order = newIndex;
+        StateHasChanged();
+    }
+
+    void OnCollapsedChanged(SectionItem section, bool value)
+    {
+        section.Collapsed = value;
+        _sectionContainer?.Refresh();
+        StateHasChanged();
+    }
+
+    public class CardWrap
+    {
+        public TaskItem Task { get; set; }
+        public string Column { get; set; }
+    }
+
+    public class SectionItem
+    {
+        public string Name { get; set; }
+        public string BackgroundCss { get; set; }
+        public bool Collapsed { get; set; }
+        public int Order { get; set; }
+        public bool Appear { get; set; }
+        public List<TaskItem> Items { get; set; } = new();
     }
 }
