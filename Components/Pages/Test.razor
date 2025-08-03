@@ -2,33 +2,27 @@
 @using MudBlazor
 
 <style>
-    /* آیکن‌های مرتب‌سازی و فیلتر در هدر را مشکی کن */
     .mud-data-grid .mud-table-head,
     .mud-data-grid .mud-table-head .mud-th,
     .mud-data-grid .mud-table-head .mud-sort-label,
     .mud-data-grid .mud-table-head .mud-sort-label .mud-icon-root,
     .mud-data-grid .mud-table-head .mud-icon-button,
     .mud-data-grid .mud-table-head .mud-icon-root {
-        color: #000 !important;
+        color: var(--mud-palette-text-primary) !important;
+        opacity: 1 !important;
     }
 
-    /* ردیف‌ها: یکی سبز، یکی زرد، یکی قرمز (تکرارشونده) */
-    .mud-data-grid .mud-table-body .mud-tr:nth-child(3n+1) {
-        background-color: #e8f5e9; /* سبز کمرنگ */
-    }
+        .mud-data-grid .mud-table-head .mud-icon-button .mud-icon-root,
+        .mud-data-grid .mud-table-head .mud-sort-label .mud-icon-root {
+            color: var(--mud-palette-text-primary) !important;
+            opacity: 1 !important;
+        }
 
-    .mud-data-grid .mud-table-body .mud-tr:nth-child(3n+2) {
-        background-color: #fffde7; /* زرد کمرنگ */
-    }
-
-    .mud-data-grid .mud-table-body .mud-tr:nth-child(3n) {
-        background-color: #ffebee; /* قرمز کمرنگ */
-    }
-    /* روی هاور فقط کمی تیره‌تر شود و رنگ زمینه از بین نرود */
     .mud-data-grid .mud-table-body .mud-tr:hover {
         filter: brightness(0.98);
     }
 </style>
+
 
 <MudDataGrid @ref="DataGrid"
              T="Item"
@@ -38,7 +32,10 @@
              FilterMode="DataGridFilterMode.ColumnFilterMenu"
              FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
              Hover="true"
-             Bordered="true">
+             Bordered="true"
+             RowStyleFunc="@_rowStyleFunc"
+             PageSize="@_pageSize"
+             @bind-Page="_page">
 
     <Columns>
         <PropertyColumn Property="x => x.Name"
@@ -55,7 +52,7 @@
 
     <PagerContent>
         <MudDataGridPager T="Item"
-                          PageSize="10"
+                          PageSize="@_pageSize"
                           PageSizeOptions="new int[]{5,10,25,50}"
                           RowsPerPageString="ردیف در صفحه" />
     </PagerContent>
@@ -63,6 +60,8 @@
 
 @code {
     private MudDataGrid<Item> DataGrid;
+    private int _page = 0;
+    private int _pageSize = 5;
 
     private IEnumerable<Item> _items = new List<Item>()
     {
@@ -75,11 +74,21 @@
         new Item("0", 55, "222222")
     };
 
+    private Func<Item, int, string> _rowStyleFunc => (x, i) =>
+    {
+        if ((i + 1) % 4 == 0)
+            return "background-color:#FFFFFF;color:#0F172A";
+        if (x.Value >= 70)
+            return "background-color:rgba(var(--mud-palette-success-rgb),0.18);color:var(--mud-palette-text-primary)";
+        if (x.Value >= 40)
+            return "background-color:rgba(var(--mud-palette-warning-rgb),0.18);color:var(--mud-palette-text-primary)";
+        return "background-color:rgba(var(--mud-palette-error-rgb),0.18);color:var(--mud-palette-text-primary)";
+    };
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && DataGrid is not null)
         {
-            // مرتب‌سازی اولیه بر اساس Name به صورت Natural
             await DataGrid.SetSortAsync(nameof(Item.Name),
                                         SortDirection.Ascending,
                                         x => x.Name,
