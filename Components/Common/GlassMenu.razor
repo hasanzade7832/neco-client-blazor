@@ -3,6 +3,7 @@
 @using MudBlazor
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
+@inject IJSRuntime JS
 
 <style>
     .gm-row {
@@ -33,55 +34,57 @@
 
 @if (Show)
 {
-    <div style="position:fixed;inset:0;z-index:1999;background:transparent;" @onclick="@( (MouseEventArgs e) => HandleBackdrop() )"></div>
-    <div style="@ContainerStyle">
-        @if (UseCheckboxes)
-        {
-            <div class="gm-row" style="padding:10px 12px;border-bottom:3px solid #000;">
-                <GlassCheck Label="@HeaderTitle"
-                            TriState="true"
-                            Dense="true"
-                            Value="@HeaderTri"
-                            ValueChanged="@(v => OnHeaderTriChanged(v))" />
-            </div>
-        }
+    <div @ref="_portalRoot">
+        <div style="position:fixed;inset:0;z-index:99998;background:transparent;" @onclick="@( (MouseEventArgs e) => HandleBackdrop() )"></div>
+        <div style="@ContainerStyle">
+            @if (UseCheckboxes)
+            {
+                <div class="gm-row" style="padding:10px 12px;border-bottom:3px solid #000;">
+                    <GlassCheck Label="@HeaderTitle"
+                                TriState="true"
+                                Dense="true"
+                                Value="@HeaderTri"
+                                ValueChanged="@(v => OnHeaderTriChanged(v))" />
+                </div>
+            }
 
-        <OrgScrollHost MaxHeight="@MaxHeight" Style="@($"padding:8px 0;min-width:{MinWidth};")">
-            @if (!UseCheckboxes)
-            {
-                @foreach (var item in Items)
+            <OrgScrollHost MaxHeight="@MaxHeight" Style="@($"padding:8px 0;min-width:{MinWidth};")">
+                @if (!UseCheckboxes)
                 {
-                    <div class="gm-row" @onclick="@( (MouseEventArgs e) => HandleItemClick(item.Text) )">
-                        <MudIcon Icon="@item.Icon" />
-                        <div style="flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@item.Text</div>
-                        @if (item.HasSubmenu)
+                    @foreach (var item in Items)
+                    {
+                        <div class="gm-row" @onclick="@( (MouseEventArgs e) => HandleItemClick(item.Text) )">
+                            <MudIcon Icon="@item.Icon" />
+                            <div style="flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@item.Text</div>
+                            @if (item.HasSubmenu)
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Style="opacity:.55;" />
+                            }
+                        </div>
+                        @if (!item.Equals(Items.Last()))
                         {
-                            <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Style="opacity:.55;" />
+                            <div class="gm-sep"></div>
                         }
-                    </div>
-                    @if (!item.Equals(Items.Last()))
-                    {
-                        <div class="gm-sep"></div>
                     }
                 }
-            }
-            else
-            {
-                @foreach (var p in PropertyItems)
+                else
                 {
-                    <div class="gm-row smallpad" style="cursor:default;">
-                        <GlassCheck Label="@p.Text"
-                                    Dense="true"
-                                    Value="@((bool?)p.Checked)"
-                                    ValueChanged="@( (bool? v) => OnPropertyCheckboxChanged(p, v == true) )" />
-                    </div>
-                    @if (p != PropertyItems.Last())
+                    @foreach (var p in PropertyItems)
                     {
-                        <div class="gm-sep"></div>
+                        <div class="gm-row smallpad" style="cursor:default;">
+                            <GlassCheck Label="@p.Text"
+                                        Dense="true"
+                                        Value="@((bool?)p.Checked)"
+                                        ValueChanged="@( (bool? v) => OnPropertyCheckboxChanged(p, v == true) )" />
+                        </div>
+                        @if (p != PropertyItems.Last())
+                        {
+                            <div class="gm-sep"></div>
+                        }
                     }
                 }
-            }
-        </OrgScrollHost>
+            </OrgScrollHost>
+        </div>
     </div>
 }
 
@@ -101,14 +104,22 @@
     [Parameter] public EventCallback<PropertyItemModel> OnPropertyToggled { get; set; }
     [Parameter] public EventCallback<bool> OnToggleAll { get; set; }
 
+    private ElementReference _portalRoot;
+
     private string ContainerStyle =>
-        $"position:fixed;left:{Left}px;top:{Top}px;z-index:2000;" +
+        $"position:fixed;left:{Left}px;top:{Top}px;z-index:99999;" +
         "background:rgba(120,120,120,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);" +
         "border-radius:12px;border:1px solid rgba(255,255,255,.35);box-shadow:0 8px 24px rgba(0,0,0,.25);";
 
     private bool AllChecked => PropertyItems.Count > 0 && PropertyItems.All(x => x.Checked);
     private bool AnyChecked => PropertyItems.Any(x => x.Checked);
     private bool? HeaderTri => AllChecked ? true : (!AnyChecked ? false : (bool?)null);
+
+    protected override async System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Show)
+            await JS.InvokeVoidAsync("gm_portalToBody", _portalRoot);
+    }
 
     private Task HandleBackdrop()
     {
@@ -147,3 +158,10 @@
         StateHasChanged();
     }
 }
+
+<script>
+    window.gm_portalToBody = function (el) {
+        if (!el) return;
+        if (el.parentElement !== document.body) document.body.appendChild(el);
+    };
+</script>
