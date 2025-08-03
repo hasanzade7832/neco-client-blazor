@@ -1,72 +1,104 @@
 ﻿@page "/test"
-@inject IJSRuntime JS
+@using MudBlazor
 
-<div style="display:flex;flex-direction:column;gap:8px;max-width:220px;">
-    <label style="display:flex;align-items:center;gap:6px;">
-        <input type="checkbox" @onchange="HeaderChanged" checked="@HeaderChecked" @ref="headerRef" />
-        <span>Select All</span>
-    </label>
-    <div style="margin-left:16px;display:flex;flex-direction:column;gap:4px;">
-        <label style="display:flex;align-items:center;gap:6px;">
-            <input type="checkbox" checked="@A" @onchange="OnChangeA" />
-            <span>A</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;">
-            <input type="checkbox" checked="@B" @onchange="OnChangeB" />
-            <span>B</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;">
-            <input type="checkbox" checked="@C" @onchange="OnChangeC" />
-            <span>C</span>
-        </label>
-    </div>
-</div>
+<style>
+    /* آیکن‌های مرتب‌سازی و فیلتر در هدر را مشکی کن */
+    .mud-data-grid .mud-table-head,
+    .mud-data-grid .mud-table-head .mud-th,
+    .mud-data-grid .mud-table-head .mud-sort-label,
+    .mud-data-grid .mud-table-head .mud-sort-label .mud-icon-root,
+    .mud-data-grid .mud-table-head .mud-icon-button,
+    .mud-data-grid .mud-table-head .mud-icon-root {
+        color: #000 !important;
+    }
+
+    /* ردیف‌ها: یکی سبز، یکی زرد، یکی قرمز (تکرارشونده) */
+    .mud-data-grid .mud-table-body .mud-tr:nth-child(3n+1) {
+        background-color: #e8f5e9; /* سبز کمرنگ */
+    }
+
+    .mud-data-grid .mud-table-body .mud-tr:nth-child(3n+2) {
+        background-color: #fffde7; /* زرد کمرنگ */
+    }
+
+    .mud-data-grid .mud-table-body .mud-tr:nth-child(3n) {
+        background-color: #ffebee; /* قرمز کمرنگ */
+    }
+    /* روی هاور فقط کمی تیره‌تر شود و رنگ زمینه از بین نرود */
+    .mud-data-grid .mud-table-body .mud-tr:hover {
+        filter: brightness(0.98);
+    }
+</style>
+
+<MudDataGrid @ref="DataGrid"
+             T="Item"
+             Items="@_items"
+             SortMode="SortMode.Multiple"
+             Filterable="true"
+             FilterMode="DataGridFilterMode.ColumnFilterMenu"
+             FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+             Hover="true"
+             Bordered="true">
+
+    <Columns>
+        <PropertyColumn Property="x => x.Name"
+                        Title="Name"
+                        Sortable="true"
+                        Comparer="@(new MudBlazor.Utilities.NaturalComparer())" />
+        <PropertyColumn Property="x => x.Value"
+                        Title="Value"
+                        Sortable="true" />
+        <PropertyColumn Property="x => x.Misc"
+                        Title="Misc"
+                        Sortable="true" />
+    </Columns>
+
+    <PagerContent>
+        <MudDataGridPager T="Item"
+                          PageSize="10"
+                          PageSizeOptions="new int[]{5,10,25,50}"
+                          RowsPerPageString="ردیف در صفحه" />
+    </PagerContent>
+</MudDataGrid>
 
 @code {
-    bool A;
-    bool B;
-    bool C;
-    ElementReference headerRef;
+    private MudDataGrid<Item> DataGrid;
 
-    bool HeaderChecked => A && B && C;
+    private IEnumerable<Item> _items = new List<Item>()
+    {
+        new Item("1", 42, "555"),
+        new Item("10", 73, "7"),
+        new Item("2", 11, "4444"),
+        new Item("1_10", 33, "33333"),
+        new Item("1_2", 99, "66"),
+        new Item("1_11", 44, "1111111"),
+        new Item("0", 55, "222222")
+    };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await UpdateHeaderIndeterminate();
+        if (firstRender && DataGrid is not null)
+        {
+            // مرتب‌سازی اولیه بر اساس Name به صورت Natural
+            await DataGrid.SetSortAsync(nameof(Item.Name),
+                                        SortDirection.Ascending,
+                                        x => x.Name,
+                                        new MudBlazor.Utilities.NaturalComparer());
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
-    async Task UpdateHeaderIndeterminate()
+    public class Item
     {
-        var indeterminate = (A || B || C) && !(A && B && C);
-        await JS.InvokeVoidAsync("setIndeterminate", headerRef, indeterminate);
-    }
+        public string Name { get; set; }
+        public int Value { get; set; }
+        public string Misc { get; set; }
 
-    async Task HeaderChanged(ChangeEventArgs e)
-    {
-        var isChecked = e.Value is bool b && b;
-        A = B = C = isChecked;
-        await UpdateHeaderIndeterminate();
-        StateHasChanged();
-    }
-
-    async Task OnChangeA(ChangeEventArgs e)
-    {
-        A = e.Value is bool b && b;
-        await UpdateHeaderIndeterminate();
-        StateHasChanged();
-    }
-
-    async Task OnChangeB(ChangeEventArgs e)
-    {
-        B = e.Value is bool b && b;
-        await UpdateHeaderIndeterminate();
-        StateHasChanged();
-    }
-
-    async Task OnChangeC(ChangeEventArgs e)
-    {
-        C = e.Value is bool b && b;
-        await UpdateHeaderIndeterminate();
-        StateHasChanged();
+        public Item(string name, int value, string misc)
+        {
+            Name = name;
+            Value = value;
+            Misc = misc;
+        }
     }
 }

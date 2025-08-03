@@ -1,95 +1,100 @@
 ﻿@typeparam TItem
-@using System.Reflection
-@using Microsoft.AspNetCore.Components
 @using MudBlazor
+@using System.Reflection
+@namespace BlazorApp12.Components
 
-<MudDataGrid T="TItem"
-             Items="@Items"
-             Filterable="@EnableFilter"
-             MultiSelection="@EnableMultiSelection"
-             SortMode="SortMode.Multiple"
-             QuickFilter="@FilterFunc"
-             RowStyleFunc="@RowStyle"
-             Dense="@Dense"
-             Hover="@Hover"
-             Striped="@Striped"
-             Bordered="@Bordered"
-             SelectedItemsChanged="@HandleSelectionChanged">
+<MudPaper Class="mud-elevation-0 d-flex flex-column h-100">
+    @if (Items is null)
+    {
+        <MudProgressCircular Indeterminate Size="Size.Large" Class="m-auto" />
+    }
+    else
+    {
+        <MudDataGrid T="TItem"
+                     Items="@Items"                 
+                     Style="height:100%;"           
+                     Class="flex-grow-1"
+                     Filterable="true"
+                     MultiSelection="true"
+                     SortMode="SortMode.Multiple"
+                     QuickFilter="@QuickFilter"
+                     AutoGenerateAllColumns="true"
+                     RowClick="@RowClicked"
+                     RowContextMenuClick="@RowRightClicked"
+                     SelectedItemsChanged="@SelectedItemsChanged"
+                     RowStyleFunc="@RowStyle">
 
-    <!-- نوار ابزار -->
-    <ToolBarContent>
-        @if (EnableSearch)
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">@Title</MudText>
+                <MudSpacer />
+                <MudTextField @bind-Value="_searchString"
+                              Immediate
+                              Placeholder="جست‌وجو..."
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              Class="mt-0" />
+            </ToolBarContent>
+
+            <PagerContent>
+                <MudDataGridPager T="TItem" />
+            </PagerContent>
+        </MudDataGrid>
+
+        @if (_events.Count > 0)
         {
-            <MudTextField @bind-Value="_search"
-                          Placeholder="@SearchPlaceholder"
-                          Adornment="Adornment.Start"
-                          Immediate="true"
-                          AdornmentIcon="@Icons.Material.Filled.Search"
-                          Class="mt-0" />
+            <MudExpansionPanels Class="mt-4">
+                <MudExpansionPanel Text="نمایش رخدادها">
+                    @foreach (var e in _events)
+                    {
+                        <MudText Typo="Typo.body2">@e</MudText>
+                    }
+                    <div class="d-flex">
+                        <MudSpacer />
+                        <MudButton Variant="Variant.Filled"
+                                   OnClick="@(() => _events.Clear())"
+                                   Class="mt-3">پاک‌سازی</MudButton>
+                    </div>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
         }
-    </ToolBarContent>
-
-    <!-- صفحه‌بندی -->
-    <PagerContent>
-        @if (EnablePagination)
-        {
-            <MudDataGridPager />
-        }
-    </PagerContent>
-</MudDataGrid>
+    }
+</MudPaper>
 
 @code {
-    /* ---------- پارامترها ---------- */
-    [Parameter] public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
+    [Parameter] public IEnumerable<TItem>? Items { get; set; }
+    [Parameter] public Func<TItem, string>? RowColorFunc { get; set; }
+    [Parameter] public string Title { get; set; } = "Data";
 
-    [Parameter] public bool EnableSearch { get; set; } = true;
-    [Parameter] public bool EnableFilter { get; set; } = true;
-    [Parameter] public bool EnableMultiSelection { get; set; } = true;
-    [Parameter] public bool EnablePagination { get; set; } = true;
+    private readonly List<string> _events = new();
+    private string _searchString = string.Empty;
 
-    [Parameter] public bool Dense { get; set; }
-    [Parameter] public bool Hover { get; set; }
-    [Parameter] public bool Striped { get; set; }
-    [Parameter] public bool Bordered { get; set; }
-
-    [Parameter] public string SearchPlaceholder { get; set; } = "Search…";
-
-    /// فیلتر دلخواه (اختیاری):  item, searchText → bool
-    [Parameter] public Func<TItem, string, bool>? CustomQuickFilter { get; set; }
-
-    /// استایل سطر دلخواه (اختیاری): item, rowIndex → css
-    [Parameter] public Func<TItem, int, string>? RowStyleFunc { get; set; }
-
-    [Parameter] public EventCallback<HashSet<TItem>> SelectedItemsChanged { get; set; }
-
-    /* ---------- وضعیت داخلی ---------- */
-    private string _search = string.Empty;
-
-    /* ---------- فیلتر سریع ---------- */
-    private bool FilterFunc(TItem item)
+    private Func<TItem, bool> QuickFilter => item =>
     {
-        if (!EnableSearch) return true;
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
 
-        if (CustomQuickFilter is not null)
-            return CustomQuickFilter(item, _search);
-
-        if (string.IsNullOrWhiteSpace(_search)) return true;
-
-        foreach (var prop in typeof(TItem).GetProperties(BindingFlags.Instance | BindingFlags.Public))
+        foreach (PropertyInfo p in typeof(TItem).GetProperties())
         {
-            var val = prop.GetValue(item);
-            if (val is not null &&
-                val.ToString()?.Contains(_search, StringComparison.OrdinalIgnoreCase) == true)
+            var val = p.GetValue(item)?.ToString() ?? string.Empty;
+            if (val.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
         }
         return false;
+    };
+
+    private string RowStyle(TItem item, int _)
+    {
+        if (RowColorFunc is null) return string.Empty;
+        var color = RowColorFunc(item);
+        return string.IsNullOrWhiteSpace(color) ? string.Empty : $"background-color:{color}";
     }
 
-    /* ---------- استایل سطر ---------- */
-    private string RowStyle(TItem item, int index) =>
-        RowStyleFunc?.Invoke(item, index) ?? string.Empty;
+    private void RowClicked(DataGridRowClickEventArgs<TItem> a) =>
+        _events.Insert(0, $"RowClick  idx={a.RowIndex}  data={System.Text.Json.JsonSerializer.Serialize(a.Item)}");
 
-    /* ---------- رویداد انتخاب ---------- */
-    private Task HandleSelectionChanged(HashSet<TItem> items) =>
-        SelectedItemsChanged.InvokeAsync(items);
+    private void RowRightClicked(DataGridRowClickEventArgs<TItem> a) =>
+        _events.Insert(0, $"RowRightClick  idx={a.RowIndex}  data={System.Text.Json.JsonSerializer.Serialize(a.Item)}");
+
+    private void SelectedItemsChanged(HashSet<TItem> s) =>
+        _events.Insert(0, $"SelectedItemsChanged  count={s.Count}");
 }
