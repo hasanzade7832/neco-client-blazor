@@ -8,8 +8,7 @@
     }
 
     .appbar {
-        width: 100vw;
-        max-width: 100%;
+        width: 100%;
         background-color: var(--mud-palette-appbar-background) !important;
         color: var(--mud-palette-appbar-text) !important;
     }
@@ -23,19 +22,28 @@
     }
 </style>
 
-<MudAppBar Dense="true" Elevation="0" Dir="ltr" Class="shadow-sm px-4 py-2 relative appbar">
+<MudAppBar Position="Position.Fixed" 
+           Dense="true"
+           Elevation="0"
+           Dir="ltr"
+           Class="shadow-sm px-4 py-2 relative appbar">
     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-        <div class="absolute top-0" style="@($"left: {(_sidebarOpen ? 250 : 56)}px; height:100%; display:flex; align-items:center; gap:12px; transition:left 0.3s;")">
+        <div class="absolute top-0"
+             style="@($"left: {(_sidebarOpen ? 250 : 56)}px; height:100%; display:flex; align-items:center; gap:12px; transition:left 0.3s;")">
             <MudTooltip Text="List">
-                <MudImage Src="images/Icons/List.png" Alt="List" Width="32" Height="32" Class="object-contain cursor-pointer" />
+                <MudImage Src="images/Icons/List.png" Alt="List" Width="32" Height="32"
+                          Class="object-contain cursor-pointer" />
             </MudTooltip>
             <MudTooltip Text="Notifications">
-                <MudBadge Content="@NotificationsCount" MaxValue="99" Color="Color.Error" Overlap="true" AnchorOrigin="Origin.TopRight">
-                    <MudImage Src="images/Icons/Notifications.png" Alt="Notifications" Width="32" Height="32" Class="object-contain cursor-pointer" />
+                <MudBadge Content="@NotificationsCount" MaxValue="99" Color="Color.Error" Overlap="true"
+                          AnchorOrigin="Origin.TopRight">
+                    <MudImage Src="images/Icons/Notifications.png" Alt="Notifications" Width="32" Height="32"
+                              Class="object-contain cursor-pointer" />
                 </MudBadge>
             </MudTooltip>
             <MudTooltip Text="Display Mode">
-                <MudImage Src="images/Icons/DisPlayMode.png" Alt="Display Mode" Width="32" Height="32" Class="object-contain cursor-pointer" />
+                <MudImage Src="images/Icons/DisPlayMode.png" Alt="Display Mode" Width="32" Height="32"
+                          Class="object-contain cursor-pointer" />
             </MudTooltip>
             <span class="text-sm font-medium ml-2 text-primary-color">All</span>
         </div>
@@ -65,7 +73,8 @@
                                    Color="Color.Inherit"
                                    Size="Size.Small"
                                    Class="p-0 !min-w-0 flex items-center justify-center no-hover">
-                        <MudImage Src="images/Icons/logout.png" Alt="Logout" Width="32" Height="32" Class="object-contain" />
+                        <MudImage Src="images/Icons/logout.png" Alt="Logout" Width="32" Height="32"
+                                  Class="object-contain" />
                     </MudIconButton>
                 </MudTooltip>
                 <MudTooltip Text="Settings">
@@ -73,7 +82,8 @@
                                    Color="Color.Inherit"
                                    Size="Size.Small"
                                    Class="p-0 !min-w-0 flex items-center justify-center no-hover">
-                        <MudImage Src="images/Icons/setting.png" Alt="Settings" Width="32" Height="32" Class="object-contain" />
+                        <MudImage Src="images/Icons/setting.png" Alt="Settings" Width="32" Height="32"
+                                  Class="object-contain" />
                     </MudIconButton>
                 </MudTooltip>
                 <MudTooltip Text="Profile">
@@ -81,7 +91,8 @@
                                    Color="Color.Inherit"
                                    Size="Size.Small"
                                    Class="p-0 !min-w-0 flex items-center justify-center no-hover">
-                        <MudImage Src="images/Icons/Profile.png" Alt="Profile" Width="32" Height="32" Class="object-contain" />
+                        <MudImage Src="images/Icons/Profile.png" Alt="Profile" Width="32" Height="32"
+                                  Class="object-contain" />
                     </MudIconButton>
                 </MudTooltip>
                 <MudTooltip Text="@(IsDarkMode ? "Light" : "Dark")">
@@ -109,25 +120,31 @@
            Variant="DrawerVariant.Temporary"
            Elevation="1"
            Class="w-72"
-           PaperStyle="position:relative;background:var(--mud-palette-drawer-background);height:100vh;color:var(--mud-palette-drawer-text);"
+           PaperStyle="position:fixed; top:0; right:0; background:var(--mud-palette-drawer-background); height:100vh; color:var(--mud-palette-drawer-text);"
            OnClose="@CloseDrawer">
 
-    <MudList T="string" Dense="true" Class="w-full px-4" Style="position:absolute;top:40px;left:0;">
+    <MudList T="string" Dense="true" Class="w-full px-4"
+             Style="position:absolute; top:40px; left:0;">
         @foreach (var item in MenuItems)
         {
-            <MudListItem T="string" Class="px-3 py-2 rounded-md transition-all duration-150 cursor-pointer drawer-item">
+            <MudListItem T="string"
+                         Class="px-3 py-2 rounded-md transition-all duration-150 cursor-pointer drawer-item">
                 <div class="w-full flex items-center justify-center gap-2">
                     @if (item.Text == "Notifications")
                     {
-                        <MudBadge Content="@NotificationsCount" MaxValue="99" Color="Color.Error" Overlap="true" AnchorOrigin="Origin.TopRight">
-                            <MudImage Src="@item.Icon" Alt="@item.Text" Width="24" Height="24" Class="object-contain" />
+                        <MudBadge Content="@NotificationsCount" MaxValue="99" Color="Color.Error" Overlap="true"
+                                  AnchorOrigin="Origin.TopRight">
+                            <MudImage Src="@item.Icon" Alt="@item.Text" Width="24" Height="24"
+                                      Class="object-contain" />
                         </MudBadge>
                     }
                     else
                     {
-                        <MudImage Src="@item.Icon" Alt="@item.Text" Width="24" Height="24" Class="object-contain" />
+                        <MudImage Src="@item.Icon" Alt="@item.Text" Width="24" Height="24"
+                                  Class="object-contain" />
                     }
-                    <MudText Class="text-sm font-medium" Style="color:var(--mud-palette-drawer-text)">@item.Text</MudText>
+                    <MudText Class="text-sm font-medium"
+                             Style="color:var(--mud-palette-drawer-text)">@item.Text</MudText>
                 </div>
             </MudListItem>
         }

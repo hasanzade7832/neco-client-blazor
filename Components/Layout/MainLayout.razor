@@ -2,24 +2,12 @@
 @using MudBlazor
 
 <HeadContent>
+    <!-- استایل‌های پروژه -->
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="Dashboard.css" />
     <link rel="stylesheet" href="css/app.min.css" />
     <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
-    <style>
-        html, body {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-            background-color: var(--mud-palette-background);
-            color: var(--mud-palette-text-primary);
-        }
-
-        #app, .mud-layout {
-            overflow-x: hidden;
-        }
-    </style>
 </HeadContent>
 
 <MudThemeProvider Theme="AppThemes.KargardoonTheme" @bind-IsDarkMode="_isDarkMode" />
@@ -27,9 +15,13 @@
 <MudSnackbarProvider />
 <MudPopoverProvider />
 
-<MudLayout>
+<!-- به‌روزرسانی Breakpoint در هر Resize / Zoom -->
+<MudBreakpointProvider OnBreakpointChanged="bp => _bp = bp" />
+
+<MudLayout Style="@LayoutStyle" Class="root-layout">
     <NavMenu SidebarOpen="_sidebarOpen" @bind-IsDarkMode="_isDarkMode" />
-    <SideBar OnSidebarToggled="HandleSidebarToggle" IsDarkMode="_isDarkMode" />
+    <SideBar OnSidebarToggled="open => _sidebarOpen = open" IsDarkMode="_isDarkMode" />
+
     <MudMainContent Style="@MainContentStyle">
         <div style="@InnerContentStyle">
             @Body
@@ -38,9 +30,22 @@
 </MudLayout>
 
 @code {
-    private bool _isDarkMode = false;
+    /* ------- وضعیت‌ها ------- */
+    private bool _isDarkMode;
     private bool _sidebarOpen = true;
-    private void HandleSidebarToggle(bool isOpen) { _sidebarOpen = isOpen; }
+    private Breakpoint _bp;
+
+    /* ------- تنظیمات قابل تغییر ------- */
+    // هر چیزی کوچک‌تر از این Breakpoint «موبایل» حساب می‎شود
+    private const Breakpoint FreeScrollFrom = Breakpoint.Lg;   // ← اگر خواستید دقیق‌تر کنید، این را کم/زیاد کنید
+
+    /* ------- استایل‌ها ------- */
+    private string LayoutStyle =>
+        _bp < FreeScrollFrom
+            // موبایل یا زوم بالا
+            ? "height:auto; overflow-y:auto;"
+            // دسکتاپ عادی
+            : "height:100dvh; overflow:hidden;";
 
     private string MainContentStyle =>
         $"padding-left:{(_sidebarOpen ? "250px" : "56px")};" +
@@ -49,8 +54,9 @@
         $"padding-bottom:24px;" +
         $"box-sizing:border-box;" +
         $"width:100%;" +
-        $"min-height:100vh;" +
-        $"overflow-x:hidden;" +
+        $"min-height:calc(100dvh - 0px);" +  /* استفاده از 100dvh */
+        $"height:auto;" +
+        $"overflow-y:auto !important;" +    /* اسکرول محتوا همیشه فعال */
         $"background-color:var(--mud-palette-background);" +
         $"transition:padding-left 300ms ease;";
 

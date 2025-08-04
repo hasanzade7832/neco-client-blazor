@@ -48,11 +48,30 @@
     .table-inner {
         flex: 1;
         min-height: 0;
-        overflow: auto;
+        overflow: hidden; /* فقط جدول خودش اسکرول بخوره */
     }
+
+    .table-frame {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    /* اگر هنوز اسکرول صفحه هست، اطمینان از اینکه این کانتینر خودش overflow رو نمی‌ذاره */
+    .root-no-scroll {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
 </style>
 
-<div style="height:100%;display:flex;flex-direction:column;gap:8px;overflow:hidden;">
+<div class="root-no-scroll">
     <div class="task-scroll" style="display:flex;align-items:center;gap:16px;padding:4px 12px;overflow-x:auto;flex:0 0 auto;">
         <MudIconButton Icon="@Icons.Material.Filled.TableChart" Color="@(_activeView==ViewMode.Table ? Color.Primary : Color.Inherit)" Style="@(_activeView==ViewMode.Table ? "font-size:64px;" : "font-size:64px;color:#000;")" OnClick="@(() => SetView(ViewMode.Table))" />
         <MudIconButton Icon="@Icons.Material.Filled.Style" Color="@(_activeView==ViewMode.Cards ? Color.Primary : Color.Inherit)" Style="@(_activeView==ViewMode.Cards ? "font-size:64px;" : "font-size:64px;color:#000;")" OnClick="@(() => SetView(ViewMode.Cards))" />
@@ -70,77 +89,67 @@
 
     @if (_activeView == ViewMode.Cards)
     {
-        <MudDropContainer T="CardWrap"
-                          @ref="_cardContainer"
-                          Items="@_cards"
-                          ItemsSelector="@((item,column) => item.Column == column)"
-                          ItemDropped="OnCardDropped"
-                          Style="position:relative;display:flex;align-items:stretch;gap:12px;padding:8px;box-sizing:border-box;height:calc((100vh - 140px)*2/3);overflow-x:auto;">
-            <ChildContent>
-                <MudDropContainer T="SectionItem"
-                                  @ref="_sectionContainer"
-                                  Items="@_sections"
-                                  ItemsSelector="@((s,slot) => s.Order.ToString() == slot)"
-                                  ItemDropped="OnSectionDropped"
-                                  Class="d-flex flex-row"
-                                  Style="display:flex;align-items:stretch;gap:12px;height:100%;">
-                    <ChildContent>
-                        @for (var i = 0; i < _sections.Count; i++)
-                        {
-                            <MudDropZone T="SectionItem" Identifier="@i.ToString()" Class="d-flex" Style="@GetSectionWidthCss(i)" />
-                        }
-                        <div @onclick="OpenAddDialog"
-                             style="flex:0 0 @($"{ExpandedColWidth}px");width:@($"{ExpandedColWidth}px");display:flex;align-items:center;justify-content:center;border:2px dashed rgba(0,0,0,.2);border-radius:12px;background:var(--mud-palette-background);cursor:pointer;height:100%;box-sizing:border-box;">
-                            <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:64px;color:rgba(0,0,0,.3);" />
-                        </div>
-                    </ChildContent>
-                    <ItemRenderer>
-                        <TaskColumn Title="@context.Name"
-                                    Items="@(context.Items)"
-                                    BackgroundCss="@context.BackgroundCss"
-                                    ExpandedWidth="@ExpandedColWidth"
-                                    CollapsedWidth="@CollapsedColWidth"
-                                    GlassOnSecond="false"
-                                    Appear="true"
-                                    Collapsed="@context.Collapsed"
-                                    CollapsedChanged="@(v => OnCollapsedChanged(context, v))"
-                                    AddTaskRequested="OpenAddTaskDialog">
-                            <CardsHost>
-                                <MudDropZone T="CardWrap" Identifier="@context.Name" Class="mud-height-full" Style="width:100%;height:100%;" />
-                            </CardsHost>
-                        </TaskColumn>
-                    </ItemRenderer>
-                </MudDropContainer>
-            </ChildContent>
-            <ItemRenderer>
-                <TaskCard Item="@context.Task" />
-            </ItemRenderer>
-        </MudDropContainer>
+        <div class="table-wrapper" style="min-height:0;display:flex;flex:1;overflow:hidden;box-sizing:border-box;">
+            <MudDropContainer T="CardWrap"
+                              @ref="_cardContainer"
+                              Items="@_cards"
+                              ItemsSelector="@((item,column) => item.Column == column)"
+                              ItemDropped="OnCardDropped"
+                              Class="d-flex"
+                              Style="position:relative;display:flex;align-items:stretch;gap:12px;padding:8px;box-sizing:border-box;flex:1;overflow-x:auto;min-height:0;">
+                <ChildContent>
+                    <MudDropContainer T="SectionItem"
+                                      @ref="_sectionContainer"
+                                      Items="@_sections"
+                                      ItemsSelector="@((s,slot) => s.Order.ToString() == slot)"
+                                      ItemDropped="OnSectionDropped"
+                                      Class="d-flex flex-row"
+                                      Style="display:flex;align-items:stretch;gap:12px;height:100%;min-height:0;">
+                        <ChildContent>
+                            @for (var i = 0; i < _sections.Count; i++)
+                            {
+                                <MudDropZone T="SectionItem" Identifier="@i.ToString()" Class="d-flex" Style="@GetSectionWidthCss(i)" />
+                            }
+                            <div @onclick="OpenAddDialog"
+                                 style="flex:0 0 @($"{ExpandedColWidth}px");width:@($"{ExpandedColWidth}px");display:flex;align-items:center;justify-content:center;border:2px dashed rgba(0,0,0,.2);border-radius:12px;background:var(--mud-palette-background);cursor:pointer;height:100%;box-sizing:border-box;min-height:0;">
+                                <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:64px;color:rgba(0,0,0,.3);" />
+                            </div>
+                        </ChildContent>
+                        <ItemRenderer>
+                            <TaskColumn Title="@context.Name"
+                                        Items="@(context.Items)"
+                                        BackgroundCss="@context.BackgroundCss"
+                                        ExpandedWidth="@ExpandedColWidth"
+                                        CollapsedWidth="@CollapsedColWidth"
+                                        GlassOnSecond="false"
+                                        Appear="true"
+                                        Collapsed="@context.Collapsed"
+                                        CollapsedChanged="@(v => OnCollapsedChanged(context, v))"
+                                        AddTaskRequested="OpenAddTaskDialog">
+                                <CardsHost>
+                                    <MudDropZone T="CardWrap" Identifier="@context.Name" Class="mud-height-full" Style="width:100%;height:100%;" />
+                                </CardsHost>
+                            </TaskColumn>
+                        </ItemRenderer>
+                    </MudDropContainer>
+                </ChildContent>
+                <ItemRenderer>
+                    <TaskCard Item="@context.Task" />
+                </ItemRenderer>
+            </MudDropContainer>
+        </div>
+
     }
     else
     {
-        <div style="flex:1;display:flex;align-items:stretch;justify-content:flex-start;padding:8px;box-sizing:border-box;min-width:0;min-height:0;">
-            @if (_activeView == ViewMode.Table)
-            {
-                <div style="flex:1;min-width:0;min-height:0;height:calc((100vh - 140px)*4/3);overflow:auto;">
-                    <Test />
-                </div>
-            }
-            else
-            {
-                <div style="flex:1;display:flex;align-items:center;justify-content:center;height:calc((100vh - 140px)*4/3);overflow:auto">
-                    <MudText Typo="Typo.h4" Align="Align.Center">
-                        @(_activeView switch
-                        {
-                            ViewMode.Chart => "نموداری",
-                            ViewMode.Calendar => "حالت تقویمی",
-                            ViewMode.Excel => "حالت اکسِل‌گونه",
-                            _ => string.Empty
-                        })
-                    </MudText>
-                </div>
-            }
-        </div>
+        @if (_activeView == ViewMode.Table)
+        {
+                <Test />
+        }
+        else
+        {
+               
+        }
     }
 
 </div>
@@ -154,39 +163,39 @@
     const int CollapsedColWidth = 64;
 
     List<TaskItem> InProgressTasks = new()
-                {
+        {
         new TaskItem { Title = "Task A", Date = "2024/03/03", Status = "In Progress" },
         new TaskItem { Title = "Task B", Date = "2024/03/05", Status = "In Progress" }
-                };
+        };
     List<TaskItem> ToDoTasks = new()
-                {
+        {
         new TaskItem { Title = "Task C", Date = "2024/03/01", Status = "To Do" },
         new TaskItem { Title = "Task D", Date = "2024/03/10", Status = "To Do" }
-                };
+        };
     List<TaskItem> DoneTasks = new()
-                {
+        {
         new TaskItem { Title = "Task E", Date = "2024/02/28", Status = "Done" },
         new TaskItem { Title = "Task F", Date = "2024/04/01", Status = "Done" }
-                };
+        };
 
     private List<TaskItem> _allTasks = new();
 
     MudBlazor.IDialogReference _dialogRef;
 
     readonly List<string> DotColors = new()
-                {
+        {
         "#8b5cf6","#3b82f6","#0ea5e9","#10b981","#34d399","#059669",
         "#f59e0b","#f97316","#ef4444","#ec4899","#a78bfa","#a3a3a3","#9ca3af","#6b7280"
-                };
+        };
 
     readonly List<string> BackgroundValues = new()
-                {
+        {
         "rgba(139,92,246,.15)","rgba(59,130,246,.15)","rgba(14,165,233,.15)",
         "rgba(16,185,129,.15)","rgba(52,211,153,.15)","rgba(5,150,105,.15)",
         "rgba(245,158,11,.15)","rgba(249,115,22,.15)","rgba(239,68,68,.15)",
         "rgba(236,72,153,.15)","rgba(167,139,250,.15)","rgba(163,163,163,.15)",
         "rgba(156,163,175,.15)","rgba(107,114,128,.15)"
-                };
+        };
 
     RenderFragment TitleFrag => @<div>Add Column</div>;
     RenderFragment TitleFragTask => @<div>Add Task</div>;

@@ -9,19 +9,19 @@
         width: 56px;
         height: 56px;
         padding: 0 !important;
-        margin: 0 !important
+        margin: 0 !important;
     }
 
         .sidebar.collapsed .nav-mini .centerer {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%,-50%);
-            pointer-events: none
+            transform: translate(-50%, -50%);
+            pointer-events: none;
         }
 
         .sidebar.collapsed .nav-mini .mud-icon-root {
-            margin: 0 !important
+            margin: 0 !important;
         }
 
     .hover-surface:hover {
@@ -38,7 +38,7 @@
 </style>
 
 <div class="@($"sidebar {(_isOpen ? "expanded" : "collapsed")}")"
-     style="@($"position: fixed; top: 0; left: 0; height: 100vh; width: {(_isOpen ? "250px" : "56px")}; background: var(--mud-palette-drawer-background); color: var(--mud-palette-drawer-text); z-index: 9999; padding-top: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1); transition: width 0.3s; overflow: hidden;")"
+     style="@($"position:fixed; top:0; left:0; height:100vh; width:{(_isOpen ? "250px" : "56px")}; background:var(--mud-palette-drawer-background); color:var(--mud-palette-drawer-text); z-index:9999; padding-top:16px; box-shadow:0 0 10px rgba(0,0,0,0.1); transition:width 0.3s; overflow:hidden;")"
      dir="ltr">
     <div class="@(_isOpen ? "flex items-center justify-start px-4 mb-4" : "flex items-center justify-center px-0 mb-2")">
         <img src="images/Icons/Menu.png"
@@ -81,19 +81,23 @@
 </div>
 
 <script>
-    function sidebarResizeInit(dotnet){function r(){dotnet.invokeMethodAsync('OnResize', window.innerWidth);} window.addEventListener('resize', r); r();}
+    function sidebarResizeInit(dotnet){
+        function r(){ dotnet.invokeMethodAsync('OnResize', window.innerWidth); }
+        window.addEventListener('resize', r);
+        r();
+    }
 </script>
 
 @code {
     private bool _isOpen = true;
 
-    private readonly (string Icon, string Text, string Href)[] _items = new[]
+    private readonly (string Icon, string Text, string Href)[] _items =
     {
         (Icons.Material.Filled.Home,         "Home",        "#"),
         (Icons.Material.Filled.Workspaces,   "Outsourcing", "#"),
         (Icons.Material.Filled.Engineering,  "Engineering", "#"),
         (Icons.Material.Filled.ShoppingCart, "Procurement", "#"),
-        (Icons.Material.Filled.Build,        "Construction","#"),
+        (Icons.Material.Filled.Build,        "Construction", "#"),
     };
 
     [Parameter] public bool IsDarkMode { get; set; }

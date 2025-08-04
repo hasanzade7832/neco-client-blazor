@@ -1,65 +1,97 @@
 ﻿@page "/test"
+@using System.Linq
 @using MudBlazor
 
-@* 10 ردیف پیش‌فرض + ارتفاع متناسب *@
-<MudDataGrid T="Element"
-             Items="@Elements"
-             FixedHeader="true"
-             Height="@_gridHeight"
-             RowClassFunc="@_rowClassFunc"
-             RowStyleFunc="@_rowStyleFunc"
-             Filterable="true"
-             FilterMode="DataGridFilterMode.Simple"
-             FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-             QuickFilter="@_quickFilter"
-             SortMode="SortMode.Multiple"
-             Hideable="false"
-             Groupable="false"
-             @bind-CurrentPage="_page"
-             @bind-RowsPerPage="_rowsPerPage">
+<style>
+    .custom-table-wrapper {
+        overflow: hidden;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        min-height: 0;
+            }
 
-    <ToolBarContent>
-        <MudText Typo="Typo.h6">Periodic Elements</MudText>
-        <MudSpacer />
-        <MudTextField @bind-Value="_searchString"
-                      Placeholder="Search"
-                      Immediate="true"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      Class="mt-0" />
-    </ToolBarContent>
+    .my-fixed-grid {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
 
-    <Columns>
-        <PropertyColumn Property="x => x.Number" Title="Nr" Sortable="false" Filterable="true" />
-        <PropertyColumn Property="x => x.Sign" Filterable="true" />
-        <PropertyColumn Property="x => x.Name" FilterMode="DataGridFilterMode.ColumnFilterMenu" />
-        <PropertyColumn Property="x => x.Position" Filterable="true" />
-        <PropertyColumn Property="x => x.Molar" Title="Molar mass" Filterable="true" />
-    </Columns>
+        .my-fixed-grid .mud-table-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
 
-    <PagerContent>
-        <div class="pager-center">
-            <MudDataGridPager T="Element"
-                              @bind-CurrentPage="_page"
-                              @bind-RowsPerPage="_rowsPerPage"
-                              PageSizeOptions="new int[] { 5, 10, 15, 20 }"
-                              RowsPerPageString="Rows per page" />
-        </div>
-    </PagerContent>
-</MudDataGrid>
+    /* مرکز کردن پیجینیشن */
+    .pager-center {
+        display: flex;
+        justify-content: center;
+        padding: 6px 0;
+        gap: 8px;
+    }
+
+
+</style>
+
+<div class="custom-table-wrapper">
+    <MudDataGrid T="Element"
+                 Items="@FilteredElements"
+                 FixedHeader="true"
+                 RowClassFunc="@_rowClassFunc"
+                 RowStyleFunc="@_rowStyleFunc"
+                 Filterable="true"
+                 FilterMode="DataGridFilterMode.Simple"
+                 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+                 SortMode="SortMode.Multiple"
+                 Hideable="false"
+                 Groupable="false"
+                 @bind-CurrentPage="_page"
+                 @bind-RowsPerPage="_rowsPerPage"
+                 Virtualize="true"
+                 Height="600px"
+                 Style="border: 1px solid rgba(0,0,0,0.2); box-sizing: border-box; border-radius: 6px;">
+
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Tasks</MudText>
+            <MudSpacer />
+            <MudTextField Value="_searchString"
+                          Immediate="true"
+                          ValueChanged="@((string s) => { _searchString = s; _page = 0; })"
+                          Placeholder="Search"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Class="mt-0" />
+        </ToolBarContent>
+
+        <Columns>
+            <PropertyColumn Property="x => x.Number" Title="Nr" Sortable="false" />
+            <PropertyColumn Property="x => x.Sign" Title="Sign" />
+            <PropertyColumn Property="x => x.Name" Title="Name" FilterMode="DataGridFilterMode.ColumnFilterMenu" />
+            <PropertyColumn Property="x => x.Position" Title="Position" />
+            <PropertyColumn Property="x => x.Molar" Title="Molar mass" />
+        </Columns>
+
+        <PagerContent>
+            <div class="pager-center">
+                <MudDataGridPager T="Element"
+                                  @bind-CurrentPage="_page"
+                                  @bind-RowsPerPage="_rowsPerPage"
+                                  PageSizeOptions="new int[] { 10, 20, 30 }"
+                                  RowsPerPageString="Rows per page" />
+            </div>
+        </PagerContent>
+
+    </MudDataGrid>
+</div>
 
 @code {
-    /* ---------- متغیرهای حالت گرید ---------- */
     private int _page = 0;
-    private int _rowsPerPage = 10;       // ← پیش‌فرض ۱۰
-    private const int _rowHeight = 48;   // ارتفاع یک ردیف در تم استاندارد
-    // private string _gridHeight => $"{_rowsPerPage * _rowHeight + 110 * 2}px";
-    private string _gridHeight => $"{(_rowsPerPage * _rowHeight + 110) * 2}px";
+    private int _rowsPerPage = 10;
 
-
-    /* ---------- داده‌ی نمونه ---------- */
     private IEnumerable<Element> Elements = Enumerable
-        .Range(1, 1000)                  // کافی برای چند صفحه
+        .Range(1, 1000)
         .Select(i => new Element
             {
                 Number = i,
@@ -69,15 +101,14 @@
                 Molar = Math.Round(1.008 + i * 0.125 + ((i % 7) * 0.037), 3)
             });
 
-    /* ---------- سرچِ سریع ---------- */
     private string _searchString = string.Empty;
-    private Func<Element, bool> _quickFilter => x =>
+
+    private IEnumerable<Element> FilteredElements => Elements.Where(x =>
         string.IsNullOrWhiteSpace(_searchString) ||
         x.Sign.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
         x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
-        $"{x.Number} {x.Position} {x.Molar}".Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+        $"{x.Number} {x.Position} {x.Molar}".Contains(_searchString, StringComparison.OrdinalIgnoreCase));
 
-    /* ---------- استایل سطرها ---------- */
     private Func<Element, int, string> _rowStyleFunc => (_, i) => (i % 4) switch
     {
         0 => "background-color:rgba(var(--mud-palette-success-rgb),0.18);",
@@ -85,10 +116,8 @@
         2 => "background-color:rgba(var(--mud-palette-warning-rgb),0.18);",
         _ => "background-color:rgba(var(--mud-palette-error-rgb),0.18);"
     };
-
     private Func<Element, int, string> _rowClassFunc => (_, i) => i % 4 == 1 ? "white-row" : null;
 
-    /* ---------- مدل داده ---------- */
     public class Element
     {
         public int Number { get; set; }

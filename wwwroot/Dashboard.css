@@ -94,3 +94,11 @@
 .clickable {
     cursor: pointer;
 }
+
+@media (max-width: 599px) { /*‏ هر عددی که مرز موبایل است */
+    .mud-layout {
+        height: auto !important; /* اجازه دهید خودش قد بکشد */
+        overflow-y: auto !important; /* اسکرول عمودی فعال شود */
+    }
+}
+

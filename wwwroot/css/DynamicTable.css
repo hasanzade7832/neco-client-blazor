@@ -1,11 +1,12 @@
-﻿.mud-data-grid .mud-table-head,
+﻿/* ----------  رنگ‌ها و آیکن‌های هدر  ---------- */
+.mud-data-grid .mud-table-head,
 .mud-data-grid .mud-table-head .mud-th,
 .mud-data-grid .mud-table-head .mud-sort-label,
 .mud-data-grid .mud-table-head .mud-sort-label .mud-icon-root,
 .mud-data-grid .mud-table-head .mud-icon-button,
 .mud-data-grid .mud-table-head .mud-icon-root {
     color: var(--mud-palette-text-primary) !important;
-    opacity: 1 !important;
+    opacity: 1 !important
 }
 
     .mud-data-grid .mud-table-head .mud-th .mud-icon-button {
@@ -14,49 +15,48 @@
         opacity: 1 !important;
         pointer-events: auto !important;
         transition: none !important;
-        background: transparent !important;
+        background: transparent !important
     }
 
         .mud-data-grid .mud-table-head .mud-th .mud-icon-button:hover,
         .mud-data-grid .mud-table-head .mud-th .mud-icon-button:focus,
         .mud-data-grid .mud-table-head .mud-th .mud-icon-button:active {
             background: transparent !important;
-            opacity: 1 !important;
+            opacity: 1 !important
         }
 
 .mud-theme-default .mud-data-grid .mud-table-head .mud-sort-label .mud-icon-root,
 .mud-theme-default .mud-data-grid .mud-table-head .mud-th .mud-icon-button .mud-icon-root {
-    color: #000000 !important;
-    fill: #000000 !important;
+    color: #000 !important;
+    fill: #000 !important
 }
 
 .mud-theme-dark .mud-data-grid .mud-table-head .mud-sort-label .mud-icon-root,
 .mud-theme-dark .mud-data-grid .mud-table-head .mud-th .mud-icon-button .mud-icon-root {
-    color: #FFFFFF !important;
-    fill: #FFFFFF !important;
+    color: #fff !important;
+    fill: #fff !important
 }
 
 .mud-data-grid .mud-table-head .mud-th .mud-icon-button:last-of-type .mud-icon-root,
 .mud-data-grid .mud-table-head .mud-th .mud-icon-button:last-of-type .mud-icon-root path {
-    color: #000000 !important;
-    fill: #000000 !important;
+    color: #000 !important;
+    fill: #000 !important
 }
 
-.mud-data-grid .mud-table-head .mud-th .mud-icon-button:last-of-type:hover .mud-icon-root,
-.mud-data-grid .mud-table-head .mud-th .mud-icon-button:last-of-type:focus .mud-icon-root,
-.mud-data-grid .mud-table-head .mud-th .mud-icon-button:last-of-type:active .mud-icon-root {
-    color: #000000 !important;
-    fill: #000000 !important;
+/* جلوگیری از پیچیدن هدر */
+.mud-data-grid .mud-table-head .mud-th {
+    white-space: nowrap;
 }
 
+/* ----------  ردیف‌ها ---------- */
 .mud-data-grid .mud-table-body .mud-tr:hover {
-    filter: brightness(0.98);
+    filter: brightness(.98)
 }
 
 .mud-data-grid .mud-table-body tr.white-row {
-    background-color: #FFFFFF !important;
+    background: #fff !important;
     --mud-palette-text-primary: #0F172A;
-    color: #0F172A !important;
+    color: #0F172A !important
 }
 
     .mud-data-grid .mud-table-body tr.white-row td,
@@ -64,64 +64,73 @@
     .mud-data-grid .mud-table-body tr.white-row .mud-typography,
     .mud-data-grid .mud-table-body tr.white-row .mud-icon-root {
         color: #0F172A !important;
-        fill: #0F172A !important;
+        fill: #0F172A !important
     }
 
-.mud-data-grid .mud-table-container {
-    max-height: calc(5 * 56px);
-    overflow-y: auto;
-}
-
+/* ----------  دکمه‌های پیجینیشن ---------- */
 .mud-data-grid .mud-table-pagination .mud-pagination,
 .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root,
 button.mud-button-root.mud-icon-button.mud-ripple.mud-flip-x-rtl {
     opacity: 1 !important;
-    filter: none !important;
+    filter: none !important
 }
 
     .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root:not(.mud-disabled),
     button.mud-button-root.mud-icon-button.mud-ripple.mud-flip-x-rtl:not(.mud-disabled) {
-        color: var(--mud-palette-text-primary) !important;
+        color: var(--mud-palette-text-primary) !important
     }
 
         .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root:not(.mud-disabled) .mud-icon-root,
         button.mud-button-root.mud-icon-button.mud-ripple.mud-flip-x-rtl:not(.mud-disabled) svg {
             fill: currentColor !important;
-            opacity: 1 !important;
+            opacity: 1 !important
         }
 
     .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root.mud-selected {
         font-weight: 700 !important;
         color: var(--mud-palette-text-primary) !important;
-        opacity: 1 !important;
+        opacity: 1 !important
     }
 
     .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root.mud-disabled,
     button.mud-button-root.mud-icon-button.mud-ripple.mud-flip-x-rtl.mud-disabled {
         opacity: .38 !important;
-        color: var(--mud-palette-text-secondary) !important;
+        color: var(--mud-palette-text-secondary) !important
     }
 
-.mud-theme-default .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root {
-    color: var(--mud-palette-text-primary) !important;
-}
-
-    .mud-theme-default .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root.mud-selected {
-        color: var(--mud-palette-text-primary) !important;
-        font-weight: 700 !important;
-    }
-
+.mud-theme-default .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root,
 .mud-theme-dark .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root {
-    color: var(--mud-palette-text-primary) !important;
+    color: var(--mud-palette-text-primary) !important
 }
 
+    .mud-theme-default .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root.mud-selected,
     .mud-theme-dark .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root.mud-selected {
-        color: var(--mud-palette-text-primary) !important;
         font-weight: 700 !important;
+        color: var(--mud-palette-text-primary) !important
     }
 
+/* ----------  لِی‌آوت ---------- */
+.my-fixed-grid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+    .my-fixed-grid .mud-table-container {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+.white-row {
+    background: #fff !important
+}
+
+/* مرکز کردن پیجر */
 .pager-center {
     display: flex;
     justify-content: center;
     width: 100%;
+    padding: 0 !important;
 }
