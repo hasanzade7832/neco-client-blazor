@@ -1,100 +1,317 @@
-﻿@typeparam TItem
+﻿@using System.Reflection
 @using MudBlazor
-@using System.Reflection
-@namespace BlazorApp12.Components
+@typeparam TItem
 
-<MudPaper Class="mud-elevation-0 d-flex flex-column h-100">
-    @if (Items is null)
-    {
-        <MudProgressCircular Indeterminate Size="Size.Large" Class="m-auto" />
-    }
-    else
-    {
-        <MudDataGrid T="TItem"
-                     Items="@Items"                 
-                     Style="height:100%;"           
-                     Class="flex-grow-1"
-                     Filterable="true"
-                     MultiSelection="true"
-                     SortMode="SortMode.Multiple"
-                     QuickFilter="@QuickFilter"
-                     AutoGenerateAllColumns="true"
-                     RowClick="@RowClicked"
-                     RowContextMenuClick="@RowRightClicked"
-                     SelectedItemsChanged="@SelectedItemsChanged"
-                     RowStyleFunc="@RowStyle">
+<div style="display:flex;flex-direction:column;gap:8px;">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <MudText Typo="Typo.h6">@Title</MudText>
 
-            <ToolBarContent>
-                <MudText Typo="Typo.h6">@Title</MudText>
-                <MudSpacer />
-                <MudTextField @bind-Value="_searchString"
-                              Immediate
-                              Placeholder="جست‌وجو..."
-                              Adornment="Adornment.Start"
-                              AdornmentIcon="@Icons.Material.Filled.Search"
-                              Class="mt-0" />
-            </ToolBarContent>
-
-            <PagerContent>
-                <MudDataGridPager T="TItem" />
-            </PagerContent>
-        </MudDataGrid>
-
-        @if (_events.Count > 0)
+        @if (EnableFiltering && !MultiColumnFiltering)
         {
-            <MudExpansionPanels Class="mt-4">
-                <MudExpansionPanel Text="نمایش رخدادها">
-                    @foreach (var e in _events)
-                    {
-                        <MudText Typo="Typo.body2">@e</MudText>
-                    }
-                    <div class="d-flex">
-                        <MudSpacer />
-                        <MudButton Variant="Variant.Filled"
-                                   OnClick="@(() => _events.Clear())"
-                                   Class="mt-3">پاک‌سازی</MudButton>
-                    </div>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
+            <MudTextField @bind-Value="GlobalFilter"
+                          Placeholder="Search"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Immediate="true"
+                          Style="min-width:220px;" />
         }
+
+        <MudSpacer />
+
+        @if (ShowPagination)
+        {
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <div style="display:flex;align-items:center;gap:4px;">
+                    <MudText Typo="Typo.subtitle2">Rows per page:</MudText>
+                    <MudSelect T="int"
+                               Value="_pageSize"
+                               ValueChanged="@(v => { _pageSize = v; ResetPage(); })"
+                               Dense="true"
+                               Style="width:80px;">
+                        @foreach (var option in PageSizeOptions)
+                        {
+                            <MudSelectItem Value="@option">@option</MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px;">
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft"
+                                   Disabled="@(_pageIndex == 0)"
+                                   OnClick="PrevPage"
+                                   Size="Size.Small" />
+                    <MudText Typo="Typo.body2">@($"{_pageIndex + 1} / {Math.Max(1, TotalPages)}")</MudText>
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronRight"
+                                   Disabled="@(_pageIndex >= TotalPages - 1)"
+                                   OnClick="NextPage"
+                                   Size="Size.Small" />
+                </div>
+                <MudText Typo="Typo.caption">@($"Showing {StartItemIndex + 1} - {EndItemIndex} of {FilteredCount}")</MudText>
+            </div>
+        }
+    </div>
+
+    <MudTable T="TItem"
+              Items="PagedItems"
+              Elevation="0"
+              Bordered="false"
+              Hover="true"
+              FixedHeader="false"
+              Class="mud-width-full">
+        <HeaderContent>
+            @foreach (var prop in _properties)
+            {
+                <MudTh>
+                    <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                        <span style="cursor:@(EnableSorting ? "pointer" : "default")"
+                              @onclick="() => OnHeaderClicked(prop)">
+                            @prop.Name
+                            @if (SortDefinitions.Any(sd => sd.Property == prop))
+                            {
+                                var sd = SortDefinitions.First(sd => sd.Property == prop);
+                                if (sd.Ascending)
+                                {
+                                    <MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.ArrowUpward" />
+                                }
+                                else
+                                {
+                                    <MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.ArrowDownward" />
+                                }
+                            }
+                        </span>
+                    </div>
+                    @if (EnableFiltering && MultiColumnFiltering)
+                    {
+                        <MudTextField @bind-Value="_columnFilters[prop.Name]"
+                                      Placeholder="Filter"
+                                      Immediate="true"
+                                      Dense="true"
+                                      OnBlur="((_) => ResetPage())" />
+                    }
+                </MudTh>
+            }
+        </HeaderContent>
+
+        <RowTemplate Context="item">
+            <MudTr Style="@GetRowStyle(item)">
+                @foreach (var prop in _properties)
+                {
+                    <MudTd>@(GetPropertyStringValue(item, prop))</MudTd>
+                }
+            </MudTr>
+        </RowTemplate>
+    </MudTable>
+
+    @if (ShowPagination && TotalPages > 1)
+    {
+        <div style="display:flex;gap:4px;justify-content:center;align-items:center;margin-top:4px;flex-wrap:wrap;">
+            @for (int i = 0; i < TotalPages; i++)
+            {
+                <MudButton Variant="Variant.Text"
+                           Size="Size.Small"
+                           Disabled="@(i == _pageIndex)"
+                           OnClick="() => SetPage(i)"
+                           Style="min-width:32px;">
+                    @(i + 1)
+                </MudButton>
+            }
+        </div>
     }
-</MudPaper>
+</div>
 
 @code {
-    [Parameter] public IEnumerable<TItem>? Items { get; set; }
-    [Parameter] public Func<TItem, string>? RowColorFunc { get; set; }
-    [Parameter] public string Title { get; set; } = "Data";
+    [Parameter] public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
+    [Parameter] public string Title { get; set; }
+    [Parameter] public Func<TItem, string> RowColorFunc { get; set; }
+    [Parameter] public bool EnableSorting { get; set; } = true;
+    [Parameter] public bool EnableFiltering { get; set; } = true;
+    [Parameter] public bool MultiColumnFiltering { get; set; } = false;
+    [Parameter] public bool ShowPagination { get; set; } = true;
+    [Parameter] public int[] PageSizeOptions { get; set; } = new[] { 5, 10, 15, 20 };
+    [Parameter] public int DefaultPageSize { get; set; } = 5;
+    [Parameter] public bool MultiSort { get; set; } = false;
 
-    private readonly List<string> _events = new();
-    private string _searchString = string.Empty;
-
-    private Func<TItem, bool> QuickFilter => item =>
+    private List<PropertyInfo> _properties = new();
+    private string _globalFilterBacking = string.Empty;
+    private string GlobalFilter
     {
-        if (string.IsNullOrWhiteSpace(_searchString))
-            return true;
-
-        foreach (PropertyInfo p in typeof(TItem).GetProperties())
+        get => _globalFilterBacking;
+        set
         {
-            var val = p.GetValue(item)?.ToString() ?? string.Empty;
-            if (val.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
-                return true;
+            if (_globalFilterBacking != value)
+            {
+                _globalFilterBacking = value;
+                ResetPage();
+            }
         }
-        return false;
-    };
-
-    private string RowStyle(TItem item, int _)
-    {
-        if (RowColorFunc is null) return string.Empty;
-        var color = RowColorFunc(item);
-        return string.IsNullOrWhiteSpace(color) ? string.Empty : $"background-color:{color}";
     }
 
-    private void RowClicked(DataGridRowClickEventArgs<TItem> a) =>
-        _events.Insert(0, $"RowClick  idx={a.RowIndex}  data={System.Text.Json.JsonSerializer.Serialize(a.Item)}");
+    private Dictionary<string, string> _columnFilters = new();
+    private List<SortDefinition> SortDefinitions = new();
+    private int _pageIndex = 0;
+    private int _pageSize;
 
-    private void RowRightClicked(DataGridRowClickEventArgs<TItem> a) =>
-        _events.Insert(0, $"RowRightClick  idx={a.RowIndex}  data={System.Text.Json.JsonSerializer.Serialize(a.Item)}");
+    private IEnumerable<TItem> FilteredItems => ApplyFiltering(Items ?? Enumerable.Empty<TItem>());
+    private int FilteredCount => FilteredItems.Count();
+    private int TotalPages => ShowPagination ? Math.Max(1, (int)Math.Ceiling(FilteredCount / (double)_pageSize)) : 1;
+    private int StartItemIndex => ShowPagination ? _pageIndex * _pageSize : 0;
+    private int EndItemIndex => Math.Min(FilteredCount, StartItemIndex + _pageSize);
+    private IEnumerable<TItem> SortedItems => ApplySorting(FilteredItems);
+    private IEnumerable<TItem> PagedItems => ShowPagination
+        ? SortedItems.Skip(_pageIndex * _pageSize).Take(_pageSize)
+        : SortedItems;
 
-    private void SelectedItemsChanged(HashSet<TItem> s) =>
-        _events.Insert(0, $"SelectedItemsChanged  count={s.Count}");
+    protected override void OnParametersSet()
+    {
+        _properties = typeof(TItem).GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.CanRead).ToList();
+        foreach (var prop in _properties)
+        {
+            if (!_columnFilters.ContainsKey(prop.Name))
+                _columnFilters[prop.Name] = string.Empty;
+        }
+
+        if (_pageSize == 0)
+            _pageSize = DefaultPageSize;
+        if (!PageSizeOptions.Contains(_pageSize))
+            _pageSize = PageSizeOptions.First();
+
+        if (_pageIndex >= TotalPages)
+            _pageIndex = TotalPages - 1;
+    }
+
+    private IEnumerable<TItem> ApplyFiltering(IEnumerable<TItem> source)
+    {
+        var query = source;
+        if (EnableFiltering)
+        {
+            if (MultiColumnFiltering)
+            {
+                foreach (var kv in _columnFilters)
+                {
+                    var filter = kv.Value;
+                    if (string.IsNullOrWhiteSpace(filter))
+                        continue;
+                    var prop = _properties.FirstOrDefault(p => p.Name == kv.Key);
+                    if (prop == null) continue;
+                    query = query.Where(item =>
+                    {
+                        var v = prop.GetValue(item);
+                        return v != null && v.ToString().Contains(filter, StringComparison.OrdinalIgnoreCase);
+                    });
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(GlobalFilter))
+                {
+                    query = query.Where(item =>
+                    {
+                        foreach (var prop in _properties)
+                        {
+                            var v = prop.GetValue(item);
+                            if (v != null && v.ToString().Contains(GlobalFilter, StringComparison.OrdinalIgnoreCase))
+                                return true;
+                        }
+                        return false;
+                    });
+                }
+            }
+        }
+        return query;
+    }
+
+    private IEnumerable<TItem> ApplySorting(IEnumerable<TItem> source)
+    {
+        if (!SortDefinitions.Any() || !EnableSorting)
+            return source;
+
+        IOrderedEnumerable<TItem> ordered = null;
+        for (int i = 0; i < SortDefinitions.Count; i++)
+        {
+            var sd = SortDefinitions[i];
+            if (i == 0)
+            {
+                ordered = sd.Ascending
+                    ? source.OrderBy(item => sd.Property.GetValue(item))
+                    : source.OrderByDescending(item => sd.Property.GetValue(item));
+            }
+            else
+            {
+                ordered = sd.Ascending
+                    ? ordered.ThenBy(item => sd.Property.GetValue(item))
+                    : ordered.ThenByDescending(item => sd.Property.GetValue(item));
+            }
+        }
+        return ordered ?? source;
+    }
+
+    private void OnHeaderClicked(PropertyInfo prop)
+    {
+        if (!EnableSorting)
+            return;
+
+        var existing = SortDefinitions.FirstOrDefault(sd => sd.Property == prop);
+        if (existing != null)
+        {
+            if (existing.Ascending)
+            {
+                existing.Ascending = false;
+            }
+            else
+            {
+                SortDefinitions.Remove(existing);
+            }
+        }
+        else
+        {
+            if (!MultiSort)
+                SortDefinitions.Clear();
+            SortDefinitions.Add(new SortDefinition { Property = prop, Ascending = true });
+        }
+        ResetPage();
+    }
+
+    private void PrevPage()
+    {
+        if (_pageIndex > 0)
+            _pageIndex--;
+    }
+
+    private void NextPage()
+    {
+        if (_pageIndex < TotalPages - 1)
+            _pageIndex++;
+    }
+
+    private void SetPage(int idx)
+    {
+        _pageIndex = idx;
+    }
+
+    private void ResetPage()
+    {
+        _pageIndex = 0;
+    }
+
+    private string GetPropertyStringValue(TItem item, PropertyInfo prop)
+    {
+        var v = prop.GetValue(item);
+        return v?.ToString() ?? string.Empty;
+    }
+
+    private string GetRowStyle(TItem item)
+    {
+        if (RowColorFunc != null)
+        {
+            var c = RowColorFunc.Invoke(item);
+            if (!string.IsNullOrWhiteSpace(c))
+                return $"background:{c};";
+        }
+        return null;
+    }
+
+    private class SortDefinition
+    {
+        public PropertyInfo Property { get; set; }
+        public bool Ascending { get; set; }
+    }
 }

@@ -87,10 +87,10 @@
                     <ChildContent>
                         @for (var i = 0; i < _sections.Count; i++)
                         {
-                            <MudDropZone T="SectionItem" Identifier="@i.ToString()" Class="d-flex" />
+                            <MudDropZone T="SectionItem" Identifier="@i.ToString()" Class="d-flex" Style="@GetSectionWidthCss(i)" />
                         }
                         <div @onclick="OpenAddDialog"
-                             style="flex:0 0 280px;width:280px;display:flex;align-items:center;justify-content:center;border:2px dashed rgba(0,0,0,.2);border-radius:12px;background:var(--mud-palette-background);cursor:pointer;height:100%;">
+                             style="flex:0 0 @($"{ExpandedColWidth}px");width:@($"{ExpandedColWidth}px");display:flex;align-items:center;justify-content:center;border:2px dashed rgba(0,0,0,.2);border-radius:12px;background:var(--mud-palette-background);cursor:pointer;height:100%;box-sizing:border-box;">
                             <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:64px;color:rgba(0,0,0,.3);" />
                         </div>
                     </ChildContent>
@@ -98,15 +98,15 @@
                         <TaskColumn Title="@context.Name"
                                     Items="@(context.Items)"
                                     BackgroundCss="@context.BackgroundCss"
-                                    ExpandedWidth="280"
-                                    CollapsedWidth="64"
+                                    ExpandedWidth="@ExpandedColWidth"
+                                    CollapsedWidth="@CollapsedColWidth"
                                     GlassOnSecond="false"
                                     Appear="true"
                                     Collapsed="@context.Collapsed"
                                     CollapsedChanged="@(v => OnCollapsedChanged(context, v))"
                                     AddTaskRequested="OpenAddTaskDialog">
                             <CardsHost>
-                                <MudDropZone T="CardWrap" Identifier="@context.Name" Class="mud-height-full" />
+                                <MudDropZone T="CardWrap" Identifier="@context.Name" Class="mud-height-full" Style="width:100%;height:100%;" />
                             </CardsHost>
                         </TaskColumn>
                     </ItemRenderer>
@@ -117,31 +117,32 @@
             </ItemRenderer>
         </MudDropContainer>
     }
-    else if (_activeView == ViewMode.Table)
-    {
-        <div class="table-wrapper">
-            <div class="table-inner">
-                <DynamicTable TItem="TaskItem"
-                              Items="@_allTasks"
-                              Title="Tasks"
-                              RowColorFunc="RowColor" />
-            </div>
-        </div>
-    }
     else
     {
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-            <MudText Typo="Typo.h4" Align="Align.Center">
-                @(_activeView switch
-                {
-                    ViewMode.Chart => "نموداری",
-                    ViewMode.Calendar => "حالت تقویمی",
-                    ViewMode.Excel => "حالت اکسِل‌گونه",
-                    _ => string.Empty
-                })
-            </MudText>
+        <div style="flex:1;display:flex;align-items:stretch;justify-content:flex-start;padding:8px;box-sizing:border-box;min-width:0;min-height:0;">
+            @if (_activeView == ViewMode.Table)
+            {
+                <div style="flex:1;min-width:0;min-height:0;height:calc((100vh - 140px)*4/3);overflow:auto;">
+                    <Test />
+                </div>
+            }
+            else
+            {
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;height:calc((100vh - 140px)*4/3);overflow:auto">
+                    <MudText Typo="Typo.h4" Align="Align.Center">
+                        @(_activeView switch
+                        {
+                            ViewMode.Chart => "نموداری",
+                            ViewMode.Calendar => "حالت تقویمی",
+                            ViewMode.Excel => "حالت اکسِل‌گونه",
+                            _ => string.Empty
+                        })
+                    </MudText>
+                </div>
+            }
         </div>
     }
+
 </div>
 
 @code {
@@ -149,40 +150,43 @@
     private ViewMode _activeView = ViewMode.Table;
     void SetView(ViewMode vm) => _activeView = vm;
 
+    const int ExpandedColWidth = 280;
+    const int CollapsedColWidth = 64;
+
     List<TaskItem> InProgressTasks = new()
-        {
+                {
         new TaskItem { Title = "Task A", Date = "2024/03/03", Status = "In Progress" },
         new TaskItem { Title = "Task B", Date = "2024/03/05", Status = "In Progress" }
-        };
+                };
     List<TaskItem> ToDoTasks = new()
-        {
+                {
         new TaskItem { Title = "Task C", Date = "2024/03/01", Status = "To Do" },
         new TaskItem { Title = "Task D", Date = "2024/03/10", Status = "To Do" }
-        };
+                };
     List<TaskItem> DoneTasks = new()
-        {
+                {
         new TaskItem { Title = "Task E", Date = "2024/02/28", Status = "Done" },
         new TaskItem { Title = "Task F", Date = "2024/04/01", Status = "Done" }
-        };
+                };
 
     private List<TaskItem> _allTasks = new();
 
     MudBlazor.IDialogReference _dialogRef;
 
     readonly List<string> DotColors = new()
-        {
+                {
         "#8b5cf6","#3b82f6","#0ea5e9","#10b981","#34d399","#059669",
         "#f59e0b","#f97316","#ef4444","#ec4899","#a78bfa","#a3a3a3","#9ca3af","#6b7280"
-        };
+                };
 
     readonly List<string> BackgroundValues = new()
-        {
+                {
         "rgba(139,92,246,.15)","rgba(59,130,246,.15)","rgba(14,165,233,.15)",
         "rgba(16,185,129,.15)","rgba(52,211,153,.15)","rgba(5,150,105,.15)",
         "rgba(245,158,11,.15)","rgba(249,115,22,.15)","rgba(239,68,68,.15)",
         "rgba(236,72,153,.15)","rgba(167,139,250,.15)","rgba(163,163,163,.15)",
         "rgba(156,163,175,.15)","rgba(107,114,128,.15)"
-        };
+                };
 
     RenderFragment TitleFrag => @<div>Add Column</div>;
     RenderFragment TitleFragTask => @<div>Add Task</div>;
@@ -300,7 +304,16 @@
     {
         section.Collapsed = value;
         _sectionContainer?.Refresh();
+        _cardContainer?.Refresh();
         StateHasChanged();
+    }
+
+    private string GetSectionWidthCss(int index)
+    {
+        if (index < 0 || index >= _sections.Count) return $"flex:0 0 {ExpandedColWidth}px;width:{ExpandedColWidth}px;height:100%;box-sizing:border-box;";
+        var s = _sections[index];
+        var w = s.Collapsed ? CollapsedColWidth : ExpandedColWidth;
+        return $"flex:0 0 {w}px;width:{w}px;height:100%;box-sizing:border-box;";
     }
 
     public class CardWrap

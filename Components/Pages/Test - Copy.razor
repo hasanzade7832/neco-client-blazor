@@ -1,0 +1,185 @@
+﻿@page "/tests1"
+@using MudBlazor
+
+<style>
+    .mud-data-grid .mud-table-head .mud-th .mud-icon-button {
+        visibility: visible !important;
+        display: inline-flex !important;
+        opacity: 1 !important;
+        background: transparent !important;
+        transition: none !important
+    }
+
+        .mud-data-grid .mud-table-head .mud-th .mud-icon-button:hover,
+        .mud-data-grid .mud-table-head .mud-th .mud-icon-button:focus,
+        .mud-data-grid .mud-table-head .mud-th .mud-icon-button:active {
+            background: transparent !important;
+            box-shadow: none !important;
+            opacity: 1 !important
+        }
+
+    .mud-theme-default .mud-data-grid .mud-table-head .mud-sort-label .mud-icon-root,
+    .mud-theme-default .mud-data-grid .mud-table-head .mud-th .mud-icon-button .mud-icon-root,
+    .mud-theme-default .mud-data-grid .mud-table-head .mud-th .mud-svg-icon {
+        color: #000 !important;
+        fill: #000 !important
+    }
+
+    .mud-theme-dark .mud-data-grid .mud-table-head .mud-sort-label .mud-icon-root,
+    .mud-theme-dark .mud-data-grid .mud-table-head .mud-th .mud-icon-button .mud-icon-root,
+    .mud-theme-dark .mud-data-grid .mud-table-head .mud-th .mud-svg-icon {
+        color: #fff !important;
+        fill: #fff !important
+    }
+
+    .mud-theme-default .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root,
+    .mud-theme-default .mud-pagination .mud-button-root,
+    .mud-theme-default .mud-data-grid .mud-table-pagination .mud-pagination .mud-icon-root,
+    .mud-theme-default .mud-pagination .mud-icon-root,
+    .mud-theme-default .mud-pagination .mud-svg-icon {
+        color: #000 !important;
+        font-weight: 800 !important;
+        opacity: 1 !important
+    }
+
+        .mud-theme-default .mud-pagination .mud-button-root.mud-disabled,
+        .mud-theme-default .mud-pagination .mud-button-root:disabled {
+            opacity: 1 !important;
+            color: #000 !important
+        }
+
+    .mud-theme-dark .mud-data-grid .mud-table-pagination .mud-pagination .mud-button-root,
+    .mud-theme-dark .mud-pagination .mud-button-root,
+    .mud-theme-dark .mud-data-grid .mud-table-pagination .mud-pagination .mud-icon-root,
+    .mud-theme-dark .mud-pagination .mud-icon-root,
+    .mud-theme-dark .mud-pagination .mud-svg-icon {
+        color: #fff !important;
+        font-weight: 800 !important;
+        opacity: 1 !important
+    }
+
+        .mud-theme-dark .mud-pagination .mud-button-root.mud-disabled,
+        .mud-theme-dark .mud-pagination .mud-button-root:disabled {
+            opacity: 1 !important;
+            color: #fff !important
+        }
+
+    .mud-data-grid .mud-table-body tr.white-row {
+        background-color: #fff !important;
+        --mud-palette-text-primary: #0F172A;
+        color: #0F172A !important
+    }
+
+        .mud-data-grid .mud-table-body tr.white-row td,
+        .mud-data-grid .mud-table-body tr.white-row td *,
+        .mud-data-grid .mud-table-body tr.white-row .mud-typography,
+        .mud-data-grid .mud-table-body tr.white-row .mud-icon-root {
+            color: #0F172A !important;
+            fill: #0F172A !important
+        }
+</style>
+
+<MudDataGrid T="Element"
+             MultiSelection="true"
+             Items="@Elements"
+             SortMode="SortMode.Multiple"
+             Filterable="true"
+             FilterMode="DataGridFilterMode.Simple"
+             FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+             QuickFilter="@_quickFilter"
+             Hideable="true"
+             RowClick="@RowClicked"
+             RowContextMenuClick="RowRightClicked"
+             SelectedItemsChanged="@SelectedItemsChanged"
+             RowStyleFunc="@_rowStyleFunc"
+             RowClassFunc="@_rowClassFunc"
+             @bind-Page="_page"
+             @bind-PageSize="_pageSize">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="_searchString"
+                      Placeholder="Search"
+                      Adornment="Adornment.Start"
+                      Immediate="true"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium"
+                      Class="mt-0" />
+    </ToolBarContent>
+
+    <Columns>
+        <PropertyColumn Property="x => x.Number" Title="Nr" Sortable="false" Filterable="true" />
+        <PropertyColumn Property="x => x.Sign" Filterable="true" />
+        <PropertyColumn Property="x => x.Name" SortBy="@_sortBy" FilterMode="DataGridFilterMode.ColumnFilterMenu" />
+        <PropertyColumn Property="x => x.Position" Filterable="true" />
+        <PropertyColumn Property="x => x.Molar" Title="Molar mass" Filterable="true" />
+    </Columns>
+
+    <PagerContent>
+        <MudDataGridPager T="Element"
+                          @bind-Page="_page"
+                          @bind-PageSize="_pageSize"
+                          PageSizeOptions="new int[]{10}"
+                          RowsPerPageString="Rows per page" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private IEnumerable<Element> Elements = new List<Element>();
+    private string _searchString = string.Empty;
+    private int _page = 0;
+    private int _pageSize = 10;
+
+    private Func<Element, object> _sortBy => x => x.Name;
+
+    private Func<Element, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString)) return true;
+        if (x.Sign.Contains(_searchString, StringComparison.OrdinalIgnoreCase)) return true;
+        if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase)) return true;
+        if ($"{x.Number} {x.Position} {x.Molar}".Contains(_searchString)) return true;
+        return false;
+    };
+
+    protected override void OnInitialized()
+    {
+        var total = _pageSize * 100;
+        Elements = Enumerable.Range(1, total).Select(i => new Element
+            {
+                Number = i,
+                Sign = $"E{i:000}",
+                Name = $"Element {i}",
+                Position = ((i - 1) % 18) + 1,
+                Molar = Math.Round(1.008 + i * 0.125 + ((i % 7) * 0.037), 3)
+            }).ToList();
+    }
+
+    private Func<Element, int, string> _rowStyleFunc => (_, i) =>
+    {
+        var m = i % 4;
+        if (m == 0) return "background-color:rgba(var(--mud-palette-success-rgb),0.18);";
+        if (m == 1) return "";
+        if (m == 2) return "background-color:rgba(var(--mud-palette-warning-rgb),0.18);";
+        return "background-color:rgba(var(--mud-palette-error-rgb),0.18);";
+    };
+
+    private Func<Element, int, string> _rowClassFunc => (_, i) =>
+    {
+        var m = i % 4;
+        if (m == 1) return "white-row";
+        return null;
+    };
+
+    void RowClicked(DataGridRowClickEventArgs<Element> args) { }
+    void RowRightClicked(DataGridRowClickEventArgs<Element> args) { }
+    void SelectedItemsChanged(HashSet<Element> items) { }
+
+    public class Element
+    {
+        public int Number { get; set; }
+        public string Sign { get; set; }
+        public string Name { get; set; }
+        public int Position { get; set; }
+        public double Molar { get; set; }
+    }
+}
