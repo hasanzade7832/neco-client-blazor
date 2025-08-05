@@ -1,7 +1,28 @@
 ﻿@using MudBlazor
 @using Microsoft.AspNetCore.Components
 
-<MudAppBar Position="Position.Fixed" 
+<style>
+    .no-hover:hover {
+        background-color: transparent !important;
+        transform: none !important;
+    }
+
+    .appbar {
+        width: 100%;
+        background-color: var(--mud-palette-appbar-background) !important;
+        color: var(--mud-palette-appbar-text) !important;
+    }
+
+    .drawer-item:hover {
+        background-color: var(--mud-palette-action-default-hover) !important;
+    }
+
+    .text-primary-color {
+        color: var(--mud-palette-text-primary) !important;
+    }
+</style>
+
+<MudAppBar Position="Position.Fixed"
            Dense="true"
            Elevation="0"
            Dir="ltr"

@@ -2,6 +2,40 @@
 @using Microsoft.AspNetCore.Components
 @using Microsoft.JSInterop
 
+<style>
+    .sidebar.collapsed .nav-mini {
+        position: relative;
+        display: block !important;
+        width: 56px;
+        height: 56px;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+        .sidebar.collapsed .nav-mini .centerer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .sidebar.collapsed .nav-mini .mud-icon-root {
+            margin: 0 !important;
+        }
+
+    .hover-surface:hover {
+        background-color: var(--mud-palette-action-default-hover) !important;
+    }
+
+    .sidebar .text-primary-color {
+        color: var(--mud-palette-drawer-text) !important;
+    }
+
+    .sidebar .mud-icon-root {
+        color: var(--mud-palette-drawer-icon) !important;
+    }
+</style>
 
 <div class="@($"sidebar {(_isOpen ? "expanded" : "collapsed")}")"
      style="@($"position:fixed; top:0; left:0; height:100vh; width:{(_isOpen ? "250px" : "56px")}; background:var(--mud-palette-drawer-background); color:var(--mud-palette-drawer-text); z-index:9999; padding-top:16px; box-shadow:0 0 10px rgba(0,0,0,0.1); transition:width 0.3s; overflow:hidden;")"

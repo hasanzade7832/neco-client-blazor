@@ -1,3 +1,5 @@
+/* ----------  APP.CSS  ---------- */
+
 .contents {
   display: contents;
 }
@@ -10,25 +12,154 @@
   align-items: center;
 }
 
-html, body, #app {
+/* ریست پایهٔ سند */
+
+html,
+body,
+#app {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  /* نوار عمودی فقط در صورت نیاز نمایش داده می‌شود */
+  overflow-y: auto;
   box-sizing: border-box;
+}
+
+/* اسکرول در دسکتاپ فقط زمانی ظاهر می‌شود که محتوا از صفحه بیرون بزند */
+
+@media (min-width: 992px) {
+  html,
+    body {
+    overflow-y: auto;
+    /* نمایش در صورت نیاز */
+  }
+}
+
+/* در صفحات کوچک همیشه اسکرول فعال است */
+
+@media (max-width: 991.98px) {
+  html,
+    body {
+    overflow-y: auto;
+  }
 }
 
 .root-layout {
   min-height: 100dvh;
-  overflow-y: auto;
   overflow-x: hidden;
+  overflow-y: auto;
+  /* ← برای نمایش اسکرول فقط در صورت نیاز */
 }
+
+/* سازگاری کامل با MudBlazor */
 
 .mud-layout,
 .mud-main-content {
   min-height: 0 !important;
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* ← مانع قفل‌شدن محتوا در دسکتاپ */
   box-sizing: border-box;
+}
+
+/*/////////////////////////////////*/
+
+/* wwwroot/css/ProjectsBoard.css */
+
+/* کانتینر کلی پروژه‌ها در حالت دسکتاپ */
+
+.projects-desktop {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 12px;
+  box-sizing: border-box;
+}
+
+/* سایدبار در حالت دسکتاپ */
+
+.projects-desktop .sidebar-container {
+  flex: 0 0 280px;
+  overflow-y: auto;
+  max-height: calc(100vh - 140px);
+  box-sizing: border-box;
+}
+
+/* تابلو کارت‌ها در حالت دسکتاپ */
+
+.projects-desktop .board-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 140px);
+  box-sizing: border-box;
+}
+
+/* کانتینر کلی پروژه‌ها در حالت موبایل/تبلت */
+
+.projects-mobile {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  min-width: 720px;
+  padding: 8px;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 50vh;
+  box-sizing: border-box;
+}
+
+/* سایدبار در حالت موبایل/تبلت */
+
+.projects-mobile .sidebar-container {
+  flex: 0 0 280px;
+  overflow-y: auto;
+  max-height: 50vh;
+  box-sizing: border-box;
+}
+
+/* تابلو کارت‌ها در حالت موبایل/تبلت */
+
+.projects-mobile .board-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 50vh;
+  box-sizing: border-box;
+}
+
+/* استایل مشترک برای هر کارت */
+
+.project-card {
+  background-color: var(--mud-palette-surface);
+  border: 1px solid var(--mud-palette-action-default);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  cursor: default;
+}
+
+.project-card.clickable {
+  cursor: pointer;
+}
+
+/* برای اسکرول هم‌زمان عمودی و افقی در موبایل/تبلت */
+
+.projects-mobile {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* کارت Tasks تمام عرض و وسط چین */
+
+.project-card.tasks {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
 }

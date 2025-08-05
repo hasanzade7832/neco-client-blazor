@@ -2,164 +2,112 @@
 @using MudBlazor
 @inject NavigationManager NavigationManager
 
-<style>
-    .org-scroll {
-        scrollbar-width: thin;
-        scrollbar-color: #4F81BD transparent;
-    }
-
-        .org-scroll::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-        .org-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .org-scroll::-webkit-scrollbar-thumb {
-            background-color: #4F81BD;
-            border-radius: 8px;
-            border: 2px solid transparent;
-            background-clip: content-box;
-            box-shadow: 0 1px 2px rgba(0,0,0,.2) inset;
-        }
-
-            .org-scroll::-webkit-scrollbar-thumb:hover {
-                background-color: #3d6aa0;
-            }
-</style>
-
 <MudHidden Breakpoint="Breakpoint.SmAndDown">
-    <div style="width:100%;display:flex;justify-content:center;">
-        <div style="width:100%;max-width:1200px;--boards-h:calc(100vh - 140px);box-sizing:border-box;">
-            <div style="display:flex;align-items:stretch;gap:16px;height:var(--boards-h);box-sizing:border-box;">
-                <div style="flex:0 0 280px;height:var(--boards-h);display:flex;align-items:stretch;justify-content:center;">
-                    <ProjectsSidebar HeightCss="min(300px, var(--boards-h))" />
-                </div>
-
-                <div class="org-scroll" style="flex:1;min-width:0;height:var(--boards-h);overflow-y:auto;display:flex;">
-                    <div style="width:100%;display:flex;align-items:flex-start;justify-content:center;padding-top:12px;box-sizing:border-box;">
-                        <MudGrid GutterSize="1" Style="width:100%;max-width:960px;">
-                            <MudItem xs="12" sm="4">
-                                <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                    <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                        Alerts&nbsp;<span style="font-weight:700;">(<span>3</span>,<span style="color:var(--mud-palette-error);font-weight:700;">0</span>)</span>
-                                    </span>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="12" sm="4">
-                                <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                    <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                        Follow&nbsp;Up&nbsp;<span style="font-weight:700;">(<span>8</span>,<span style="color:var(--mud-palette-error);font-weight:700;">2</span>)</span>
-                                    </span>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="12" sm="4">
-                                <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                    <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                        Comments&nbsp;<span style="font-weight:700;">(<span>13</span>,<span style="color:var(--mud-palette-error);font-weight:700;">5</span>)</span>
-                                    </span>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="12">
-                                <div @onclick='() => NavigationManager.NavigateTo("/tasks")' style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:pointer;">
-                                    <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                        Tasks&nbsp;<span style="font-weight:700;">(<span>23</span>,<span style="color:var(--mud-palette-error);font-weight:700;">8</span>)</span>
-                                    </span>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="12" sm="4">
-                                <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                    <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                        Meetings&nbsp;<span style="font-weight:700;">(<span>6</span>,<span style="color:var(--mud-palette-error);font-weight:700;">2</span>)</span>
-                                    </span>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="12" sm="4">
-                                <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                    <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                        Issues&nbsp;<span style="font-weight:700;">(<span>10</span>,<span style="color:var(--mud-palette-error);font-weight:700;">9</span>)</span>
-                                    </span>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="12" sm="4">
-                                <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                    <span style="color:var(--mud-palette-text-primary);font-weight:700;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                        Letters&nbsp;<span style="font-weight:700;">(<span>8</span>,<span style="color:var(--mud-palette-error);font-weight:700;">2</span>)</span>
-                                    </span>
-                                </div>
-                            </MudItem>
-                        </MudGrid>
-                    </div>
-                </div>
-            </div>
+    <div class="projects-desktop">
+        <!-- SIDEBAR -->
+        <div class="sidebar-container">
+            <ProjectsSidebar />
+        </div>
+        <!-- BOARD -->
+        <div class="board-container org-scroll">
+            <MudGrid GutterSize="1"
+                     Style="width:100%;max-width:960px;margin:0 auto;"
+                     Justify="Justify.Center">
+                @foreach (var card in Cards)
+                {
+                    var isTasks = card.Title == "Tasks";
+                    <MudItem xs="12" sm="@(isTasks ? 12 : 4)">
+                        <div @onclick="() => OnCardClick(card)"
+                             class="project-card @(card.IsClickable ? "clickable" : "") @(isTasks ? "tasks" : "")">
+                            <span style="
+                                color:var(--mud-palette-text-primary);
+                                font-weight:500;
+                                font-size:1.125rem;
+                                display:inline-flex;
+                                align-items:center;
+                                white-space:nowrap;
+                                overflow:hidden;
+                                text-overflow:ellipsis;
+                                max-width:100%;">
+                                @card.Title&nbsp;
+                                <span style="font-weight:700;">
+                                    (<span>@card.Total</span>,
+                                    <span style="color:var(--mud-palette-error);font-weight:700;">@card.Delayed</span>)
+                                </span>
+                            </span>
+                        </div>
+                    </MudItem>
+                }
+            </MudGrid>
         </div>
     </div>
 </MudHidden>
 
 <MudHidden Breakpoint="Breakpoint.MdAndUp">
-    <div class="org-scroll" style="width:100%;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;--boards-h:50vh;height:var(--boards-h);">
-        <div style="display:flex;align-items:stretch;gap:16px;min-width:1040px;height:100%;padding:8px;box-sizing:border-box;">
-            <div style="flex:0 0 280px;height:100%;display:flex;align-items:stretch;justify-content:center;">
-                <ProjectsSidebar HeightCss="var(--boards-h)" />
-            </div>
-
-            <div style="flex:1;min-width:720px;height:100%;display:flex;overflow:hidden;">
-                <div style="width:100%;display:flex;align-items:flex-start;justify-content:center;box-sizing:border-box;">
-                    <MudGrid GutterSize="1" Style="width:100%;max-width:960px;">
-                        <MudItem xs="12" sm="4">
-                            <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                    Alerts&nbsp;<span style="font-weight:700;">(<span>3</span>,<span style="color:var(--mud-palette-error);font-weight:700;">0</span>)</span>
+    <div class="projects-mobile">
+        <!-- SIDEBAR -->
+        <div class="sidebar-container">
+            <ProjectsSidebar />
+        </div>
+        <!-- BOARD -->
+        <div class="board-container org-scroll">
+            <MudGrid GutterSize="1"
+                     Style="width:100%;max-width:960px;margin:0 auto;"
+                     Justify="Justify.Center">
+                @foreach (var card in Cards)
+                {
+                    var isTasks = card.Title == "Tasks";
+                    <MudItem xs="12" sm="@(isTasks ? 12 : 4)">
+                        <div @onclick="() => OnCardClick(card)"
+                             class="project-card @(card.IsClickable ? "clickable" : "") @(isTasks ? "tasks" : "")">
+                            <span style="
+                                color:var(--mud-palette-text-primary);
+                                font-weight:500;
+                                font-size:1.125rem;
+                                display:inline-flex;
+                                align-items:center;
+                                white-space:nowrap;
+                                overflow:hidden;
+                                text-overflow:ellipsis;
+                                max-width:100%;">
+                                @card.Title&nbsp;
+                                <span style="font-weight:700;">
+                                    (<span>@card.Total</span>,
+                                    <span style="color:var(--mud-palette-error);font-weight:700;">@card.Delayed</span>)
                                 </span>
-                            </div>
-                        </MudItem>
-                        <MudItem xs="12" sm="4">
-                            <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                    Follow&nbsp;Up&nbsp;<span style="font-weight:700;">(<span>8</span>,<span style="color:var(--mud-palette-error);font-weight:700;">2</span>)</span>
-                                </span>
-                            </div>
-                        </MudItem>
-                        <MudItem xs="12" sm="4">
-                            <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                    Comments&nbsp;<span style="font-weight:700;">(<span>13</span>,<span style="color:var(--mud-palette-error);font-weight:700;">5</span>)</span>
-                                </span>
-                            </div>
-                        </MudItem>
-                        <MudItem xs="12">
-                            <div @onclick='() => NavigationManager.NavigateTo("/tasks")' style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:pointer;">
-                                <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                    Tasks&nbsp;<span style="font-weight:700;">(<span>23</span>,<span style="color:var(--mud-palette-error);font-weight:700;">8</span>)</span>
-                                </span>
-                            </div>
-                        </MudItem>
-                        <MudItem xs="12" sm="4">
-                            <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                    Meetings&nbsp;<span style="font-weight:700;">(<span>6</span>,<span style="color:var(--mud-palette-error);font-weight:700;">2</span>)</span>
-                                </span>
-                            </div>
-                        </MudItem>
-                        <MudItem xs="12" sm="4">
-                            <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                    Issues&nbsp;<span style="font-weight:700;">(<span>10</span>,<span style="color:var(--mud-palette-error);font-weight:700;">9</span>)</span>
-                                </span>
-                            </div>
-                        </MudItem>
-                        <MudItem xs="12" sm="4">
-                            <div style="background-color:var(--mud-palette-surface);border:1px solid var(--mud-palette-action-default);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06);">
-                                <span style="color:var(--mud-palette-text-primary);font-weight:500;font-size:1.125rem;display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">
-                                    Letters&nbsp;<span style="font-weight:700;">(<span>8</span>,<span style="color:var(--mud-palette-error);font-weight:700;">2</span>)</span>
-                                </span>
-                            </div>
-                        </MudItem>
-                    </MudGrid>
-                </div>
-            </div>
+                            </span>
+                        </div>
+                    </MudItem>
+                }
+            </MudGrid>
         </div>
     </div>
 </MudHidden>
+
+@code {
+    class CardInfo
+    {
+        public string Title { get; set; } = "";
+        public int Total { get; set; }
+        public int Delayed { get; set; }
+        public bool IsClickable { get; set; }
+        public string NavigateTo { get; set; } = "";
+    }
+
+    private List<CardInfo> Cards = new()
+    {
+        new() { Title = "Alerts",     Total = 3,  Delayed = 0, IsClickable = false },
+        new() { Title = "Follow Up",  Total = 8,  Delayed = 2, IsClickable = false },
+        new() { Title = "Comments",   Total = 13, Delayed = 5, IsClickable = false },
+        new() { Title = "Tasks",      Total = 23, Delayed = 8, IsClickable = true,  NavigateTo = "/tasks" },
+        new() { Title = "Meetings",   Total = 6,  Delayed = 2, IsClickable = false },
+        new() { Title = "Issues",     Total = 10, Delayed = 9, IsClickable = false },
+        new() { Title = "Letters",    Total = 8,  Delayed = 2, IsClickable = false },
+    };
+
+    private void OnCardClick(CardInfo card)
+    {
+        if (card.IsClickable && !string.IsNullOrEmpty(card.NavigateTo))
+            NavigationManager.NavigateTo(card.NavigateTo);
+    }
+}

@@ -1,4 +1,6 @@
-﻿.no-hover:hover {
+﻿/* ----------  NAVBAR.CSS  ---------- */
+
+.no-hover:hover {
     background-color: transparent !important;
     transform: none !important;
 }
@@ -17,6 +19,7 @@
     color: var(--mud-palette-text-primary) !important;
 }
 
+/* در صفحات کوچک اجازهٔ اسکرول عمودی وجود دارد */
 @media (max-width: 599px) {
     .mud-layout {
         height: auto !important;

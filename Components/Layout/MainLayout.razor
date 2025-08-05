@@ -37,15 +37,17 @@
 
     /* ------- تنظیمات قابل تغییر ------- */
     // هر چیزی کوچک‌تر از این Breakpoint «موبایل» حساب می‎شود
-    private const Breakpoint FreeScrollFrom = Breakpoint.Lg;   // ← اگر خواستید دقیق‌تر کنید، این را کم/زیاد کنید
+    private const Breakpoint FreeScrollFrom = Breakpoint.Lg;
 
     /* ------- استایل‌ها ------- */
+
+    /* در دسکتاپ نوار اسکرول تنها هنگام نیاز ظاهر می‌شود */
     private string LayoutStyle =>
         _bp < FreeScrollFrom
-            // موبایل یا زوم بالا
+            /* موبایل یا زوم بالا */
             ? "height:auto; overflow-y:auto;"
-            // دسکتاپ عادی
-            : "height:100dvh; overflow:hidden;";
+            /* دسکتاپ عادی */
+            : "height:100dvh; overflow-y:auto;";
 
     private string MainContentStyle =>
         $"padding-left:{(_sidebarOpen ? "250px" : "56px")};" +
@@ -54,9 +56,9 @@
         $"padding-bottom:24px;" +
         $"box-sizing:border-box;" +
         $"width:100%;" +
-        $"min-height:calc(100dvh - 0px);" +  /* استفاده از 100dvh */
+        $"min-height:calc(100dvh - 0px);" +
         $"height:auto;" +
-        $"overflow-y:auto !important;" +    /* اسکرول محتوا همیشه فعال */
+        $"overflow-y:auto !important;" +    /* اسکرول محتوا همیشه در صورت نیاز فعال */
         $"background-color:var(--mud-palette-background);" +
         $"transition:padding-left 300ms ease;";
 
@@ -65,3 +67,4 @@
         $"margin:0 auto;" +
         $"width:100%;";
 }
+
