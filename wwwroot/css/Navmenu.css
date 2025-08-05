@@ -1,0 +1,25 @@
+﻿.no-hover:hover {
+    background-color: transparent !important;
+    transform: none !important;
+}
+
+.appbar {
+    width: 100%;
+    background-color: var(--mud-palette-appbar-background) !important;
+    color: var(--mud-palette-appbar-text) !important;
+}
+
+.drawer-item:hover {
+    background-color: var(--mud-palette-action-default-hover) !important;
+}
+
+.text-primary-color {
+    color: var(--mud-palette-text-primary) !important;
+}
+
+@media (max-width: 599px) {
+    .mud-layout {
+        height: auto !important;
+        overflow-y: auto !important;
+    }
+}

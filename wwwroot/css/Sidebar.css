@@ -1,0 +1,36 @@
+﻿.sidebar.collapsed {
+    width: 56px !important;
+}
+
+    .sidebar.collapsed .nav-mini {
+        position: relative;
+        display: block !important;
+        width: 56px;
+        height: 56px;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+        .sidebar.collapsed .nav-mini .centerer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .sidebar.collapsed .nav-mini .mud-icon-root {
+            margin: 0 !important;
+        }
+
+.hover-surface:hover {
+    background-color: var(--mud-palette-action-default-hover) !important;
+}
+
+.sidebar .text-primary-color {
+    color: var(--mud-palette-drawer-text) !important;
+}
+
+.sidebar .mud-icon-root {
+    color: var(--mud-palette-drawer-icon) !important;
+}
