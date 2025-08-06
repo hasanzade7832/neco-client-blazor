@@ -156,11 +156,7 @@ body,
   border-radius: 4px;
 }
 
-.board-container {
-  scrollbar-color: #005B9E #E6F0FA;
-  scrollbar-width: thin;
-}
-
+.board-container,
 .sidebar-container {
   scrollbar-color: #005B9E #E6F0FA;
   scrollbar-width: thin;
@@ -240,6 +236,8 @@ body,
   overflow-y: hidden;
   flex: 1;
   min-height: 0;
+  height: 70vh;
+  /* NEW – ثابت کردن ارتفاع ستون‌ها و دو برابر کردن آن */
   box-sizing: border-box;
 }
 
@@ -267,6 +265,8 @@ body,
   box-sizing: border-box;
 }
 
+/* اسکرول‌بار */
+
 .cards-container::-webkit-scrollbar,
     .table-inner::-webkit-scrollbar {
   width: 8px;
@@ -283,21 +283,20 @@ body,
   border-radius: 4px;
 }
 
-.cards-container {
-  scrollbar-color: #005B9E #E6F0FA;
-  scrollbar-width: thin;
-}
-
+.cards-container,
 .table-inner {
   scrollbar-color: #005B9E #E6F0FA;
   scrollbar-width: thin;
 }
 
+/* موبایل */
+
 @media (max-width: 960px) {
   .cards-container {
     overflow-x: auto;
     overflow-y: hidden;
-    height: 35vh;
+    height: 70vh;
+    /* UPDATED – دو برابر نسخهٔ قبلی (۳۵→۷۰) */
   }
 
   .cards-container > * {
@@ -307,5 +306,3 @@ body,
     overflow-y: auto;
   }
 }
-
-
