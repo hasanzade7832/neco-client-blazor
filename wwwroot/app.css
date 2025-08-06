@@ -77,8 +77,6 @@ body,
    استایل پایه برای دسکتاپ
    ======================================================== */
 
-/* کانتینر کلی پروژه‌ها در حالت دسکتاپ */
-
 .projects-desktop {
   display: flex;
   align-items: stretch;
@@ -89,16 +87,12 @@ body,
   box-sizing: border-box;
 }
 
-/* سایدبار در حالت دسکتاپ */
-
 .projects-desktop .sidebar-container {
   flex: 0 0 280px;
   overflow-y: auto;
   max-height: calc(100vh - 140px);
   box-sizing: border-box;
 }
-
-/* تابلو کارت‌ها در حالت دسکتاپ */
 
 .projects-desktop .board-container {
   flex: 1;
@@ -109,44 +103,27 @@ body,
 }
 
 /* ========================================================
-   استایل پایه برای موبایل/تبلت (و هم دسکتاپ برای نمایش متفاوت)
+   استایل پایه برای موبایل/تبلت
    ======================================================== */
-
-/* کانتینر کلی پروژه‌ها در حالت موبایل/تبلت */
 
 .projects-mobile {
   display: flex;
   align-items: stretch;
   gap: 16px;
   padding: 8px;
-  overflow: hidden;
-  /* مخفی کردن افقی/عمودی خارج از محدوده */
-  max-height: 50vh;
   box-sizing: border-box;
+  /* ارتفاع و اسکرول‌ها در مدیا کوئری تنظیم می‌شوند */
 }
-
-/* سایدبار در حالت موبایل/تبلت */
 
 .projects-mobile .sidebar-container {
-  flex: 1;
-  /* عرض برابر */
-  overflow-y: auto;
-  max-height: 50vh;
-  box-sizing: border-box;
+  /* مقادیر override در مدیا کوئری */
 }
-
-/* تابلو کارت‌ها در حالت موبایل/تبلت */
 
 .projects-mobile .board-container {
-  flex: 1;
-  /* عرض برابر */
-  overflow-y: auto;
-  /* فقط عمودی اسکرول */
-  max-height: 50vh;
-  box-sizing: border-box;
+  /* مقادیر override در مدیا کوئری */
 }
 
-/* استایل مشترک برای هر کارت */
+/* استایل مشترک کارت‌ها */
 
 .project-card {
   background-color: var(--mud-palette-surface);
@@ -164,15 +141,13 @@ body,
   cursor: pointer;
 }
 
-/* کارت Tasks تمام عرض و وسط‌چین */
-
 .project-card.tasks {
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
 }
 
-/* استایل scrollbar عمومی (دسکتاپ + موبایل) */
+/* استایل عمومی اسکرول‌بار */
 
 .board-container::-webkit-scrollbar {
   height: 8px;
@@ -194,29 +169,29 @@ body,
 }
 
 /* ========================================================
-   Override برای موبایل: کنار هم قرار گرفتن سایدبار و بورد
-   و هر دو با overflow-y
+   مدیا کوئری موبایل/تبلت: تقسیم دقیق عرض و ارتفاع،
+   اسکرول افقی کانتینر و عمودی هر ستون
    ======================================================== */
 
 @media (max-width: 960px) {
   .projects-mobile {
-    /* حالت افقی یا عمودی اسکرول عمومی غیرفعال */
-    overflow: hidden;
+    overflow-x: auto;
+    /* اسکرول افقی کل کانتینر */
+    overflow-y: hidden;
+    height: 50vh;
+    /* ارتفاع ثابت کانتینر */
   }
 
   .projects-mobile .sidebar-container,
         .projects-mobile .board-container {
-    flex: 1 1 0;
-    /* تقسیم عرض به دو قسمت مساوی */
-    min-width: 0;
-    /* جلوگیری از overflow عرض */
-    max-height: 50vh;
-    /* ارتفاع یکسان */
-  }
-
-  /* اگر بخواهیم هم‌چنان gap رعایت شود */
-
-  .projects-mobile {
-    gap: 8px;
+    flex: 0 0 50%;
+    /* هر کدام دقیقاً نصف عرض کانتینر */
+    max-width: 50%;
+    /* حداکثر نصف عرض */
+    height: 100%;
+    /* تمام ارتفاع والد (50vh) */
+    overflow-y: auto;
+    /* اسکرول عمودی مستقل */
+    box-sizing: border-box;
   }
 }
