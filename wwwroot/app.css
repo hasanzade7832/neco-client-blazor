@@ -1,5 +1,61 @@
 /* ----------  APP.CSS  ---------- */
 
+/* ریست پایهٔ سند و فعال‌سازی اسکرول عمودی تنها در صورت نیاز */
+
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* دسکتاپ: اسکرول عمودی فقط در صورت نیاز */
+
+@media (min-width: 992px) {
+  html,
+    body {
+    overflow-y: auto;
+  }
+}
+
+/* موبایل/تبلت: همیشه اسکرول عمودی */
+
+@media (max-width: 991.98px) {
+  html,
+    body {
+    overflow-y: auto;
+  }
+}
+
+/* روت کلی لای‌آوت */
+
+.root-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* هماهنگی با MudBlazor */
+
+.mud-layout,
+.mud-main-content {
+  min-height: 0 !important;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* کلاس‌های کمکی */
+
 .contents {
   display: contents;
 }
@@ -12,70 +68,11 @@
   align-items: center;
 }
 
-/* ریست پایهٔ سند */
-
-html,
-body,
-#app {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  /* نوار عمودی فقط در صورت نیاز نمایش داده می‌شود */
-  overflow-y: auto;
-  box-sizing: border-box;
-}
-
-/* اسکرول در دسکتاپ فقط زمانی ظاهر می‌شود که محتوا از صفحه بیرون بزند */
-
-@media (min-width: 992px) {
-  html,
-    body {
-    overflow-y: auto;
-    /* نمایش در صورت نیاز */
-  }
-}
-
-/* در صفحات کوچک همیشه اسکرول فعال است */
-
-@media (max-width: 991.98px) {
-  html,
-    body {
-    overflow-y: auto;
-  }
-}
-
-.root-layout {
-  min-height: 100dvh;
-  overflow-x: hidden;
-  overflow-y: auto;
-  /* ← برای نمایش اسکرول فقط در صورت نیاز */
-}
-
-/* سازگاری کامل با MudBlazor */
-
-.mud-layout,
-.mud-main-content {
-  min-height: 0 !important;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  /* ← مانع قفل‌شدن محتوا در دسکتاپ */
-  box-sizing: border-box;
-}
-
-/*/////////////////////////////////*/
-
-/* wwwroot/css/ProjectsBoard.css */
-
 /* ========================================================
    ProjectsBoard — Desktop & Mobile Scroll + Custom Scrollbar
    ======================================================== */
 
-/* ========================================================
-   استایل پایه برای دسکتاپ
-   ======================================================== */
+/* دسکتاپ */
 
 .projects-desktop {
   display: flex;
@@ -102,9 +99,7 @@ body,
   box-sizing: border-box;
 }
 
-/* ========================================================
-   استایل پایه برای موبایل/تبلت
-   ======================================================== */
+/* موبایل/تبلت */
 
 .projects-mobile {
   display: flex;
@@ -112,18 +107,14 @@ body,
   gap: 16px;
   padding: 8px;
   box-sizing: border-box;
-  /* ارتفاع و اسکرول‌ها در مدیا کوئری تنظیم می‌شوند */
 }
 
-.projects-mobile .sidebar-container {
-  /* مقادیر override در مدیا کوئری */
+.projects-mobile .sidebar-container,
+    .projects-mobile .board-container {
+  box-sizing: border-box;
 }
 
-.projects-mobile .board-container {
-  /* مقادیر override در مدیا کوئری */
-}
-
-/* استایل مشترک کارت‌ها */
+/* کارت‌ها */
 
 .project-card {
   background-color: var(--mud-palette-surface);
@@ -147,18 +138,20 @@ body,
   margin: 0 auto;
 }
 
-/* استایل عمومی اسکرول‌بار */
+/* اسکرول‌بارهای سفارشی */
 
-.board-container::-webkit-scrollbar {
-  height: 8px;
+.board-container::-webkit-scrollbar,
+.sidebar-container::-webkit-scrollbar {
   width: 8px;
 }
 
-.board-container::-webkit-scrollbar-track {
+.board-container::-webkit-scrollbar-track,
+.sidebar-container::-webkit-scrollbar-track {
   background: #E6F0FA;
 }
 
-.board-container::-webkit-scrollbar-thumb {
+.board-container::-webkit-scrollbar-thumb,
+.sidebar-container::-webkit-scrollbar-thumb {
   background: #005B9E;
   border-radius: 4px;
 }
@@ -168,30 +161,151 @@ body,
   scrollbar-width: thin;
 }
 
-/* ========================================================
-   مدیا کوئری موبایل/تبلت: تقسیم دقیق عرض و ارتفاع،
-   اسکرول افقی کانتینر و عمودی هر ستون
-   ======================================================== */
+.sidebar-container {
+  scrollbar-color: #005B9E #E6F0FA;
+  scrollbar-width: thin;
+}
 
-@media (max-width: 960px) {
+/* موبایل/تبلت: اسکرول افقی کانتینر و عمودی ستون‌ها */
+
+@media (max-width:7000px) {
   .projects-mobile {
+    background-color: #f5f7fa;
     overflow-x: auto;
-    /* اسکرول افقی کل کانتینر */
     overflow-y: hidden;
-    height: 50vh;
-    /* ارتفاع ثابت کانتینر */
+    height: 35vh;
   }
 
-  .projects-mobile .sidebar-container,
-        .projects-mobile .board-container {
-    flex: 0 0 50%;
-    /* هر کدام دقیقاً نصف عرض کانتینر */
-    max-width: 50%;
-    /* حداکثر نصف عرض */
+  .projects-mobile .sidebar-container {
+    flex: 0 0 40%;
+    min-width: 200px;
     height: 100%;
-    /* تمام ارتفاع والد (50vh) */
     overflow-y: auto;
-    /* اسکرول عمودی مستقل */
-    box-sizing: border-box;
+  }
+
+  .projects-mobile .board-container {
+    flex: 0 0 60%;
+    min-width: 280px;
+    height: 100%;
+    overflow-y: auto;
   }
 }
+
+/* ========================================================
+   Task View Styles
+   ======================================================== */
+
+/* نوار تغییر نما */
+
+.task-scroll {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 12px;
+  flex: 0 0 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--mud-palette-primary,#2563EB) transparent;
+}
+
+.task-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.task-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.task-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--mud-palette-primary,#2563EB);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.2);
+}
+
+.task-scroll::-webkit-scrollbar-thumb:hover {
+  filter: brightness(.9);
+}
+
+/* نمای کارت‌ها */
+
+.cards-container {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  padding: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.cards-container > * {
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* نمای جدول */
+
+.table-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.table-inner {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.cards-container::-webkit-scrollbar,
+    .table-inner::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cards-container::-webkit-scrollbar-track,
+    .table-inner::-webkit-scrollbar-track {
+  background: #E6F0FA;
+}
+
+.cards-container::-webkit-scrollbar-thumb,
+    .table-inner::-webkit-scrollbar-thumb {
+  background: #005B9E;
+  border-radius: 4px;
+}
+
+.cards-container {
+  scrollbar-color: #005B9E #E6F0FA;
+  scrollbar-width: thin;
+}
+
+.table-inner {
+  scrollbar-color: #005B9E #E6F0FA;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 960px) {
+  .cards-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 35vh;
+  }
+
+  .cards-container > * {
+    flex: 0 0 50%;
+    min-width: 200px;
+    height: 100%;
+    overflow-y: auto;
+  }
+}
+
+

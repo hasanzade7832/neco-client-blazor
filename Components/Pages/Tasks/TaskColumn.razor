@@ -2,19 +2,34 @@
 @using BlazorApp12.Models
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
+@using STT = System.Threading.Tasks
 
 <div style="@($"height:100%;flex:0 0 {ContainerWidth}px;width:{ContainerWidth}px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;position:relative;background-color:{BackgroundCss};transition:width .25s ease,flex-basis .25s ease;")">
     @if (!Collapsed)
     {
-        <div style="flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;">
-            <div style="font-weight:600;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@Title</div>
-            <div style="display:flex;align-items:center;gap:8px;">
-                <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="@(() => Toggle())" Style="color:var(--mud-palette-text-primary);font-size:24px;" />
-                <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz" Style="font-size:22px;color:var(--mud-palette-text-primary);margin:0;padding:4px;" OnClick="@(e=>OpenHeaderMenu(e))" />
+        <!-- Header -->
+        <div style="flex:0 0 auto; display:flex; justify-content:space-between; align-items:center; padding:8px 12px;">
+            <div style="font-weight:600;font-size:1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                @Title
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft"
+                               OnClick="@Toggle"
+                               Style="color:var(--mud-palette-text-primary); font-size:24px;" />
+                <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz"
+                               OnClick="@OpenHeaderMenu"
+                               Style="font-size:22px; color:var(--mud-palette-text-primary); margin:0; padding:4px;" />
             </div>
         </div>
 
-        <OrgScrollHost Style="flex:1 1 auto;min-height:0;padding:0 8px 12px;box-sizing:border-box;height:100%;overflow:auto;">
+        <!-- Scrollable content -->
+        <OrgScrollHost Style="
+      flex:1 1 auto;
+      min-height:0;
+      overflow-y:auto;
+      overflow-x:hidden;
+      padding:0 8px 12px;
+      box-sizing:border-box;">
             @if (CardsHost is not null)
             {
                 @CardsHost
@@ -33,31 +48,42 @@
             }
         </OrgScrollHost>
 
-        <div style="flex:0 0 auto;padding:0 8px 12px;">
-            <MudButton OnClick="@(() => AddTaskRequested.InvokeAsync(Title))" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add task</MudButton>
+        <!-- Add task button -->
+        <div style="flex:0 0 auto; padding:0 8px 12px;">
+            <MudButton OnClick="@InvokeAddTask"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       FullWidth="true"
+                       Class="rounded-lg py-2">
+                Add task
+            </MudButton>
         </div>
     }
     else
     {
-        <div style="position:absolute;top:6px;right:6px;">
-            <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="@(() => Toggle())" Style="color:var(--mud-palette-text-primary);font-size:24px;" />
+        <!-- Collapsed view -->
+        <div style="position:absolute; top:6px; right:6px;">
+            <MudIconButton Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight"
+                           OnClick="@Toggle"
+                           Style="color:var(--mud-palette-text-primary); font-size:24px;" />
         </div>
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-            <div style="transform:rotate(-90deg);font-weight:700;font-size:1.1rem;color:rgba(0,0,0,.55);letter-spacing:.5px;white-space:nowrap;">@Title</div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+            <div style="transform:rotate(-90deg); font-weight:700; font-size:1.1rem; color:rgba(0,0,0,.55); letter-spacing:.5px; white-space:nowrap;">
+                @Title
+            </div>
         </div>
     }
 </div>
 
 <GlassMenu Items="@HeaderMenuItems"
            Show="@_headerMenuOpen"
-           ShowChanged="@(v=>_headerMenuOpen=v)"
+           ShowChanged="@(v => _headerMenuOpen = v)"
            Left="@_headerX"
            Top="@_headerY"
            OnItemClick="OnHeaderMenuItem" />
 
 <GlassMenu Items="@CardMenuItems"
            Show="@_cardMenuOpen"
-           ShowChanged="@(v=>_cardMenuOpen=v)"
+           ShowChanged="@(v => _cardMenuOpen = v)"
            Left="@_cardX"
            Top="@_cardY"
            OnItemClick="OnCardMenuItem" />
@@ -67,110 +93,107 @@
            HeaderTitle="Select All"
            PropertyItems="@PropertyItems"
            Show="@_propertiesOpen"
-           ShowChanged="@(v=>_propertiesOpen=v)"
+           ShowChanged="@(v => _propertiesOpen = v)"
            Left="@_propertiesX"
            Top="@_propertiesY"
-           OnPropertyToggled="@(i=>StateHasChanged())"
-           OnToggleAll="@(v=>StateHasChanged())" />
+           OnPropertyToggled="@(i => StateHasChanged())"
+           OnToggleAll="@(v => StateHasChanged())" />
 
 @code {
-    [Parameter] public string Title { get; set; } = "";
-    [Parameter] public IEnumerable<TaskItem> Items { get; set; } = Array.Empty<TaskItem>();
+    [Parameter] public string Title { get; set; }
+    [Parameter] public IEnumerable<TaskItem> Items { get; set; }
     [Parameter] public bool Collapsed { get; set; }
     [Parameter] public EventCallback<bool> CollapsedChanged { get; set; }
-    [Parameter] public string BackgroundCss { get; set; } = "var(--mud-palette-action-default)";
-    [Parameter] public int ExpandedWidth { get; set; } = 280;
-    [Parameter] public int CollapsedWidth { get; set; } = 64;
+    [Parameter] public string BackgroundCss { get; set; }
+    [Parameter] public int ExpandedWidth { get; set; }
+    [Parameter] public int CollapsedWidth { get; set; }
     [Parameter] public bool GlassOnSecond { get; set; }
     [Parameter] public bool Appear { get; set; }
     [Parameter] public RenderFragment CardsHost { get; set; }
     [Parameter] public EventCallback<string> AddTaskRequested { get; set; }
 
     private bool _headerMenuOpen;
-    private double _headerX;
-    private double _headerY;
-
+    private double _headerX, _headerY;
     private bool _cardMenuOpen;
-    private double _cardX;
-    private double _cardY;
-
+    private double _cardX, _cardY;
     private bool _propertiesOpen;
-    private double _propertiesX;
-    private double _propertiesY;
+    private double _propertiesX, _propertiesY;
 
     private readonly List<MenuItemModel> HeaderMenuItems = new()
-    {
-        new MenuItemModel(Icons.Material.Filled.Tune,"Properties", true),
-        new MenuItemModel(Icons.Material.Filled.Sort,"Sort", false)
-    };
+  {
+    new(Icons.Material.Filled.Tune, "Properties", true),
+    new(Icons.Material.Filled.Sort, "Sort", false)
+  };
 
     private readonly List<MenuItemModel> CardMenuItems = new()
-    {
-        new MenuItemModel(Icons.Material.Filled.SubdirectoryArrowRight,"Follow Up", false),
-        new MenuItemModel(Icons.Material.Filled.Notifications,"Alert", false),
-        new MenuItemModel(Icons.Material.Filled.DoubleArrow,"Expedite", false),
-        new MenuItemModel(Icons.Material.Filled.Groups,"Consult", false),
-        new MenuItemModel(Icons.Material.Filled.ChangeCircle,"Reassign", false)
-    };
+  {
+    new(Icons.Material.Filled.SubdirectoryArrowRight, "Follow Up", false),
+    new(Icons.Material.Filled.Notifications,      "Alert",      false),
+    new(Icons.Material.Filled.DoubleArrow,        "Expedite",   false),
+    new(Icons.Material.Filled.Groups,             "Consult",    false),
+    new(Icons.Material.Filled.ChangeCircle,       "Reassign",   false)
+  };
 
     private List<PropertyItemModel> PropertyItems = new()
-    {
-        new PropertyItemModel { Text="Title", Checked=true },
-        new PropertyItemModel { Text="From", Checked=true },
-        new PropertyItemModel { Text="To", Checked=true },
-        new PropertyItemModel { Text="Program" },
-        new PropertyItemModel { Text="Project", Checked=true },
-        new PropertyItemModel { Text="Send Date" },
-        new PropertyItemModel { Text="Seen Date" },
-        new PropertyItemModel { Text="Completion Date", Checked=true },
-        new PropertyItemModel { Text="Due Date" },
-        new PropertyItemModel { Text="Delay" },
-        new PropertyItemModel { Text="Status" }
-    };
+  {
+    new() { Text = "Title", Checked = true },
+    new() { Text = "From", Checked = true },
+    new() { Text = "To", Checked = true },
+    new() { Text = "Program" },
+    new() { Text = "Project", Checked = true },
+    new() { Text = "Send Date" },
+    new() { Text = "Seen Date" },
+    new() { Text = "Completion Date", Checked = true },
+    new() { Text = "Due Date" },
+    new() { Text = "Status", Checked = true }
+  };
 
     private int _appearWidth = 1;
     private bool _appeared;
+    private int ContainerWidth =>
+      Appear && !_appeared
+        ? _appearWidth
+        : (Collapsed ? CollapsedWidth : ExpandedWidth);
 
-    private int ContainerWidth => Appear && !_appeared ? _appearWidth : (Collapsed ? CollapsedWidth : ExpandedWidth);
-
-    protected override async System.Threading.Tasks.Task OnAfterRenderAsync(bool firstRender)
+    protected override async STT.Task OnAfterRenderAsync(bool firstRender)
     {
-        if (Appear && !_appeared)
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender && Appear)
         {
-            await System.Threading.Tasks.Task.Delay(25);
+            await STT.Task.Delay(25);
             _appearWidth = ExpandedWidth;
-            await InvokeAsync(StateHasChanged);
-            await System.Threading.Tasks.Task.Delay(300);
+            StateHasChanged();
+            await STT.Task.Delay(300);
             _appeared = true;
-            await InvokeAsync(StateHasChanged);
+            StateHasChanged();
         }
     }
 
-    private void Toggle() => CollapsedChanged.InvokeAsync(!Collapsed);
+    private STT.Task Toggle()
+      => CollapsedChanged.InvokeAsync(!Collapsed);
 
-    private System.Threading.Tasks.Task OpenHeaderMenu(MouseEventArgs e)
+    private STT.Task InvokeAddTask()
+      => AddTaskRequested.InvokeAsync(Title);
+
+    private STT.Task OpenHeaderMenu(MouseEventArgs e)
     {
         _headerX = e.ClientX + 8;
         _headerY = e.ClientY + 8;
         _headerMenuOpen = true;
-        _cardMenuOpen = false;
-        _propertiesOpen = false;
-        StateHasChanged();
-        return System.Threading.Tasks.Task.CompletedTask;
+        _cardMenuOpen = _propertiesOpen = false;
+        return STT.Task.CompletedTask;
     }
 
-    private System.Threading.Tasks.Task OpenCardMenu(MouseEventArgs e)
+    private STT.Task OpenCardMenu(MouseEventArgs e)
     {
         _cardX = e.ClientX + 12;
         _cardY = e.ClientY + 10;
         _cardMenuOpen = true;
-        _headerMenuOpen = false;
-        _propertiesOpen = false;
-        StateHasChanged();
-        return System.Threading.Tasks.Task.CompletedTask;
+        _headerMenuOpen = _propertiesOpen = false;
+        return STT.Task.CompletedTask;
     }
 
-    private System.Threading.Tasks.Task OnHeaderMenuItem(string key)
+    private STT.Task OnHeaderMenuItem(string key)
     {
         if (key == "Properties")
         {
@@ -179,8 +202,8 @@
             _propertiesOpen = true;
             _headerMenuOpen = true;
         }
-        return System.Threading.Tasks.Task.CompletedTask;
+        return STT.Task.CompletedTask;
     }
 
-    private System.Threading.Tasks.Task OnCardMenuItem(string key) => System.Threading.Tasks.Task.CompletedTask;
+    private STT.Task OnCardMenuItem(string _) => STT.Task.CompletedTask;
 }

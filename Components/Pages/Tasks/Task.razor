@@ -6,79 +6,36 @@
 @using System.Globalization
 @inject IDialogService DialogService
 
-<style>
-    .task-scroll {
-        scrollbar-width: thin;
-        scrollbar-color: var(--mud-palette-primary,#2563EB) transparent;
-    }
 
-        .task-scroll::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
 
-        .task-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
 
-        .task-scroll::-webkit-scrollbar-thumb {
-            background-color: var(--mud-palette-primary,#2563EB);
-            border-radius: 8px;
-            border: 2px solid transparent;
-            background-clip: content-box;
-            box-shadow: 0 1px 2px rgba(0,0,0,.2) inset;
-        }
-
-            .task-scroll::-webkit-scrollbar-thumb:hover {
-                filter: brightness(.9);
-            }
-
-    .dlg-blur {
-        backdrop-filter: blur(10px);
-    }
-
-    .table-wrapper {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-        overflow: hidden;
-    }
-
-    .table-inner {
-        flex: 1;
-        min-height: 0;
-        overflow: hidden; /* فقط جدول خودش اسکرول بخوره */
-    }
-
-    .table-frame {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-        overflow: hidden;
-    }
-
-    /* اگر هنوز اسکرول صفحه هست، اطمینان از اینکه این کانتینر خودش overflow رو نمی‌ذاره */
-    .root-no-scroll {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        overflow: hidden;
-        box-sizing: border-box;
-    }
-
-</style>
-
-<div class="root-no-scroll">
-    <div class="task-scroll" style="display:flex;align-items:center;gap:16px;padding:4px 12px;overflow-x:auto;flex:0 0 auto;">
-        <MudIconButton Icon="@Icons.Material.Filled.TableChart" Color="@(_activeView==ViewMode.Table ? Color.Primary : Color.Inherit)" Style="@(_activeView==ViewMode.Table ? "font-size:64px;" : "font-size:64px;color:#000;")" OnClick="@(() => SetView(ViewMode.Table))" />
-        <MudIconButton Icon="@Icons.Material.Filled.Style" Color="@(_activeView==ViewMode.Cards ? Color.Primary : Color.Inherit)" Style="@(_activeView==ViewMode.Cards ? "font-size:64px;" : "font-size:64px;color:#000;")" OnClick="@(() => SetView(ViewMode.Cards))" />
-        <MudIconButton Icon="@Icons.Material.Filled.CandlestickChart" Color="@(_activeView==ViewMode.Chart ? Color.Primary : Color.Inherit)" Style="@(_activeView==ViewMode.Chart ? "font-size:64px;" : "font-size:64px;color:#000;")" OnClick="@(() => SetView(ViewMode.Chart))" />
-        <MudIconButton Icon="@Icons.Material.Filled.CalendarMonth" Color="@(_activeView==ViewMode.Calendar ? Color.Primary : Color.Inherit)" Style="@(_activeView==ViewMode.Calendar ? "font-size:64px;" : "font-size:64px;color:#000;")" OnClick="@(() => SetView(ViewMode.Calendar))" />
+    <div class="task-scroll">
+        <button type="button"
+                @onclick="@(() => SetView(ViewMode.Table))"
+                style="font-size:64px;border:none;background:none;color:@(_activeView==ViewMode.Table ? "var(--mud-palette-primary)" : "inherit");">
+            <MudIcon Icon="@Icons.Material.Filled.TableChart" />
+        </button>
+        <button type="button"
+                @onclick="@(() => SetView(ViewMode.Cards))"
+                style="font-size:64px;border:none;background:none;color:@(_activeView==ViewMode.Cards ? "var(--mud-palette-primary)" : "inherit");">
+            <MudIcon Icon="@Icons.Material.Filled.Style" />
+        </button>
+        <button type="button"
+                @onclick="@(() => SetView(ViewMode.Chart))"
+                style="font-size:64px;border:none;background:none;color:@(_activeView==ViewMode.Chart ? "var(--mud-palette-primary)" : "inherit");">
+            <MudIcon Icon="@Icons.Material.Filled.CandlestickChart" />
+        </button>
+        <button type="button"
+                @onclick="@(() => SetView(ViewMode.Calendar))"
+                style="font-size:64px;border:none;background:none;color:@(_activeView==ViewMode.Calendar ? "var(--mud-palette-primary)" : "inherit");">
+            <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" />
+        </button>
         <div style="width:1px;height:32px;background-color:rgba(0,0,0,.2);margin:0 8px;"></div>
-        <MudIconButton Icon="@Icons.Material.Filled.GridOn" Color="@(_activeView==ViewMode.Excel ? Color.Primary : Color.Inherit)" Style="@(_activeView==ViewMode.Excel ? "font-size:64px;" : "font-size:64px;color:#000;")" OnClick="@(() => SetView(ViewMode.Excel))" />
+        <button type="button"
+                @onclick="@(() => SetView(ViewMode.Excel))"
+                style="font-size:64px;border:none;background:none;color:@(_activeView==ViewMode.Excel ? "var(--mud-palette-primary)" : "inherit");">
+            <MudIcon Icon="@Icons.Material.Filled.GridOn" />
+        </button>
         <div style="display:flex;flex-direction:column;justify-content:space-between;height:26px;margin:0 8px;">
             <div style="width:4px;height:4px;border-radius:50%;background-color:rgba(0,0,0,.7);"></div>
             <div style="width:4px;height:4px;border-radius:50%;background-color:rgba(0,0,0,.7);"></div>
@@ -87,16 +44,18 @@
         <span style="font-size:.9rem;font-weight:500;white-space:nowrap;">View</span>
     </div>
 
+
     @if (_activeView == ViewMode.Cards)
     {
-        <div class="table-wrapper" style="min-height:0;display:flex;flex:1;overflow:hidden;box-sizing:border-box;">
+        <!-- نمای کارت‌ها -->
+        <div class="cards-container">
             <MudDropContainer T="CardWrap"
                               @ref="_cardContainer"
                               Items="@_cards"
                               ItemsSelector="@((item,column) => item.Column == column)"
                               ItemDropped="OnCardDropped"
                               Class="d-flex"
-                              Style="position:relative;display:flex;align-items:stretch;gap:12px;padding:8px;box-sizing:border-box;flex:1;overflow-x:auto;min-height:0;">
+                              Style="position:relative;display:flex;align-items:stretch;gap:12px;box-sizing:border-box;flex:1;min-height:0;">
                 <ChildContent>
                     <MudDropContainer T="SectionItem"
                                       @ref="_sectionContainer"
@@ -138,21 +97,23 @@
                 </ItemRenderer>
             </MudDropContainer>
         </div>
-
+    }
+    else if (_activeView == ViewMode.Table)
+    {
+        <!-- نمای جدول -->
+        <div class="table-wrapper">
+            <Test />
+        </div>
     }
     else
     {
-        @if (_activeView == ViewMode.Table)
-        {
+        <div class="table-wrapper">
+            <div class="table-inner">
                 <Test />
-        }
-        else
-        {
-               
-        }
+            </div>
+        </div>
     }
 
-</div>
 
 @code {
     enum ViewMode { Table, Cards, Chart, Calendar, Excel }
@@ -271,7 +232,8 @@
     async System.Threading.Tasks.Task OnAddTaskConfirmed(TaskItem item)
     {
         if (_targetSectionForTask == null) return;
-        if (string.IsNullOrWhiteSpace(item.Status)) item.Status = _targetSectionForTask.Name == "Done" ? "Done" : (_targetSectionForTask.Name == "To Do" ? "To Do" : "In Progress");
+        if (string.IsNullOrWhiteSpace(item.Status))
+            item.Status = _targetSectionForTask.Name == "Done" ? "Done" : (_targetSectionForTask.Name == "To Do" ? "To Do" : "In Progress");
         _targetSectionForTask.Items.Add(item);
         _cards.Add(new CardWrap { Task = item, Column = _targetSectionForTask.Name });
         _cardContainer.Refresh();
@@ -319,7 +281,8 @@
 
     private string GetSectionWidthCss(int index)
     {
-        if (index < 0 || index >= _sections.Count) return $"flex:0 0 {ExpandedColWidth}px;width:{ExpandedColWidth}px;height:100%;box-sizing:border-box;";
+        if (index < 0 || index >= _sections.Count)
+            return $"flex:0 0 {ExpandedColWidth}px;width:{ExpandedColWidth}px;height:100%;box-sizing:border-box;";
         var s = _sections[index];
         var w = s.Collapsed ? CollapsedColWidth : ExpandedColWidth;
         return $"flex:0 0 {w}px;width:{w}px;height:100%;box-sizing:border-box;";
