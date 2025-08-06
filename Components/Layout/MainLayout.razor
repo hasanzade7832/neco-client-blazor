@@ -39,9 +39,12 @@
     // هر چیزی کوچک‌تر از این Breakpoint «موبایل» حساب می‎شود
     private const Breakpoint FreeScrollFrom = Breakpoint.Lg;
 
+    // عرض پیش‌فرض حداکثر برای محتوای درونی
+    private const int DefaultMaxWidth = 1600;
+
     /* ------- استایل‌ها ------- */
 
-    /* در دسکتاپ نوار اسکرول تنها هنگام نیاز ظاهر می‌شود */
+    // در دسکتاپ نوار اسکرول تنها هنگام نیاز ظاهر می‌شود
     private string LayoutStyle =>
         _bp < FreeScrollFrom
             /* موبایل یا زوم بالا */
@@ -63,8 +66,7 @@
         $"transition:padding-left 300ms ease;";
 
     private string InnerContentStyle =>
-        $"max-width:1200px;" +
+        $"max-width:{DefaultMaxWidth}px;" +
         $"margin:0 auto;" +
         $"width:100%;";
 }
-

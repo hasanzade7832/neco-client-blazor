@@ -24,12 +24,12 @@
 
         <!-- Scrollable content -->
         <OrgScrollHost Style="
-      flex:1 1 auto;
-      min-height:0;
-      overflow-y:auto;
-      overflow-x:hidden;
-      padding:0 8px 12px;
-      box-sizing:border-box;">
+            flex:1 1 auto;
+            min-height:0;
+            overflow-y:auto;
+            overflow-x:hidden;
+            padding:0 8px 12px;
+            box-sizing:border-box;">
             @if (CardsHost is not null)
             {
                 @CardsHost
@@ -43,7 +43,15 @@
                     ? EventCallback.Factory.Create<MouseEventArgs>(this, OpenCardMenu)
                     : EventCallback<MouseEventArgs>.Empty;
 
-                    <TaskCard Item="list[i]" MenuClicked="handler" />
+                    <!-- هر کارت را درون یک کانتینر با ارتفاع مشخص شده قرار می‌دهیم -->
+                    <div style="
+                        flex:0 0 auto;
+                        height:@($"{CardHeightVh}vh");
+                        margin-bottom:8px;
+                        box-sizing:border-box;
+                        overflow:hidden;">
+                        <TaskCard Item="list[i]" MenuClicked="handler" />
+                    </div>
                 }
             }
         </OrgScrollHost>
@@ -112,6 +120,9 @@
     [Parameter] public RenderFragment CardsHost { get; set; }
     [Parameter] public EventCallback<string> AddTaskRequested { get; set; }
 
+    // **پارامتر جدید**: ارتفاع کارت بر حسب درصد از ارتفاع نما
+    [Parameter] public int CardHeightVh { get; set; } = 25;
+
     private bool _headerMenuOpen;
     private double _headerX, _headerY;
     private bool _cardMenuOpen;
@@ -120,40 +131,40 @@
     private double _propertiesX, _propertiesY;
 
     private readonly List<MenuItemModel> HeaderMenuItems = new()
-  {
-    new(Icons.Material.Filled.Tune, "Properties", true),
-    new(Icons.Material.Filled.Sort, "Sort", false)
-  };
+    {
+        new(Icons.Material.Filled.Tune, "Properties", true),
+        new(Icons.Material.Filled.Sort, "Sort", false)
+    };
 
     private readonly List<MenuItemModel> CardMenuItems = new()
-  {
-    new(Icons.Material.Filled.SubdirectoryArrowRight, "Follow Up", false),
-    new(Icons.Material.Filled.Notifications,      "Alert",      false),
-    new(Icons.Material.Filled.DoubleArrow,        "Expedite",   false),
-    new(Icons.Material.Filled.Groups,             "Consult",    false),
-    new(Icons.Material.Filled.ChangeCircle,       "Reassign",   false)
-  };
+    {
+        new(Icons.Material.Filled.SubdirectoryArrowRight, "Follow Up", false),
+        new(Icons.Material.Filled.Notifications,      "Alert",      false),
+        new(Icons.Material.Filled.DoubleArrow,        "Expedite",   false),
+        new(Icons.Material.Filled.Groups,             "Consult",    false),
+        new(Icons.Material.Filled.ChangeCircle,       "Reassign",   false)
+    };
 
     private List<PropertyItemModel> PropertyItems = new()
-  {
-    new() { Text = "Title", Checked = true },
-    new() { Text = "From", Checked = true },
-    new() { Text = "To", Checked = true },
-    new() { Text = "Program" },
-    new() { Text = "Project", Checked = true },
-    new() { Text = "Send Date" },
-    new() { Text = "Seen Date" },
-    new() { Text = "Completion Date", Checked = true },
-    new() { Text = "Due Date" },
-    new() { Text = "Status", Checked = true }
-  };
+    {
+        new() { Text = "Title", Checked = true },
+        new() { Text = "From", Checked = true },
+        new() { Text = "To", Checked = true },
+        new() { Text = "Program" },
+        new() { Text = "Project", Checked = true },
+        new() { Text = "Send Date" },
+        new() { Text = "Seen Date" },
+        new() { Text = "Completion Date", Checked = true },
+        new() { Text = "Due Date" },
+        new() { Text = "Status", Checked = true }
+    };
 
     private int _appearWidth = 1;
     private bool _appeared;
     private int ContainerWidth =>
-      Appear && !_appeared
-        ? _appearWidth
-        : (Collapsed ? CollapsedWidth : ExpandedWidth);
+        Appear && !_appeared
+            ? _appearWidth
+            : (Collapsed ? CollapsedWidth : ExpandedWidth);
 
     protected override async STT.Task OnAfterRenderAsync(bool firstRender)
     {
@@ -170,10 +181,10 @@
     }
 
     private STT.Task Toggle()
-      => CollapsedChanged.InvokeAsync(!Collapsed);
+        => CollapsedChanged.InvokeAsync(!Collapsed);
 
     private STT.Task InvokeAddTask()
-      => AddTaskRequested.InvokeAsync(Title);
+        => AddTaskRequested.InvokeAsync(Title);
 
     private STT.Task OpenHeaderMenu(MouseEventArgs e)
     {

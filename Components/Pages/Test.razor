@@ -11,6 +11,17 @@
         min-height: 0;
         overflow-x: hidden;
         overflow-y: auto;
+        /* 3) جلوگیری از چسبیدن به لبه‌ها */
+        padding: 0 16px;
+        align-items: center; /* مرکز افقی */
+    }
+
+    /* کانتینر میانی برای تعیین حداکثر پهنا و مرکز شدن */
+    .table-center {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        box-sizing: border-box;
     }
 
     /* گرید داخلی — ارتفاع کامل و فلکس‌پذیر */
@@ -38,61 +49,62 @@
 </style>
 
 <div class="custom-table-wrapper">
-    <div class="my-fixed-grid">
-        <MudDataGrid T="Element"
-                     Items="@FilteredElements"
-                     FixedHeader="true"
-                     RowClassFunc="@_rowClassFunc"
-                     RowStyleFunc="@_rowStyleFunc"
-                     Filterable="true"
-                     FilterMode="DataGridFilterMode.Simple"
-                     FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                     SortMode="SortMode.Multiple"
-                     Hideable="false"
-                     Groupable="false"
-                     @bind-CurrentPage="_page"
-                     @bind-RowsPerPage="_rowsPerPage"
-                     Virtualize="true"
-                     Style="border: 1px solid rgba(0,0,0,0.2);
-                        box-sizing: border-box;
-                        border-radius: 6px;
-                        height: 100%;">
+    <div class="table-center">
+        <div class="my-fixed-grid">
+            <MudDataGrid T="Element"
+                         Items="@FilteredElements"
+                         FixedHeader="true"
+                         RowClassFunc="@_rowClassFunc"
+                         RowStyleFunc="@_rowStyleFunc"
+                         Filterable="true"
+                         FilterMode="DataGridFilterMode.Simple"
+                         FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+                         SortMode="SortMode.Multiple"
+                         Hideable="false"
+                         Groupable="false"
+                         @bind-CurrentPage="_page"
+                         @bind-RowsPerPage="_rowsPerPage"
+                         Virtualize="true"
+                         Style="border: 1px solid rgba(0,0,0,0.2);
+                                box-sizing: border-box;
+                                border-radius: 6px;
+                                height: 100%;">
 
-            <ToolBarContent>
-                <MudText Typo="Typo.h6">Tasks</MudText>
-                <MudSpacer />
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Tasks</MudText>
+                    <MudSpacer />
 
-                <!-- اصلاح شده: حذف @bind-Value و استفاده از Value/ValueChanged/ValueExpression -->
-                <MudTextField T="string"
-                              Value="_searchString"
-                              ValueChanged="@( (string s) => { _searchString = s; _page = 0; } )"
-                              ValueExpression="() => _searchString"
-                              Immediate="true"
-                              Placeholder="Search"
-                              Adornment="Adornment.Start"
-                              AdornmentIcon="@Icons.Material.Filled.Search"
-                              Class="mt-0" />
-            </ToolBarContent>
+                    <MudTextField T="string"
+                                  Value="_searchString"
+                                  ValueChanged="@( (string s) => { _searchString = s; _page = 0; } )"
+                                  ValueExpression="() => _searchString"
+                                  Immediate="true"
+                                  Placeholder="Search"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  Class="mt-0" />
+                </ToolBarContent>
 
-            <Columns>
-                <PropertyColumn Property="x => x.Number" Title="Nr" Sortable="false" />
-                <PropertyColumn Property="x => x.Sign" Title="Sign" />
-                <PropertyColumn Property="x => x.Name" Title="Name" FilterMode="DataGridFilterMode.ColumnFilterMenu" />
-                <PropertyColumn Property="x => x.Position" Title="Position" />
-                <PropertyColumn Property="x => x.Molar" Title="Molar mass" />
-            </Columns>
+                <Columns>
+                    <PropertyColumn Property="x => x.Number" Title="Nr" Sortable="false" />
+                    <PropertyColumn Property="x => x.Sign" Title="Sign" />
+                    <PropertyColumn Property="x => x.Name" Title="Name" FilterMode="DataGridFilterMode.ColumnFilterMenu" />
+                    <PropertyColumn Property="x => x.Position" Title="Position" />
+                    <PropertyColumn Property="x => x.Molar" Title="Molar mass" />
+                </Columns>
 
-            <PagerContent>
-                <div class="pager-center">
-                    <MudDataGridPager T="Element"
-                                      @bind-CurrentPage="_page"
-                                      @bind-RowsPerPage="_rowsPerPage"
-                                      PageSizeOptions="new int[] { 10, 20, 30 }"
-                                      RowsPerPageString="Rows per page" />
-                </div>
-            </PagerContent>
+                <PagerContent>
+                    <div class="pager-center">
+                        <MudDataGridPager T="Element"
+                                          @bind-CurrentPage="_page"
+                                          @bind-RowsPerPage="_rowsPerPage"
+                                          PageSizeOptions="new int[] { 10, 20, 30 }"
+                                          RowsPerPageString="Rows per page" />
+                    </div>
+                </PagerContent>
 
-        </MudDataGrid>
+            </MudDataGrid>
+        </div>
     </div>
 </div>
 
