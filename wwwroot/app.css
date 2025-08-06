@@ -69,6 +69,14 @@ body,
 
 /* wwwroot/css/ProjectsBoard.css */
 
+/* ========================================================
+   ProjectsBoard — Desktop & Mobile Scroll + Custom Scrollbar
+   ======================================================== */
+
+/* ========================================================
+   استایل پایه برای دسکتاپ
+   ======================================================== */
+
 /* کانتینر کلی پروژه‌ها در حالت دسکتاپ */
 
 .projects-desktop {
@@ -94,10 +102,15 @@ body,
 
 .projects-desktop .board-container {
   flex: 1;
+  overflow-x: auto;
   overflow-y: auto;
   max-height: calc(100vh - 140px);
   box-sizing: border-box;
 }
+
+/* ========================================================
+   استایل پایه برای موبایل/تبلت (و هم دسکتاپ برای نمایش متفاوت)
+   ======================================================== */
 
 /* کانتینر کلی پروژه‌ها در حالت موبایل/تبلت */
 
@@ -105,10 +118,9 @@ body,
   display: flex;
   align-items: stretch;
   gap: 16px;
-  min-width: 720px;
   padding: 8px;
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow: hidden;
+  /* مخفی کردن افقی/عمودی خارج از محدوده */
   max-height: 50vh;
   box-sizing: border-box;
 }
@@ -116,7 +128,8 @@ body,
 /* سایدبار در حالت موبایل/تبلت */
 
 .projects-mobile .sidebar-container {
-  flex: 0 0 280px;
+  flex: 1;
+  /* عرض برابر */
   overflow-y: auto;
   max-height: 50vh;
   box-sizing: border-box;
@@ -126,7 +139,9 @@ body,
 
 .projects-mobile .board-container {
   flex: 1;
+  /* عرض برابر */
   overflow-y: auto;
+  /* فقط عمودی اسکرول */
   max-height: 50vh;
   box-sizing: border-box;
 }
@@ -149,17 +164,59 @@ body,
   cursor: pointer;
 }
 
-/* برای اسکرول هم‌زمان عمودی و افقی در موبایل/تبلت */
-
-.projects-mobile {
-  overflow-x: auto;
-  overflow-y: auto;
-}
-
-/* کارت Tasks تمام عرض و وسط چین */
+/* کارت Tasks تمام عرض و وسط‌چین */
 
 .project-card.tasks {
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
+}
+
+/* استایل scrollbar عمومی (دسکتاپ + موبایل) */
+
+.board-container::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.board-container::-webkit-scrollbar-track {
+  background: #E6F0FA;
+}
+
+.board-container::-webkit-scrollbar-thumb {
+  background: #005B9E;
+  border-radius: 4px;
+}
+
+.board-container {
+  scrollbar-color: #005B9E #E6F0FA;
+  scrollbar-width: thin;
+}
+
+/* ========================================================
+   Override برای موبایل: کنار هم قرار گرفتن سایدبار و بورد
+   و هر دو با overflow-y
+   ======================================================== */
+
+@media (max-width: 960px) {
+  .projects-mobile {
+    /* حالت افقی یا عمودی اسکرول عمومی غیرفعال */
+    overflow: hidden;
+  }
+
+  .projects-mobile .sidebar-container,
+        .projects-mobile .board-container {
+    flex: 1 1 0;
+    /* تقسیم عرض به دو قسمت مساوی */
+    min-width: 0;
+    /* جلوگیری از overflow عرض */
+    max-height: 50vh;
+    /* ارتفاع یکسان */
+  }
+
+  /* اگر بخواهیم هم‌چنان gap رعایت شود */
+
+  .projects-mobile {
+    gap: 8px;
+  }
 }

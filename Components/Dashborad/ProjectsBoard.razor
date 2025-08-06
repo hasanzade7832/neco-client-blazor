@@ -1,17 +1,18 @@
-﻿@page "/projects"
-@using MudBlazor
+﻿@using MudBlazor
 @inject NavigationManager NavigationManager
 
+<!-- ========================= دسکتاپ ========================= -->
 <MudHidden Breakpoint="Breakpoint.SmAndDown">
     <div class="projects-desktop">
-        <!-- SIDEBAR -->
+        <!-- سایدبار -->
         <div class="sidebar-container">
             <ProjectsSidebar />
         </div>
-        <!-- BOARD -->
-        <div class="board-container org-scroll">
+
+        <!-- برد -->
+        <div class="board-container">
             <MudGrid GutterSize="1"
-                     Style="width:100%;max-width:960px;margin:0 auto;"
+                     Style="width:100%; max-width:960px; margin:0 auto;"
                      Justify="Justify.Center">
                 @foreach (var card in Cards)
                 {
@@ -43,16 +44,18 @@
     </div>
 </MudHidden>
 
+<!-- ========================= موبایل / تبلت ========================= -->
 <MudHidden Breakpoint="Breakpoint.MdAndUp">
     <div class="projects-mobile">
-        <!-- SIDEBAR -->
+        <!-- سایدبار -->
         <div class="sidebar-container">
             <ProjectsSidebar />
         </div>
-        <!-- BOARD -->
-        <div class="board-container org-scroll">
+
+        <!-- برد -->
+        <div class="board-container">
             <MudGrid GutterSize="1"
-                     Style="width:100%;max-width:960px;margin:0 auto;"
+                     Style="width:100%; margin:0;"
                      Justify="Justify.Center">
                 @foreach (var card in Cards)
                 {
@@ -88,21 +91,21 @@
     class CardInfo
     {
         public string Title { get; set; } = "";
-        public int Total { get; set; }
+        public int Total  { get; set; }
         public int Delayed { get; set; }
         public bool IsClickable { get; set; }
         public string NavigateTo { get; set; } = "";
     }
 
-    private List<CardInfo> Cards = new()
+    private readonly List<CardInfo> Cards = new()
     {
-        new() { Title = "Alerts",     Total = 3,  Delayed = 0, IsClickable = false },
-        new() { Title = "Follow Up",  Total = 8,  Delayed = 2, IsClickable = false },
-        new() { Title = "Comments",   Total = 13, Delayed = 5, IsClickable = false },
-        new() { Title = "Tasks",      Total = 23, Delayed = 8, IsClickable = true,  NavigateTo = "/tasks" },
-        new() { Title = "Meetings",   Total = 6,  Delayed = 2, IsClickable = false },
-        new() { Title = "Issues",     Total = 10, Delayed = 9, IsClickable = false },
-        new() { Title = "Letters",    Total = 8,  Delayed = 2, IsClickable = false },
+        new() { Title = "Alerts",    Total = 3,  Delayed = 0, IsClickable = false },
+        new() { Title = "Follow Up", Total = 8,  Delayed = 2, IsClickable = false },
+        new() { Title = "Comments",  Total = 13, Delayed = 5, IsClickable = false },
+        new() { Title = "Tasks",     Total = 23, Delayed = 8, IsClickable = true,  NavigateTo = "/tasks" },
+        new() { Title = "Meetings",  Total = 6,  Delayed = 2, IsClickable = false },
+        new() { Title = "Issues",    Total = 10, Delayed = 9, IsClickable = false },
+        new() { Title = "Letters",   Total = 8,  Delayed = 2, IsClickable = false },
     };
 
     private void OnCardClick(CardInfo card)
