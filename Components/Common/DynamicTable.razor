@@ -1,62 +1,131 @@
 ﻿@page "/test111113"
 @using System.Linq
 @using MudBlazor
+@using Microsoft.AspNetCore.Components.Web
+@using BlazorApp12.Components.TaskManageMent   @* برای <TaskManageMent /> *@
 
-<div class="wrapper">
-    <!-- نمایش تعداد سطرهای انتخاب-شده -->
-    <MudText Typo="Typo.subtitle2" Class="mb-2">
-        Rows per page: @_rowsPerPage
-    </MudText>
+<style>
+    /* کانتینر روت جدول — اجازه اسکرول عمودی تنها در صورت نیاز */
+    .custom-table-wrapper {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 0 16px; /* جلوگیری از چسبیدن به لبه‌ها */
+        align-items: center; /* مرکز افقی */
+    }
 
-    <!-- دیتاگرید با هدر ثابت و پیجر چسبیده -->
-    <MudDataGrid T="Element"
-                 Items="@FilteredElements"
-                 Class="my-fixed-grid"
-                 FixedHeader="true"
-                 RowClassFunc="@_rowClassFunc"
-                 RowStyleFunc="@_rowStyleFunc"
-                 Filterable="true"
-                 FilterMode="DataGridFilterMode.Simple"
-                 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                 SortMode="SortMode.Multiple"
-                 Hideable="false"
-                 Groupable="false"
-                 @bind-CurrentPage="_page"
-                 @bind-RowsPerPage="_rowsPerPage">
+    /* کانتینر میانی برای تعیین حداکثر پهنا و مرکز شدن */
+    .table-center {
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
 
-        <!-- نوار ابزار -->
-        <ToolBarContent>
-            <MudText Typo="Typo.h6">Tasks</MudText>
-            <MudSpacer />
-            <MudTextField Value="_searchString"
-                          Immediate="true"
-                          ValueChanged="@((string s) => { _searchString = s; _page = 0; })"
-                          Placeholder="Search"
-                          Adornment="Adornment.Start"
-                          AdornmentIcon="@Icons.Material.Filled.Search"
-                          Class="mt-0" />
-        </ToolBarContent>
+    /* گرید داخلی — ارتفاع کامل و فلکس‌پذیر */
+    .my-fixed-grid {
+        position: relative; /* برای پوشاندن محدوده توسط TaskManageMent لازم است */
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+    }
 
-        <!-- ستون‌ها -->
-        <Columns>
-            <PropertyColumn Property="x => x.Number" Title="Nr" Sortable="false" Filterable="true" />
-            <PropertyColumn Property="x => x.Sign" Filterable="true" />
-            <PropertyColumn Property="x => x.Name" FilterMode="DataGridFilterMode.ColumnFilterMenu" />
-            <PropertyColumn Property="x => x.Position" Filterable="true" />
-            <PropertyColumn Property="x => x.Molar" Title="Molar mass" Filterable="true" />
-        </Columns>
+        /* کانتینر جدول خودِ MudDataGrid */
+        .my-fixed-grid .mud-table-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
 
-        <!-- پیجر -->
-        <PagerContent>
-            <div class="pager-center">
-                <MudDataGridPager T="Element"
-                                  @bind-CurrentPage="_page"
-                                  @bind-RowsPerPage="_rowsPerPage"
-                                  PageSizeOptions="new int[] { 10, 20, 30 }"
-                                  RowsPerPageString="Rows per page" />
-            </div>
-        </PagerContent>
-    </MudDataGrid>
+    /* مرکز کردن پیجینیشن */
+    .pager-center {
+        display: flex;
+        justify-content: center;
+        padding: 6px 0;
+        gap: 8px;
+    }
+
+    /* برای اطمینان از سفید ماندن ردیف‌های خاص */
+    .white-row {
+        background-color: #ffffff;
+    }
+</style>
+
+<div class="custom-table-wrapper">
+    <div class="table-center">
+        <MudText Typo="Typo.subtitle2" Class="mb-2">
+            Rows per page: @_rowsPerPage
+        </MudText>
+
+        <div class="my-fixed-grid">
+            @* کامپوننت دیالوگ — تمام منطق داخل خودش است *@
+            <TaskManageMent Visible="_showTaskOverlay"
+                            MaximizedInitial="true"
+                            OnClose="CloseOverlay" />
+
+            <MudDataGrid T="Element"
+                         Items="@FilteredElements"
+                         FixedHeader="true"
+                         RowClassFunc="@_rowClassFunc"
+                         RowStyleFunc="@_rowStyleFunc"
+                         Filterable="true"
+                         FilterMode="DataGridFilterMode.Simple"
+                         FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+                         SortMode="SortMode.Multiple"
+                         Hideable="false"
+                         Groupable="false"
+                         Virtualize="true"
+                         RowClick="OnRowClick"
+                         @bind-CurrentPage="_page"
+                         @bind-RowsPerPage="_rowsPerPage"
+                         Style="border: 1px solid rgba(0,0,0,0.2);
+                                box-sizing: border-box;
+                                border-radius: 6px;
+                                height: 100%;">
+
+                <!-- نوار ابزار -->
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Tasks</MudText>
+                    <MudSpacer />
+
+                    <MudTextField T="string"
+                                  Value="_searchString"
+                                  ValueChanged="@( (string s) => { _searchString = s; _page = 0; } )"
+                                  ValueExpression="() => _searchString"
+                                  Immediate="true"
+                                  Placeholder="Search"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  Class="mt-0" />
+                </ToolBarContent>
+
+                <!-- ستون‌ها -->
+                <Columns>
+                    <PropertyColumn Property="x => x.Number" Title="Nr" Sortable="false" />
+                    <PropertyColumn Property="x => x.Sign" Title="Sign" />
+                    <PropertyColumn Property="x => x.Name" Title="Name" FilterMode="DataGridFilterMode.ColumnFilterMenu" />
+                    <PropertyColumn Property="x => x.Position" Title="Position" />
+                    <PropertyColumn Property="x => x.Molar" Title="Molar mass" />
+                </Columns>
+
+                <!-- پیجر -->
+                <PagerContent>
+                    <div class="pager-center">
+                        <MudDataGridPager T="Element"
+                                          @bind-CurrentPage="_page"
+                                          @bind-RowsPerPage="_rowsPerPage"
+                                          PageSizeOptions="new int[] { 10, 20, 30 }"
+                                          RowsPerPageString="Rows per page" />
+                    </div>
+                </PagerContent>
+
+            </MudDataGrid>
+        </div>
+    </div>
 </div>
 
 @code {
@@ -64,7 +133,7 @@
     private int _page = 0;
     private int _rowsPerPage = 10;
 
-    /* ---------- داده ساختگی ---------- */
+    /* ---------- داده ساختگی (Sample Data) ---------- */
     private IEnumerable<Element> Elements = Enumerable
         .Range(1, 1000)
         .Select(i => new Element
@@ -83,18 +152,28 @@
         string.IsNullOrWhiteSpace(_searchString) ||
         x.Sign.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
         x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
-        $"{x.Number} {x.Position} {x.Molar}".Contains(_searchString, StringComparison.OrdinalIgnoreCase));
+        $"{x.Number} {x.Position} {x.Molar}".Contains(_searchString, StringComparison.OrdinalIgnoreCase)
+    );
 
     /* ---------- رنگ‌بندی ردیف‌ها ---------- */
     private Func<Element, int, string> _rowStyleFunc => (_, i) => (i % 4) switch
     {
         0 => "background-color:rgba(var(--mud-palette-success-rgb),0.18);",
-        1 => "background-color:rgba(255,255,255,1);",
+        1 => "background-color:#ffffff;",
         2 => "background-color:rgba(var(--mud-palette-warning-rgb),0.18);",
         _ => "background-color:rgba(var(--mud-palette-error-rgb),0.18);"
     };
 
     private Func<Element, int, string> _rowClassFunc => (_, i) => i % 4 == 1 ? "white-row" : null;
+
+    /* ---------- کنترل نمایش TaskManageMent ---------- */
+    private bool _showTaskOverlay = false;
+
+    private void OnRowClick(DataGridRowClickEventArgs<Element> args)
+        => _showTaskOverlay = true;
+
+    private void CloseOverlay()
+        => _showTaskOverlay = false;
 
     /* ---------- مدل ---------- */
     public class Element
@@ -106,3 +185,4 @@
         public double Molar { get; set; }
     }
 }
+

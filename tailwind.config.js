@@ -1,12 +1,11 @@
-﻿/** @type {import('tailwindcss').Config} */
-module.exports = {
+﻿module.exports = {
     content: [
-        "./Pages/**/*.{razor,html,cshtml}",
-        "./Components/**/*.{razor,html,cshtml}",
-        "./**/*.razor"
+        "./Pages/**/*.{razor,cshtml,html}",
+        "./Components/**/*.{razor,cshtml,html}",
+        "./wwwroot/index.html"
     ],
     theme: {
         extend: {},
     },
     plugins: [],
-}
+};

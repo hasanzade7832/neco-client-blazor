@@ -14,11 +14,13 @@
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["BlazorApp12.styles.css"]" />
     <link rel="stylesheet" href="css/login.css" />
-    <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="css//DynamicTable.css"/>
+    <link rel="stylesheet" href="app.min.css" />
+    <link rel="stylesheet" href="~/app.css" />
+
 
     <!-- ➌ سایر وابستگی‌ها -->
-    <ImportMap />
+    <ImportMap />`
     <link rel="icon" type="image/png" href="favicon.png" />
 
     <!-- ➍ تجهیز تگ <head> برای کامپوننت‌های Blazor -->
@@ -46,6 +48,7 @@
           if (elem) elem.indeterminate = !!value;
         };
     </script>
+    <script src="js/taskOverlay.js"></script>
 
 
 </body>
