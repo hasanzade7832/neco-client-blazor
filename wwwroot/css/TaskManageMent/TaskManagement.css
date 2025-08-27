@@ -5,13 +5,11 @@
 :root {
     --tm-line: 1.5rem;
     --tm-accent: #1f497d;
-    /* اندازه باکس‌های زیر خط (پایه) */
-    --tm-mini-w: 160px;
-    --tm-mini-h: 56px;
-    /* درخواست شما: 2/3 کم شود ⇒ هر باکس = 1/3 اندازه قبلی */
-    --tm-mini-scale: 0.3333333;
+    --tm-mini-icon-size: 26px;
+    --tm-action-gap: 6px;
 }
 
+/* ---------- کلیات ---------- */
 .tm-overlay {
     position: absolute;
     inset: 0;
@@ -23,27 +21,26 @@
 }
 
 .tm-dialog {
-    position: relative;
     background: #d9d9d9;
     border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.35), 0 8px 20px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.12);
+    box-shadow: 0 20px 60px rgba(0,0,0,.35),0 8px 20px rgba(0,0,0,.18),0 2px 6px rgba(0,0,0,.12);
     display: flex;
     flex-direction: column;
-    transition: width .22s cubic-bezier(.2,.8,.2,1), height .22s cubic-bezier(.2,.8,.2,1), margin .22s cubic-bezier(.2,.8,.2,1), transform .22s cubic-bezier(.2,.8,.2,1), opacity .22s ease;
-    animation: dialog-in .22s cubic-bezier(.2,.8,.2,1);
+    transition: width .22s cubic-bezier(.2,.8,.2,1),height .22s cubic-bezier(.2,.8,.2,1),margin .22s cubic-bezier(.2,.8,.2,1),transform .22s cubic-bezier(.2,.8,.2,1),opacity .22s ease;
 }
 
     .tm-dialog.closing {
         animation: dialog-out .18s ease forwards;
     }
 
+/* ---------- هدر ---------- */
 .tm-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     padding: 10px 14px;
-    border-bottom: 1px solid rgba(0,0,0,.08);
     background: #d9d9d9;
+    border-bottom: 1px solid rgba(0,0,0,.08);
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     position: sticky;
@@ -52,56 +49,66 @@
 }
 
 .tm-title {
-    font-size: 18px;
-    font-weight: 700;
+    font: 700 18px/1 "Segoe UI",sans-serif;
     color: #111827;
 }
 
 .tm-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--tm-action-gap);
 }
 
 .tm-icon {
     color: #000 !important;
 }
 
+.tm-actions .mud-button-root {
+    min-width: 0;
+    padding: 4px;
+}
+
+.tm-actions .mud-icon-root {
+    font-size: var(--tm-mini-icon-size) !important;
+    line-height: 1 !important;
+}
+
+/* ---------- بادی ---------- */
 .tm-dialog-body {
     flex: 1 1 auto;
-    overflow: auto;
     padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    overflow: auto;
 }
 
 .tm-rail-8lines {
-    height: calc(var(--tm-line) * 8);
+    height: calc(var(--tm-line)*8);
     display: flex;
-    align-items: stretch;
     gap: 12px;
-    margin: 8px;
-    margin-top: 4px; /* محتوا بالاتر حس شود */
+    margin: 8px 8px 0;
+}
+
+.tm-sidebar,
+.tm-main {
+    background: #d9d9d9 !important;
+    border: none !important;
+    border-radius: 10px;
+    box-shadow: none !important;
 }
 
 .tm-sidebar {
     flex: 0 0 280px;
     max-width: 320px;
-    height: 100%;
-    background: #d9d9d9;
-    border-radius: 10px;
-    padding: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 12px;
 }
 
 .tm-main {
-    flex: 1 1 auto;
-    height: 100%;
-    background: #d9d9d9;
-    border-radius: 10px;
-    padding: 8px 12px 12px; /* بالایی کمتر تا تیتر به بالا بچسبد */
+    flex: 1;
+    padding: 8px 12px 12px;
     display: flex;
     flex-direction: column;
     min-width: 0;
@@ -113,12 +120,12 @@
     margin: 0 8px;
 }
 
+/* ---------- محتواى ساید ---------- */
 .tm-role-card {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 10px;
-    user-select: none;
+    align-items: center;
 }
 
 .tm-avatar {
@@ -131,12 +138,10 @@
     place-items: center;
 }
 
-/* — کلید مشکل: مجبور کردن سایز آیکون — */
 .tm-avatar-icon {
     font-size: 70px !important;
     color: var(--tm-accent) !important;
     line-height: 1 !important;
-    display: inline-block !important;
 }
 
 .tm-role-caption {
@@ -145,47 +150,38 @@
     color: var(--tm-accent);
 }
 
-/* تیتر بالاتر و فاصله کم با باکس */
+/* ---------- تیتر مین ---------- */
 .tm-main-headline {
-    margin-top: 0;
-    margin-bottom: 10px; /* فاصله‌ی کم از باکس (تیتر به بالا نزدیک‌تر) */
+    margin: 0 0 10px;
     text-align: center;
     color: var(--tm-accent);
-    font-weight: 600;
-    font-size: 1rem;
+    font: 600 1rem/1 "Segoe UI",sans-serif;
 }
 
-/* ===== مستطیل زیر متن Execute — داخل ناحیه main ===== */
+/* ---------- Execute Panel ---------- */
 .tm-exec-panel {
-    width: min(100%, 900px);
-    min-height: calc(var(--tm-line) * 6);
-    border: 1px solid #000; /* بردر نازک سیاه دور مستطیل */
-    border-radius: 8px;
-    overflow: hidden; /* خروج محتوا از مستطیل ممنوع */
-    box-sizing: border-box;
+    width: min(100%,900px);
+    border: none !important; /* بردر پنل حذف */
+    background: #d9d9d9; /* خاکستری */
     display: grid;
-    grid-template-columns: 1fr 1fr; /* تقسیم به دو قسمت */
-    margin-left: auto; /* وسط‌چین افقی */
-    margin-right: auto;
+    grid-template-columns: 1fr 1fr;
+    margin: 0 auto;
+    border: 1px solid #000 !important; /* بردر نازک (۱px) */
+    border-radius: 4px;
 }
 
-/* دو قسمت داخلی با بردر بین‌شان */
+/* نیمه‌ها: بدون بردر و رنگ اضافی */
+.tm-exec-left, .tm-exec-right {
+    background: #d9d9d9 !important;
+    border: none !important;
+    padding: 8px;
+    display: flex;
+}
+
 .tm-exec-left {
-    background: #ffe5e5; /* چپ قرمز روشن */
-    border-right: 1px solid #000; /* خط تقسیم داخلی */
-    min-height: inherit;
-    padding: 8px;
-    display: flex;
+    border-right: none !important;
 }
 
-.tm-exec-right {
-    background: #e6ffe6; /* راست سبز روشن */
-    min-height: inherit;
-    padding: 8px;
-    display: flex;
-}
-
-/* === محتوای باکس قرمز: دو قسمت زیر هم طبق تصویر 1 با بک‌گراند #d9d9d9 === */
 .tm-left-stack {
     display: flex;
     flex-direction: column;
@@ -195,13 +191,11 @@
 
 .tm-card {
     background: #d9d9d9;
+    border: none;
     border-radius: 8px;
     padding: 12px;
-    width: 100%;
-    box-sizing: border-box;
 }
 
-/* تیتر بنفش Project IV */
 .tm-project-title {
     text-align: center;
     font-weight: 600;
@@ -209,81 +203,47 @@
     color: #6b5da7;
 }
 
-/* دکمه آبی Action */
 .tm-action-btn {
     display: block;
     width: 180px;
-    max-width: 100%;
     margin: 0 auto;
     background: #1f497d !important;
     color: #fff !important;
     font-weight: 700;
 }
 
-/* === محتوای باکس سبز: چهار نوشته زیر هم طبق تصویر 2، چسبیده به چپ با فاصله کم === */
 .tm-meta-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    align-items: flex-start;
-    padding-left: 8px; /* فاصله‌ی کم از لبه چپ */
-    padding-top: 6px;
+    padding: 6px 0 0 8px;
     color: var(--tm-accent);
-    font-weight: 700;
-    font-size: .95rem;
+    font: 700 .95rem/1 "Segoe UI",sans-serif;
 }
 
-/* ===== ناحیه‌ی جدید زیر خط (divider) ===== */
+/* ---------- نوار آیکون پایین ---------- */
 .tm-after-line {
     display: flex;
-    justify-content: space-between; /* چپ و راست */
-    align-items: flex-start;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px 0;
     gap: 12px;
-    padding-left: 8px; /* طبق خواسته: با یک فاصله از سمت چپ */
-    padding-right: 8px;
-    margin-top: 8px;
 }
 
-/* باکس کوچک قرمز سمت چپ — با کاهش 2/3 (اسکیل 1/3) */
-.tm-mini-left {
-    width: calc(var(--tm-mini-w) * var(--tm-mini-scale));
-    height: calc(var(--tm-mini-h) * var(--tm-mini-scale));
-    background: #ff4d4d;
-    border-radius: 8px;
-}
-
-/* باکس سه‌تکه سمت راست: سه باکس کنار هم؛ هر کدام 1/3 کل
-   عرض کل = 3 × عرض هر تیکه (کاهش‌یافته) */
-.tm-mini-right {
-    width: calc(var(--tm-mini-w) * 3 * var(--tm-mini-scale));
-    height: calc(var(--tm-mini-h) * var(--tm-mini-scale));
+.tm-left-actions, .tm-right-actions {
     display: flex;
-    flex-direction: row; /* کنار هم */
-    align-items: stretch;
-    overflow: hidden;
-    border-radius: 8px; /* گوشه‌های کلی */
+    align-items: center;
+    gap: var(--tm-action-gap);
 }
 
-.tm-mini-seg {
-    flex: 1 1 33.3333%; /* هر کدام دقیقاً 1/3 */
-    height: 100%;
-}
+    .tm-mini-icon, .tm-left-actions .mud-icon-root, .tm-right-actions .mud-icon-root {
+        font-size: var(--tm-mini-icon-size) !important;
+        color: var(--tm-accent) !important;
+        line-height: 1 !important;
+    }
 
-/* رنگ‌ها */
-.tm-seg-purple {
-    background: #6b5da7;
-}
-
-.tm-seg-yellow {
-    background: #ffd54f;
-}
-
-.tm-seg-orange {
-    background: #ff9800;
-}
-
-/* ریسپانسیو: در موبایل‌ها چیدمان‌ها زیر هم شوند */
-@media (max-width: 768px) {
+/* ---------- ریسپانسیو ---------- */
+@media (max-width:768px) {
     .tm-rail-8lines {
         flex-direction: column;
     }
@@ -295,37 +255,10 @@
 
     .tm-exec-panel {
         grid-template-columns: 1fr;
-        grid-auto-rows: 1fr;
-    }
-
-    .tm-exec-left {
-        border-right: none;
-        border-bottom: 1px solid #000;
-    }
-
-    .tm-after-line {
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px 24px;
-    }
-
-    .tm-mini-right {
-        width: min(100%, calc(var(--tm-mini-w) * 3 * var(--tm-mini-scale)));
     }
 }
 
-@keyframes dialog-in {
-    from {
-        transform: scale(.92);
-        opacity: 0;
-    }
-
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
+/* ---------- انیمیشن ---------- */
 @keyframes dialog-out {
     from {
         transform: scale(1);
@@ -337,3 +270,4 @@
         opacity: 0;
     }
 }
+

@@ -1,0 +1,94 @@
+﻿@* =======================
+   ActionsManagement.razor
+   ======================= *@
+@namespace BlazorApp12.Components
+@using MudBlazor
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+
+@if (Visible)
+{
+  <div class="am-overlay open" @onclick="BackdropClick" @onkeydown="OnKeyDown" tabindex="0" @ref="_overlayRef">
+    <div class="am-dialog @( _isClosing ? "closing" : null ) @( _maximized ? "" : "small")"
+         @onclick:stopPropagation="true">
+      <!-- Header -->
+      <div class="am-header">
+        <div class="am-title">Actions Management</div>
+        <div class="am-actions">
+          <MudIconButton Icon="@(_maximized ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                         Class="am-icon" Size="Size.Small" Variant="Variant.Text" OnClick="ToggleMaximize" />
+          <MudIconButton Icon="@Icons.Material.Filled.Close"
+                         Class="am-icon" Size="Size.Small" Variant="Variant.Text" OnClick="CloseAsync" />
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="am-body">
+        <div class="am-tabbar">
+          <div class="@TabClass(AmTab.Action)"        @onclick="() => SetTab(AmTab.Action)">Action</div>
+          <div class="am-tab-sep"></div>
+          <div class="@TabClass(AmTab.LessonLearned)" @onclick="() => SetTab(AmTab.LessonLearned)">LessonLearned</div>
+        </div>
+
+        <div class="am-center">
+          @(_tab == AmTab.Action ? "اکشن" : "لسن لیرند")
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@code {
+  [Parameter] public bool Visible { get; set; }
+  [Parameter] public EventCallback OnClose { get; set; }
+  [Parameter] public bool MaximizedInitial { get; set; } = true;
+
+  private bool _maximized = true;
+  private bool _isClosing = false;
+  private ElementReference _overlayRef;
+  private bool _requestFocus;
+
+  private enum AmTab { Action, LessonLearned }
+  private AmTab _tab = AmTab.Action;
+
+  protected override void OnParametersSet()
+  {
+    // هم‌اندازه با دیالوگ والد
+    _maximized = MaximizedInitial;
+    if (Visible) _requestFocus = true;
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (_requestFocus)
+    {
+      _requestFocus = false;
+      try { await _overlayRef.FocusAsync(); } catch { }
+    }
+  }
+
+  private async Task CloseAsync()
+  {
+    if (_isClosing) return;
+    _isClosing = true;
+    await Task.Delay(180);
+    _isClosing = false;
+    if (OnClose.HasDelegate) await OnClose.InvokeAsync();
+  }
+
+  private void ToggleMaximize() => _maximized = !_maximized;
+
+  private async Task OnKeyDown(KeyboardEventArgs e)
+  {
+    if (e.Key == "Escape") await CloseAsync();
+  }
+
+  private async Task BackdropClick(MouseEventArgs _)
+  {
+    await CloseAsync();
+  }
+
+  private void SetTab(AmTab t) => _tab = t;
+
+  private string TabClass(AmTab t) => t == _tab ? "am-tab active" : "am-tab";
+}

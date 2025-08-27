@@ -1,0 +1,156 @@
+﻿/* =======================
+   ActionsManagement.razor.css
+   ======================= */
+.am-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.35)
+}
+
+    .am-overlay.open {
+        display: flex
+    }
+
+.am-dialog {
+    position: relative;
+    width: calc(100% - 32px);
+    height: calc(100% - 32px);
+    margin: 16px;
+    background: #d9d9d9;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.35),0 8px 20px rgba(0,0,0,.18),0 2px 6px rgba(0,0,0,.12);
+    display: flex;
+    flex-direction: column;
+    animation: am-in .22s cubic-bezier(.2,.8,.2,1);
+    transition: width .22s,height .22s,margin .22s,transform .22s,opacity .22s
+}
+
+    .am-dialog.closing {
+        animation: am-out .18s ease forwards
+    }
+
+    .am-dialog.small {
+        width: 50%;
+        height: 50%;
+        min-width: 480px;
+        min-height: 320px
+    }
+
+@keyframes am-in {
+    from {
+        transform: scale(.92);
+        opacity: 0
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1
+    }
+}
+
+@keyframes am-out {
+    from {
+        transform: scale(1);
+        opacity: 1
+    }
+
+    to {
+        transform: scale(.92);
+        opacity: 0
+    }
+}
+
+.am-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #d9d9d9;
+    border-bottom: 1px solid rgba(0,0,0,.08);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 1
+}
+
+.am-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827
+}
+
+.am-actions {
+    display: flex;
+    gap: 6px
+}
+
+.am-icon {
+    color: #000 !important
+}
+
+.am-actions .mud-button-root {
+    min-width: 0;
+    padding: 4px
+}
+
+.am-actions .mud-icon-root {
+    font-size: 26px !important;
+    line-height: 1 !important
+}
+
+.am-body {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+}
+
+.am-tabbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #d9d9d9;
+    padding: 8px 12px;
+    border-radius: 10px
+}
+
+.am-tab {
+    font-weight: 700;
+    color: #111827;
+    cursor: pointer;
+    user-select: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: color .15s ease,background .15s ease
+}
+
+    .am-tab:hover {
+        background: rgba(0,0,0,.06)
+    }
+
+    .am-tab.active {
+        color: #d32f2f
+    }
+
+.am-tab-sep {
+    width: 1px;
+    height: 24px;
+    background: rgba(0,0,0,.15)
+}
+
+.am-center {
+    flex: 1 1 auto;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 32px;
+    color: #1f497d;
+    text-align: center
+}
